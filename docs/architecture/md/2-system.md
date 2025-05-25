@@ -6,4 +6,3 @@
 @import "./2.4-qa-req.md"
 @import "./2.5-constraints.md"
 @import "./2.6-concerns.md"
-@import "./2.7-drivers.md"
