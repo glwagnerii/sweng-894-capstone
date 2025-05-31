@@ -2,9 +2,16 @@
   import svelteLogo from './assets/svelte.svg'
   import viteLogo from './assets/vite.svg'
   import Counter from './lib/Counter.svelte'
+  import PluginOpener from './lib/PluginOpener.svelte'
+  import PluginOs from './lib/PluginOS.svelte' 
+  import PluginHTTP from './lib/PluginHTTP.svelte'
 </script>
 
 <main>
+  <PluginOs />
+  <PluginOpener />
+  <PluginHTTP />
+
   <div>
     <a href="https://vite.dev" target="_blank" rel="noreferrer">
       <img src={viteLogo} class="logo" alt="Vite Logo" />
