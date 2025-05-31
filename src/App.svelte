@@ -5,12 +5,14 @@
   import PluginOpener from './lib/PluginOpener.svelte'
   import PluginOs from './lib/PluginOS.svelte' 
   import PluginHTTP from './lib/PluginHTTP.svelte'
+  import PluginNotification from './lib/PluginNotification.svelte';
 </script>
 
 <main>
   <PluginOs />
   <PluginOpener />
   <PluginHTTP />
+  <PluginNotification />
 
   <div>
     <a href="https://vite.dev" target="_blank" rel="noreferrer">
