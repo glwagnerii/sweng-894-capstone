@@ -32,7 +32,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   @reference "tailwindcss";
   #activitybar :global(.btn)  { @apply h-12 w-full p-0; }
   #activitybar :global(.icon) { @apply h-7 w-7; }

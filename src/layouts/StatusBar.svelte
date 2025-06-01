@@ -27,7 +27,7 @@
     </div>
 </div>
 
-<style>
+<style lang="postcss">
   @reference "tailwindcss";
   #statusbar :global(.btn) { @apply h-full px-2; }
 </style>
