@@ -11,7 +11,7 @@
     <!-- {/* { window.electron && isMac && !isFullScreen && <div className="flex-none h-full w-16"></div> } */} -->
     <div class ='title-bar-logo flex justify-start items-center h-full px-2' >
       <Button name='psu' onClick={() => openGoogle()}/>
-      <div class='app-name px-2'>ClassiCam</div>
+      <div class='app-name px-2'>Classi-Cam</div>
     </div>
   </div>
   <div class='titlebar-center flex items-center justify-center my-0 mx-2 h-full max-w-max min-w-0 order-1'>

@@ -1,4 +1,4 @@
-# ClassiCam
+# Classi-Cam
 
 - see /docs/README.md for vscode setup
 
