@@ -1,79 +1,44 @@
+@import 'tailwindcss';
+@import './themes.css';
+@config '../tailwind.config.js';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    --w-panel-left: 0px;
+    --w-panel-right: 0px;
+    --h-panel-bottom: 0px;
+    --h-layout: calc(100vh - 64px);
+    --l-body: calc(48px + var(--w-panel-left));
+    --w-body: calc(100vw - var(--l-body) - var(--w-panel-right));
+    --h-body: calc(var(--h-layout) - var(--h-panel-bottom));
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
+:focus { outline: none; }
 
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
+/* layout background color and text color */
+#titlebar                { @apply bg-bg-tb-l  text-text-tb-l  dark:bg-bg-tb-d  dark:text-text-tb-d }
+#activitybar             { @apply bg-bg-ab-l  text-text-ab-l/40 dark:bg-bg-ab-d  dark:text-text-ab-d/40 }
+#leftpanel, #rightpanel  { @apply bg-bg-pnl-l text-text-pnl-l dark:bg-bg-pnl-d dark:text-text-pnl-d }
+#main-body, #bottompanel { @apply bg-bg-bod-l text-text-bod-l dark:bg-bg-bod-d dark:text-text-bod-d }
+#statusbar               { @apply bg-bg-sb-l  text-text-sb-l  dark:bg-bg-sb-d  dark:text-text-sb-d }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
+/* layout border color and style, always show bottom panel border */
+#titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar         { @apply border-bc1-l }
+.dark { #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar { @apply border-bc1-d }}
 
-.card {
-  padding: 2em;
-}
+#titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #statusbar         { border-style: var(--border-style-light); }
+.dark { #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #statusbar { border-style: var(--border-style-dark); }}
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-}
+/* layout hover and active */
+#titlebar    .btn-psu    { @apply text-custom-red }
+#titlebar    .app-name   { @apply text-a-tb-l dark:text-a-tb-d }
+#titlebar                { .btn-active, .btn:hover { @apply bg-a-tb-l/20 text-a-tb-l dark:bg-a-tb-d/20 dark:text-a-tb-d }}
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
+#activitybar .btn        { @apply border-l-4 border-bg-ab-l dark:border-bg-ab-d }
+#activitybar .btn:hover  { @apply text-text-ab-l dark:text-text-ab-d }
+#activitybar .btn-active { @apply border-text-ab-l text-text-ab-l dark:border-text-ab-d dark:text-text-ab-d}
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+#statusbar               { .btn-active, .btn:hover { @apply bg-a-sb-l/20 text-a-sb-l dark:bg-a-sb-d/20 dark:text-a-sb-d }}
+#statusbar   .range      { @apply bg-text-sb-l dark:bg-text-sb-d }
+#statusbar   .range::-webkit-slider-thumb { @apply cursor-pointer appearance-none h-2 w-2 rounded-full bg-custom-lightblue }

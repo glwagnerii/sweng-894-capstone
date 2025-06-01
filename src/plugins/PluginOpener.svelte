@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { openUrl } from '@tauri-apps/plugin-opener';
+  import { openUrl } from '@tauri-apps/plugin-opener'
 
   async function openGoogle() {
-    await openUrl('https://www.google.com');
+    await openUrl('https://www.google.com')
   }
 </script>
 
