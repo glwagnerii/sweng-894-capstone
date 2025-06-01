@@ -27,7 +27,7 @@
   </div>
 </div>
 
-<style>
+<style lang="postcss">
   @reference "tailwindcss";
   #titlebar :global(.btn) { @apply h-full px-1; }
   #titlebar :global(.icon-psu) { @apply w-8 text-blue-800 bg-white; }
