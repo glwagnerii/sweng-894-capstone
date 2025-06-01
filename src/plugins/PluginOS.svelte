@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os';
-  import { writable } from 'svelte/store';
+  import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
+  import { writable } from 'svelte/store'
 
   const osInfo = writable<{
-    platform?: string;
-    version?: string;
-    type?: string;
-    arch?: string;
-    locale?: string | null;
-  }>({});
+    platform?: string
+    version?: string
+    type?: string
+    arch?: string
+    locale?: string | null
+  }>({})
 
   async function getOS() {
     osInfo.set({
@@ -16,8 +16,8 @@
       version: version(),
       type: type(),
       arch: arch(),
-      locale: await locale()
-    });
+      locale: await locale(),
+    })
   }
 </script>
 
