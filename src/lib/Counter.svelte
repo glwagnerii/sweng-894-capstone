@@ -1,10 +1,11 @@
 <script lang="ts">
-  let count: number = $state(0)
-  const increment = () => {
-    count += 1
-  }
+  import { getContext } from 'svelte';
+  import type { Writable } from 'svelte/store';
+  
+  const count: Writable<number> = getContext('count');
+  function increment() { count.update(n => n + 1) }
 </script>
 
-<button onclick={increment}>
-  count is {count}
+<button on:click={increment}>
+  count is {$count}
 </button>
