@@ -1,47 +1,43 @@
 <script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from './assets/vite.svg'
-  import Counter from './lib/Counter.svelte'
+  import { useSelector, useDispatch } from './store'
+  import { TitleBar, ActivityBar, LeftPanel, BottomPanel, RightPanel, StatusBar } from './layouts'
+  import { Counter } from './components'
+  import { PluginHTTP, PluginStore } from './plugins'
+
+  import { setContext } from 'svelte'
+  import { writable } from 'svelte/store'
+
+  const count = writable(0)
+  setContext('count', count)
+
+  const dispatch = useDispatch()
+  const theme = useSelector((state) => state.app.theme)
+  const handleResize = () => { dispatch({ type: 'app/windowResize' }) }
+  const handleKeydown = (e: KeyboardEvent) => { console.log(e.key) }
 </script>
 
-<main>
-  <div>
-    <a href="https://vite.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+<svelte:window on:resize={handleResize} onkeydown={handleKeydown}/>
 
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
-</main>
-
-<style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
-</style>
+<div id='classicam' class="h-screen w-screen {$theme.isDark ? 'dark' : ''}" data-theme={$theme.name}>
+    <TitleBar />
+    <div class='absolute top-8 left-0 h-[var(--h-layout)] w-screen'>
+        <div class = 'relative'>
+          <ActivityBar />
+          <LeftPanel />
+          <div class='body absolute top-0 left-[calc(48px+var(--w-panel-left))] h-[var(--h-layout)] w-[var(--w-body)]'>
+            <div class = 'relative block overflow-hidden h-full w-full'>
+              <div id='main-body' class='absolute top-0 left-0 h-[var(--h-body)] w-[var(--w-body)] overflow-auto'>
+                <!-- <Body /> -->
+                <PluginHTTP />
+                <PluginStore />
+                <p></p>
+                <Counter />
+              </div>
+              <BottomPanel />
+            </div>
+          </div>
+          <RightPanel />
+        </div>
+    </div>
+    <StatusBar />
+</div>

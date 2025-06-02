@@ -1,0 +1,115 @@
+@layer base {
+    [data-theme="eva"] {
+      --color-light-activitybar:#ebeef5;        --color-dark-activitybar:#282c34;
+      --color-light-activitybar-text:120 122 127; --color-dark-activitybar-text:150 164 205;
+      --color-light-body:#ebeef5;               --color-dark-body:#282c34;
+      --color-light-body-text:#5d5d5f;          --color-dark-body-text:#9da5b3;
+      --color-light-panel:#e1e4eb;              --color-dark-panel:#21252b;
+      --color-light-panel-text:#626264d8;       --color-dark-panel-text:#8e99b1;
+      --color-light-statusbar:#e1e4eb;          --color-dark-statusbar:#21252b;
+      --color-light-statusbar-text:#5d5d5f;     --color-dark-statusbar-text:#9da5b3;
+      --color-light-titlebar:#ebeef5;           --color-dark-titlebar:#282c34;
+      --color-light-titlebar-text:#626264;      --color-dark-titlebar-text:#8e99b1;
+      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
+      --color-light-border:#e1e4eb;             --color-dark-border:#21252b;
+      --border-style-light: none;                 --border-style-dark: none;
+    }
+    [data-theme="github"] {
+      --color-light-activitybar:#ffffff;        --color-dark-activitybar:#22272e;
+      --color-light-activitybar-text:31 35 40;    --color-dark-activitybar-text:173 186 199;
+      --color-light-body:#ffffff;               --color-dark-body:#22272e;
+      --color-light-body-text:#1f2328;          --color-dark-body-text:#adbac7;
+      --color-light-panel:#f6f8fa;              --color-dark-panel:#1c2128;
+      --color-light-panel-text:#1f2328;         --color-dark-panel-text:#adbac7;
+      --color-light-statusbar:#ffffff;          --color-dark-statusbar:#22272e;
+      --color-light-statusbar-text:#656d76;     --color-dark-statusbar-text:#768390;
+      --color-light-titlebar:#ffffff;           --color-dark-titlebar:#22272e;
+      --color-light-titlebar-text:#656d76;      --color-dark-titlebar-text:#768390;
+      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
+      --color-light-border:#e1e4e8;             --color-dark-border:#444c56;
+      --border-style-light: solid;                --border-style-dark: solid;
+    }
+    [data-theme="nightowl"] {
+      --color-light-activitybar:#f0f0f0;        --color-dark-activitybar:#011627;
+      --color-light-activitybar-text:64 63 83;    --color-dark-activitybar-text:95 126 151;
+      --color-light-body:#fbfbfb;               --color-dark-body:#011627;
+      --color-light-body-text:#403f53;          --color-dark-body-text:#d6deeb;
+      --color-light-panel:#f0f0f0;              --color-dark-panel:#011627;
+      --color-light-panel-text:#403f53;         --color-dark-panel-text:#89a4bb;
+      --color-light-statusbar:#f0f0f0;          --color-dark-statusbar:#011627;
+      --color-light-statusbar-text:#403f53;     --color-dark-statusbar-text:#5f7e97;
+      --color-light-titlebar:#f0f0f0;           --color-dark-titlebar:#011627;
+      --color-light-titlebar-text:#403f53;      --color-dark-titlebar-text:#eeefff;
+      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
+      --color-light-border:#d0d7de;             --color-dark-border:#444c56;
+      --border-style-light: none;                 --border-style-dark: none;
+    }
+    [data-theme="solarized"] {
+      --color-light-activitybar:#ddd6c1;        --color-dark-activitybar:#003847;
+      --color-light-activitybar-text:88 76 39;    --color-dark-activitybar-text:204 204 204;
+      --color-light-body:#fdf6e3;               --color-dark-body:#002b36;
+      --color-light-body-text:#657b83;          --color-dark-body-text:#839496;
+      --color-light-panel:#eee8d5;              --color-dark-panel:#00212b;
+      --color-light-panel-text:#586e75;         --color-dark-panel-text:#cccccc;
+      --color-light-statusbar:#eee8d5;          --color-dark-statusbar:#00212b;
+      --color-light-statusbar-text:#586e75;     --color-dark-statusbar-text:#93a1a1;
+      --color-light-titlebar:#eee8d5;           --color-dark-titlebar:#002c39;
+      --color-light-titlebar-text:#333333;      --color-dark-titlebar-text:#cccccc;
+      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
+      --color-light-border:#ddd6c1;             --color-dark-border:#2b2b4a;
+      --border-style-light: none;                 --border-style-dark: none;
+    }
+    [data-theme="tokyonight"] {
+      --color-light-activitybar:#cbccd1;        --color-dark-activitybar:#16161e;
+      --color-light-activitybar-text:76 80 94;    --color-dark-activitybar-text:120 124 153;
+      --color-light-body:#d5d6db;               --color-dark-body:#1a1b26;
+      --color-light-body-text:#343b59;          --color-dark-body-text:#a9b1d6;
+      --color-light-panel:#cbccd1;              --color-dark-panel:#16161e;
+      --color-light-panel-text:#4c505e;         --color-dark-panel-text:#787c99;
+      --color-light-statusbar:#cbccd1;          --color-dark-statusbar:#16161e;
+      --color-light-statusbar-text:#4c505e;     --color-dark-statusbar-text:#787c99;
+      --color-light-titlebar:#cbccd1;           --color-dark-titlebar:#16161e;
+      --color-light-titlebar-text:#4c505e;      --color-dark-titlebar-text:#787c99;
+      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
+      --color-light-border:#c1c2c7;             --color-dark-border:#101014;
+      --border-style-light: solid;                --border-style-dark: solid;
+    }
+    [data-theme="vscode"] {
+      --color-light-activitybar:#2c2c2c;        --color-dark-activitybar:#333333;
+      --color-light-activitybar-text:255 255 255; --color-dark-activitybar-text:255 255 255; 
+      --color-light-body:#ffffff;               --color-dark-body:#1e1e1e;
+      --color-light-body-text:#000000;          --color-dark-body-text:#d4d4d4; 
+      --color-light-panel:#f3f3f3;              --color-dark-panel:#252526;
+      --color-light-panel-text:#000000;         --color-dark-panel-text:#ffffff; 
+      --color-light-statusbar:#007acc;          --color-dark-statusbar:#007acc;
+      --color-light-statusbar-text:#ffffff;     --color-dark-statusbar-text:#ffffff; 
+      --color-light-titlebar:#dddddd;           --color-dark-titlebar:#3c3c3c; 
+      --color-light-titlebar-text:#000000;      --color-dark-titlebar-text:#ffffff; 
+      --color-light-accent-sb:255 255 255;        --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
+      --color-light-border:#808080;             --color-dark-border:#808080;
+      --border-style-light: none;                 --border-style-dark: none;
+    }
+    [data-theme="winter"] {
+      --color-light-activitybar:#2c2c2c;        --color-dark-activitybar:#011627;
+      --color-light-activitybar-text:153 208 247; --color-dark-activitybar-text:153 208 247;
+      --color-light-body:#ffffff;               --color-dark-body:#011627;
+      --color-light-body-text:#236ebf;          --color-dark-body-text:#a7dbf7;
+      --color-light-panel:#f3f3f3;              --color-dark-panel:#011627;
+      --color-light-panel-text:#0d3464cc;       --color-dark-panel-text:#7799bb;
+      --color-light-statusbar:#011627;          --color-dark-statusbar:#011627;
+      --color-light-statusbar-text:#d6deeb;     --color-dark-statusbar-text:#d6deeb; 
+      --color-light-titlebar:#112233;           --color-dark-titlebar:#112233;
+      --color-light-titlebar-text:#eeefff;      --color-dark-titlebar-text:#eeefff;
+      --color-light-accent-sb:255 255 255;        --color-dark-accent-sb:255 255 255;
+      --color-light-accent-tb:255 255 255;        --color-dark-accent-tb:255 255 255;
+      --color-light-border:#219fd544;           --color-dark-border:#219fd544;
+      --border-style-light: solid;                --border-style-dark: solid;
+    }
+  }
+  
