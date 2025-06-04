@@ -6,19 +6,23 @@
 
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
+    import Colors from './components/Colors.svelte'
 
   const count = writable(0)
   setContext('count', count)
 
   const dispatch = useDispatch()
   const theme = useSelector((state) => state.app.theme)
+  $: document.documentElement.className = `${$theme.isDark ? 'dark ' : ''}${$theme.name}`
+
   const handleResize = () => { dispatch({ type: 'app/windowResize' }) }
   const handleKeydown = (e: KeyboardEvent) => { console.log(e.key) }
 </script>
 
 <svelte:window on:resize={handleResize} onkeydown={handleKeydown}/>
 
-<div id='classicam' class="h-screen w-screen {$theme.isDark ? 'dark' : ''}" data-theme={$theme.name}>
+<!-- <div id='classicam' class="h-screen w-screen {$theme.isDark ? 'dark' : ''}" data-theme={$theme.name}> -->
+<div id='classicam' class="h-screen w-screen" data-theme={$theme.name}>
     <TitleBar />
     <div class='absolute top-8 left-0 h-[var(--h-layout)] w-screen'>
         <div class = 'relative'>
@@ -32,6 +36,7 @@
                 <PluginStore />
                 <p></p>
                 <Counter />
+                <Colors></Colors>
               </div>
               <BottomPanel />
             </div>

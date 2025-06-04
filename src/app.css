@@ -15,23 +15,20 @@
 }
 
 :focus { outline: none; }
-
-/* layout background color and text color */
+/* 
 #titlebar                { @apply bg-bg-tb-l  text-text-tb-l  dark:bg-bg-tb-d  dark:text-text-tb-d }
 #activitybar             { @apply bg-bg-ab-l  text-text-ab-l/40 dark:bg-bg-ab-d  dark:text-text-ab-d/40 }
 #leftpanel, #rightpanel  { @apply bg-bg-pnl-l text-text-pnl-l dark:bg-bg-pnl-d dark:text-text-pnl-d }
 #main-body, #bottompanel { @apply bg-bg-bod-l text-text-bod-l dark:bg-bg-bod-d dark:text-text-bod-d }
 #statusbar               { @apply bg-bg-sb-l  text-text-sb-l  dark:bg-bg-sb-d  dark:text-text-sb-d }
 
-/* layout border color and style, always show bottom panel border */
 #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar         { @apply border-bc1-l }
 .dark { #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar { @apply border-bc1-d }}
 
 #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #statusbar         { border-style: var(--border-style-light); }
 .dark { #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #statusbar { border-style: var(--border-style-dark); }}
 
-/* layout hover and active */
-#titlebar    .btn-psu    { @apply text-custom-red }
+#titlebar    .btn-psu    { @apply text-cc-red }
 #titlebar    .app-name   { @apply text-a-tb-l dark:text-a-tb-d }
 #titlebar                { .btn-active, .btn:hover { @apply bg-a-tb-l/20 text-a-tb-l dark:bg-a-tb-d/20 dark:text-a-tb-d }}
 
@@ -41,4 +38,34 @@
 
 #statusbar               { .btn-active, .btn:hover { @apply bg-a-sb-l/20 text-a-sb-l dark:bg-a-sb-d/20 dark:text-a-sb-d }}
 #statusbar   .range      { @apply bg-text-sb-l dark:bg-text-sb-d }
-#statusbar   .range::-webkit-slider-thumb { @apply cursor-pointer appearance-none h-2 w-2 rounded-full bg-custom-lightblue }
+#statusbar   .range::-webkit-slider-thumb { @apply cursor-pointer appearance-none h-2 w-2 rounded-full bg-cc-lightblue } */
+
+/* layout background color and text color */
+#titlebar                { @apply bg-canvas text-canvas-text }
+#activitybar             { @apply bg-canvas text-canvas-text/40 }
+#leftpanel, #rightpanel  { @apply bg-field text-field-text }
+#main-body, #bottompanel { @apply bg-canvas text-canvas-text }
+#statusbar               { @apply bg-button-face text-button-text }
+
+/* layout border color and style */
+#titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar {
+  @apply border-gray-text/30;
+  border-style: solid;
+}
+
+/* layout hover and active */
+#titlebar .btn-psu       { @apply text-highlight }
+#titlebar .app-name      { @apply text-active-text }
+#titlebar .btn-active,
+#titlebar .btn:hover     { @apply bg-highlight/20 text-highlight }
+
+#activitybar .btn        { @apply border-l-4 border-canvas }
+#activitybar .btn:hover  { @apply text-canvas-text }
+#activitybar .btn-active { @apply border-active-text text-active-text }
+
+#statusbar .btn-active,
+#statusbar .btn:hover    { @apply bg-highlight/20 text-highlight }
+#statusbar .range        { @apply bg-button-text }
+#statusbar .range::-webkit-slider-thumb {
+  @apply cursor-pointer appearance-none h-2 w-2 rounded-full bg-highlight;
+}
