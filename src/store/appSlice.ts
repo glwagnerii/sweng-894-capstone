@@ -14,6 +14,17 @@ export interface App {
   zoom: { level: number, fit: boolean, big: boolean, height: number, width: number }
 }
 
+const detectPlatform = () => {
+  const ua = navigator.userAgent.toLowerCase()
+  console.log(ua)
+  if (/iphone|ipad|ipod/.test(ua)) return 'ios'
+  if (/android/.test(ua)) return 'android'
+  if (/mac/.test(ua)) return 'macos'
+  if (/win/.test(ua)) return 'windows'
+  if (/linux/.test(ua)) return 'linux'
+  return 'desktop'
+}
+
 const app: App = {
   titleBar: { title: 'Classi-Cam', visible: true },
   panels: {
@@ -21,7 +32,10 @@ const app: App = {
     right:  { visible: false, size: 200, cssVar: '--w-panel-right',  selected: 'right' },
     bottom: { visible: false, size: 100, cssVar: '--h-panel-bottom', selected: 'bottom' },
   },
-  theme: { name: 'github', isDark: true },
+  theme: {
+    name: detectPlatform(),
+    isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
+  },
   zoom: { level: 70, fit: false, big: true, height: 900, width: 1600 },
 }
 
