@@ -2,6 +2,12 @@
   import { Button } from '../components'
   import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/plugin-notification'
   import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
+  import { open, message } from '@tauri-apps/plugin-dialog'
+
+  const openFolder = async () => {
+    const file = await open({ multiple: false, directory: false })
+    await message(`You selected: ${file}`, { title: 'Tauri', kind:'info' })
+  }
 
   const notify = async () => {
     let permissionGranted = await isPermissionGranted()
@@ -27,6 +33,7 @@
   <div class='tb tb-abBottom flex flex-col justify-center items-center'>
     <Button name='themeLight'/>
     <Button name='themeDark'/>
+    <Button name='openFolder' onClick={() => openFolder()}/>
     <Button name='notification' onClick={() => notify()}/>
     <Button name='getOS' onClick={() => getOS()}/>
   </div>

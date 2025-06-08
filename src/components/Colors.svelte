@@ -73,7 +73,7 @@
 <div class="p-4">
   <h2 class="text-xl font-bold mb-4">System Colors</h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-    {#each colors.slice(0, 17) as color (color.class)}
+    {#each colors.slice(0, 16) as color (color.class)}
       <div class="flex flex-col items-center">
         <div class={`bg-${color.class} w-16 h-16 rounded shadow-sm`}></div>
         <span class="mt-2 text-sm">{color.class}</span>
@@ -88,7 +88,7 @@
   <div class="h-4"></div>
   <h2 class="text-xl font-bold mb-4">Custom Colors</h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-    {#each colors.slice(17) as color (color.class)}
+    {#each colors.slice(16) as color (color.class)}
       <div class="flex flex-col items-center">
         <div class={`bg-${color.class} w-16 h-16 rounded shadow-sm` + (color.class === 'cc-white' ? ' border' : '')}></div>
         <span class="mt-2 text-sm">{color.class}</span>
