@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "daisyui";
 @import './themes.css';
 @config '../tailwind.config.js';
 
@@ -41,20 +42,20 @@
 #statusbar   .range::-webkit-slider-thumb { @apply cursor-pointer appearance-none h-2 w-2 rounded-full bg-cc-lightblue } */
 
 /* layout background color and text color */
-#titlebar                { @apply bg-canvas text-canvas-text }
+/* #titlebar                { @apply bg-canvas text-canvas-text }
 #activitybar             { @apply bg-canvas text-canvas-text/40 }
 #leftpanel, #rightpanel  { @apply bg-field text-field-text }
 #main-body, #bottompanel { @apply bg-canvas text-canvas-text }
-#statusbar               { @apply bg-button-face text-button-text }
+#statusbar               { @apply bg-button-face text-button-text } */
 
 /* layout border color and style */
-#titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar {
+/* #titlebar, #activitybar, #leftpanel, #rightpanel, #main-body, #plot-area, #bottompanel, #statusbar {
   @apply border-gray-text/30;
   border-style: solid;
-}
+} */
 
 /* layout hover and active */
-#titlebar .btn-psu       { @apply text-highlight }
+/* #titlebar .btn-psu       { @apply text-highlight }
 #titlebar .app-name      { @apply text-active-text }
 #titlebar .btn-active,
 #titlebar .btn:hover     { @apply bg-highlight/20 text-highlight }
@@ -68,4 +69,4 @@
 #statusbar .range        { @apply bg-button-text }
 #statusbar .range::-webkit-slider-thumb {
   @apply cursor-pointer appearance-none h-2 w-2 rounded-full bg-highlight;
-}
+} */

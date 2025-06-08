@@ -1,0 +1,10 @@
+{
+  "$schema":     "../gen/schemas/desktop-schema.json",
+  "identifier":  "desktop-capability",
+  "description": "Permissions to run the app (desktop)",
+  "platforms":   ["macOS", "windows", "linux"],
+  "windows":     ["main"],
+  "permissions": [
+      "window-state:default"
+  ]
+}

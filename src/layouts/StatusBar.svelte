@@ -22,7 +22,7 @@
       <Button name='zoomDecrease'/>
       <input class='range appearance-none h-0.5 w-16' type='range' min={ZOOM_MIN} max={ZOOM_MAX} value={$zoom.level} onchange={onchange} />
       <Button name='zoomIncrease'/>
-      <Button name='zoomReset' className='w-14'>{$zoom.level}%</Button>
+      <Button name='zoomReset' btnClass='w-14'>{$zoom.level}%</Button>
       <Button name='zoomFit'/>
     </div>
 </div>
