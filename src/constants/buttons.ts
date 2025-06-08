@@ -8,6 +8,7 @@ function tButton<V extends ButtonType, T extends { [key in string]: V }>(o: T): 
 export const buttons = tButton({
   getOS:           { title: 'Get OS information', key: '', icon: 'bi-cpu' },
   notification:    { title: 'Notification',       key: '', icon: 'bi-bell' },
+  openFolder:      { title: 'Open folder',        key: '', icon: 'bi-folder2-open' },
   panelBottomHide: { title: 'Hide bottom panel',  key: '', icon: 'bi-arrow-down-square-fill',  visible: (s) => s.app.panels.bottom.visible },
   panelBottomShow: { title: 'Show bottom panel',  key: '', icon: 'bi-arrow-down-square',       visible: (s) => !s.app.panels.bottom.visible },
   panelLeftHide:   { title: 'Hide left panel',    key: '', icon: 'bi-arrow-left-square-fill',  visible: (s) => s.app.panels.left.visible },

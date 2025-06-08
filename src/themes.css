@@ -1,115 +1,175 @@
 @layer base {
-    [data-theme="eva"] {
-      --color-light-activitybar:#ebeef5;        --color-dark-activitybar:#282c34;
-      --color-light-activitybar-text:120 122 127; --color-dark-activitybar-text:150 164 205;
-      --color-light-body:#ebeef5;               --color-dark-body:#282c34;
-      --color-light-body-text:#5d5d5f;          --color-dark-body-text:#9da5b3;
-      --color-light-panel:#e1e4eb;              --color-dark-panel:#21252b;
-      --color-light-panel-text:#626264d8;       --color-dark-panel-text:#8e99b1;
-      --color-light-statusbar:#e1e4eb;          --color-dark-statusbar:#21252b;
-      --color-light-statusbar-text:#5d5d5f;     --color-dark-statusbar-text:#9da5b3;
-      --color-light-titlebar:#ebeef5;           --color-dark-titlebar:#282c34;
-      --color-light-titlebar-text:#626264;      --color-dark-titlebar-text:#8e99b1;
-      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
-      --color-light-border:#e1e4eb;             --color-dark-border:#21252b;
-      --border-style-light: none;                 --border-style-dark: none;
-    }
-    [data-theme="github"] {
-      --color-light-activitybar:#ffffff;        --color-dark-activitybar:#22272e;
-      --color-light-activitybar-text:31 35 40;    --color-dark-activitybar-text:173 186 199;
-      --color-light-body:#ffffff;               --color-dark-body:#22272e;
-      --color-light-body-text:#1f2328;          --color-dark-body-text:#adbac7;
-      --color-light-panel:#f6f8fa;              --color-dark-panel:#1c2128;
-      --color-light-panel-text:#1f2328;         --color-dark-panel-text:#adbac7;
-      --color-light-statusbar:#ffffff;          --color-dark-statusbar:#22272e;
-      --color-light-statusbar-text:#656d76;     --color-dark-statusbar-text:#768390;
-      --color-light-titlebar:#ffffff;           --color-dark-titlebar:#22272e;
-      --color-light-titlebar-text:#656d76;      --color-dark-titlebar-text:#768390;
-      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
-      --color-light-border:#e1e4e8;             --color-dark-border:#444c56;
-      --border-style-light: solid;                --border-style-dark: solid;
-    }
-    [data-theme="nightowl"] {
-      --color-light-activitybar:#f0f0f0;        --color-dark-activitybar:#011627;
-      --color-light-activitybar-text:64 63 83;    --color-dark-activitybar-text:95 126 151;
-      --color-light-body:#fbfbfb;               --color-dark-body:#011627;
-      --color-light-body-text:#403f53;          --color-dark-body-text:#d6deeb;
-      --color-light-panel:#f0f0f0;              --color-dark-panel:#011627;
-      --color-light-panel-text:#403f53;         --color-dark-panel-text:#89a4bb;
-      --color-light-statusbar:#f0f0f0;          --color-dark-statusbar:#011627;
-      --color-light-statusbar-text:#403f53;     --color-dark-statusbar-text:#5f7e97;
-      --color-light-titlebar:#f0f0f0;           --color-dark-titlebar:#011627;
-      --color-light-titlebar-text:#403f53;      --color-dark-titlebar-text:#eeefff;
-      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
-      --color-light-border:#d0d7de;             --color-dark-border:#444c56;
-      --border-style-light: none;                 --border-style-dark: none;
-    }
-    [data-theme="solarized"] {
-      --color-light-activitybar:#ddd6c1;        --color-dark-activitybar:#003847;
-      --color-light-activitybar-text:88 76 39;    --color-dark-activitybar-text:204 204 204;
-      --color-light-body:#fdf6e3;               --color-dark-body:#002b36;
-      --color-light-body-text:#657b83;          --color-dark-body-text:#839496;
-      --color-light-panel:#eee8d5;              --color-dark-panel:#00212b;
-      --color-light-panel-text:#586e75;         --color-dark-panel-text:#cccccc;
-      --color-light-statusbar:#eee8d5;          --color-dark-statusbar:#00212b;
-      --color-light-statusbar-text:#586e75;     --color-dark-statusbar-text:#93a1a1;
-      --color-light-titlebar:#eee8d5;           --color-dark-titlebar:#002c39;
-      --color-light-titlebar-text:#333333;      --color-dark-titlebar-text:#cccccc;
-      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
-      --color-light-border:#ddd6c1;             --color-dark-border:#2b2b4a;
-      --border-style-light: none;                 --border-style-dark: none;
-    }
-    [data-theme="tokyonight"] {
-      --color-light-activitybar:#cbccd1;        --color-dark-activitybar:#16161e;
-      --color-light-activitybar-text:76 80 94;    --color-dark-activitybar-text:120 124 153;
-      --color-light-body:#d5d6db;               --color-dark-body:#1a1b26;
-      --color-light-body-text:#343b59;          --color-dark-body-text:#a9b1d6;
-      --color-light-panel:#cbccd1;              --color-dark-panel:#16161e;
-      --color-light-panel-text:#4c505e;         --color-dark-panel-text:#787c99;
-      --color-light-statusbar:#cbccd1;          --color-dark-statusbar:#16161e;
-      --color-light-statusbar-text:#4c505e;     --color-dark-statusbar-text:#787c99;
-      --color-light-titlebar:#cbccd1;           --color-dark-titlebar:#16161e;
-      --color-light-titlebar-text:#4c505e;      --color-dark-titlebar-text:#787c99;
-      --color-light-accent-sb:0 0 0;              --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
-      --color-light-border:#c1c2c7;             --color-dark-border:#101014;
-      --border-style-light: solid;                --border-style-dark: solid;
-    }
-    [data-theme="vscode"] {
-      --color-light-activitybar:#2c2c2c;        --color-dark-activitybar:#333333;
-      --color-light-activitybar-text:255 255 255; --color-dark-activitybar-text:255 255 255; 
-      --color-light-body:#ffffff;               --color-dark-body:#1e1e1e;
-      --color-light-body-text:#000000;          --color-dark-body-text:#d4d4d4; 
-      --color-light-panel:#f3f3f3;              --color-dark-panel:#252526;
-      --color-light-panel-text:#000000;         --color-dark-panel-text:#ffffff; 
-      --color-light-statusbar:#007acc;          --color-dark-statusbar:#007acc;
-      --color-light-statusbar-text:#ffffff;     --color-dark-statusbar-text:#ffffff; 
-      --color-light-titlebar:#dddddd;           --color-dark-titlebar:#3c3c3c; 
-      --color-light-titlebar-text:#000000;      --color-dark-titlebar-text:#ffffff; 
-      --color-light-accent-sb:255 255 255;        --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:0 0 0;              --color-dark-accent-tb:255 255 255;
-      --color-light-border:#808080;             --color-dark-border:#808080;
-      --border-style-light: none;                 --border-style-dark: none;
-    }
-    [data-theme="winter"] {
-      --color-light-activitybar:#2c2c2c;        --color-dark-activitybar:#011627;
-      --color-light-activitybar-text:153 208 247; --color-dark-activitybar-text:153 208 247;
-      --color-light-body:#ffffff;               --color-dark-body:#011627;
-      --color-light-body-text:#236ebf;          --color-dark-body-text:#a7dbf7;
-      --color-light-panel:#f3f3f3;              --color-dark-panel:#011627;
-      --color-light-panel-text:#0d3464cc;       --color-dark-panel-text:#7799bb;
-      --color-light-statusbar:#011627;          --color-dark-statusbar:#011627;
-      --color-light-statusbar-text:#d6deeb;     --color-dark-statusbar-text:#d6deeb; 
-      --color-light-titlebar:#112233;           --color-dark-titlebar:#112233;
-      --color-light-titlebar-text:#eeefff;      --color-dark-titlebar-text:#eeefff;
-      --color-light-accent-sb:255 255 255;        --color-dark-accent-sb:255 255 255;
-      --color-light-accent-tb:255 255 255;        --color-dark-accent-tb:255 255 255;
-      --color-light-border:#219fd544;           --color-dark-border:#219fd544;
-      --border-style-light: solid;                --border-style-dark: solid;
-    }
+  :root {
+    --active-text:        ActiveText;
+    --button-face:        ButtonFace;
+    --button-text:        ButtonText;
+    --canvas:             Canvas;
+    --canvas-text:        CanvasText;
+    --field:              Field;
+    --field-text:         FieldText;
+    --gray-text:          GrayText;
+    --highlight:          Highlight;
+    --highlight-text:     HighlightText;
+    --link-text:          LinkText;
+    --mark:               Mark;
+    --mark-text:          MarkText;
+    --selected-item:      SelectedItem;
+    --selected-item-text: SelectedItemText;
+    --visited-text:       VisitedText;
   }
-  
+
+  :root.light { color-scheme: light; }
+  :root.dark  { color-scheme: dark; }
+
+  .theme-gitlab {
+    --active-text:        #2e2e2e;
+    --button-face:        #ffffff;
+    --button-text:        #2e2e2e;
+    --canvas:             #ffffff;
+    --canvas-text:        #2e2e2e;
+    --field:              #ffffff;
+    --field-text:         #2e2e2e;
+    --gray-text:          #868686;
+    --highlight:          #fc6d26;
+    --highlight-text:     #ffffff;
+    --link-text:          #1068bf;
+    --mark:               #ffff00;
+    --mark-text:          #2e2e2e;
+    --selected-item:      #e1e1e1;
+    --selected-item-text: #2e2e2e;
+    --visited-text:       #6e49cb;
+  }
+
+  .dark .theme-gitlab {
+    --active-text:        #e1e1e1;
+    --button-face:        #333238;
+    --button-text:        #e1e1e1;
+    --canvas:             #1f1e24;
+    --canvas-text:        #e1e1e1;
+    --field:              #333238;
+    --field-text:         #e1e1e1;
+    --gray-text:          #9e9e9e;
+    --highlight:          #fc6d26;
+    --highlight-text:     #ffffff;
+    --link-text:          #69a5ff;
+    --mark:               #ffd33d;
+    --mark-text:          #1f1e24;
+    --selected-item:      #444444;
+    --selected-item-text: #e1e1e1;
+    --visited-text:       #b78aff;
+  }
+
+  .theme-vscode {
+    --active-text:        #333333;
+    --button-face:        #ffffff;
+    --button-text:        #333333;
+    --canvas:             #ffffff;
+    --canvas-text:        #333333;
+    --field:              #ffffff;
+    --field-text:         #333333;
+    --gray-text:          #6c6c6c;
+    --highlight:          #007acc;
+    --highlight-text:     #ffffff;
+    --link-text:          #006ab1;
+    --mark:               #add6ff;
+    --mark-text:          #333333;
+    --selected-item:      #e8e8e8;
+    --selected-item-text: #333333;
+    --visited-text:       #800080;
+  }
+
+  .dark .theme-vscode {
+    --active-text:        #cccccc;
+    --button-face:        #3c3c3c;
+    --button-text:        #cccccc;
+    --canvas:             #1e1e1e;
+    --canvas-text:        #cccccc;
+    --field:              #3c3c3c;
+    --field-text:         #cccccc;
+    --gray-text:          #9d9d9d;
+    --highlight:          #0e639c;
+    --highlight-text:     #ffffff;
+    --link-text:          #3794ff;
+    --mark:               #264f78;
+    --mark-text:          #ffffff;
+    --selected-item:      #094771;
+    --selected-item-text: #ffffff;
+    --visited-text:       #c586c0;
+  }
+
+  .theme-github {
+    --active-text:        #24292f;
+    --button-face:        #f6f8fa;
+    --button-text:        #24292f;
+    --canvas:             #ffffff;
+    --canvas-text:        #24292f;
+    --field:              #ffffff;
+    --field-text:         #24292f;
+    --gray-text:          #6e7781;
+    --highlight:          #0969da;
+    --highlight-text:     #ffffff;
+    --link-text:          #0969da;
+    --mark:               #fff8c5;
+    --mark-text:          #24292f;
+    --selected-item:      #f6f8fa;
+    --selected-item-text: #24292f;
+    --visited-text:       #8250df;
+  }
+
+  .dark .theme-github {
+    --active-text:        #c9d1d9;
+    --button-face:        #21262d;
+    --button-text:        #c9d1d9;
+    --canvas:             #0d1117;
+    --canvas-text:        #c9d1d9;
+    --field:              #0d1117;
+    --field-text:         #c9d1d9;
+    --gray-text:          #8b949e;
+    --highlight:          #1f6feb;
+    --highlight-text:     #ffffff;
+    --link-text:          #58a6ff;
+    --mark:               #f0883e;
+    --mark-text:          #0d1117;
+    --selected-item:      #161b22;
+    --selected-item-text: #c9d1d9;
+    --visited-text:       #a371f7;
+  }
+
+  .theme-nord {
+    --active-text:        #2e3440;
+    --button-face:        #e5e9f0;
+    --button-text:        #2e3440;
+    --canvas:             #eceff4;
+    --canvas-text:        #2e3440;
+    --field:              #e5e9f0;
+    --field-text:         #2e3440;
+    --gray-text:          #4c566a;
+    --highlight:          #5e81ac;
+    --highlight-text:     #eceff4;
+    --link-text:          #5e81ac;
+    --mark:               #ebcb8b;
+    --mark-text:          #2e3440;
+    --selected-item:      #d8dee9;
+    --selected-item-text: #2e3440;
+    --visited-text:       #b48ead;
+  }
+
+  .dark .theme-nord {
+    --active-text:        #eceff4;
+    --button-face:        #4c566a;
+    --button-text:        #eceff4;
+    --canvas:             #2e3440;
+    --canvas-text:        #eceff4;
+    --field:              #3b4252;
+    --field-text:         #eceff4;
+    --gray-text:          #d8dee9;
+    --highlight:          #88c0d0;
+    --highlight-text:     #2e3440;
+    --link-text:          #88c0d0;
+    --mark:               #ebcb8b;
+    --mark-text:          #2e3440;
+    --selected-item:      #434c5e;
+    --selected-item-text: #eceff4;
+    --visited-text:       #b48ead;
+  }
+}

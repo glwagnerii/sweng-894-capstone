@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "coloraide>=4.7",
     "matplotlib>=3.10.3",
     "onnx>=1.12.0,<1.18.0",
     "onnxruntime>=1.22.0",

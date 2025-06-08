@@ -1,0 +1,9 @@
+{
+  "$schema":     "../gen/schemas/mobile-schema.json",
+  "identifier":  "mobile-capability",
+  "description": "Permissions to run the app (mobile)",
+  "platforms":   ["android", "iOS"],
+  "windows":     ["main"],
+  "permissions": [
+  ]
+}
