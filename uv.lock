@@ -137,6 +137,7 @@ name = "classi-cam"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
+    { name = "coloraide" },
     { name = "matplotlib" },
     { name = "onnx" },
     { name = "onnxruntime" },
@@ -156,6 +157,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "coloraide", specifier = ">=4.7" },
     { name = "matplotlib", specifier = ">=3.10.3" },
     { name = "onnx", specifier = ">=1.12.0,<1.18.0" },
     { name = "onnxruntime", specifier = ">=1.22.0" },
@@ -171,6 +173,15 @@ requires-dist = [
 dev = [
     { name = "ipykernel", specifier = ">=6.29.5" },
     { name = "pytest", specifier = ">=8.3.5" },
+]
+
+[[package]]
+name = "coloraide"
+version = "4.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/1d/1a/8e902c6b317c03d08c8ae7cf38dfb84c7f915be68052ac3edca7ff8b5386/coloraide-4.7.tar.gz", hash = "sha256:42e253715f5e00dfee6ee8020e659260e5edf7522c0630a09fa8a637ef6230e8", size = 22709629, upload-time = "2025-06-07T03:14:34.379Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/75/9e/82c5fdd2386ed672d1d486f9db360682239c37321c0346320c40bf075cb5/coloraide-4.7-py3-none-any.whl", hash = "sha256:7e787fb6e71eced3c1b79714d41407e5a725d94d3824925d14de731e05afe6ff", size = 267496, upload-time = "2025-06-07T03:14:31.52Z" },
 ]
 
 [[package]]

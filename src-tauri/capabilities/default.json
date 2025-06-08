@@ -1,9 +1,10 @@
 {
-  "$schema": "../gen/schemas/desktop-schema.json",
-  "identifier": "default",
+  "$schema":     "../gen/schemas/desktop-schema.json",
+  "identifier":  "default",
   "description": "enables the default permissions",
-  "windows": ["main"],
+  "windows":    ["main"],
   "permissions": [
+    "log:default",
     "core:default",
     "os:default",
     "store:default",
@@ -11,6 +12,12 @@
     {
       "identifier": "http:default",
       "allow": [{ "url": "https://fakestoreapi.com" }]
+    },
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$RESOURCE/**/*" }
+      ]
     },
     "opener:default",
     "notification:default",
