@@ -6,9 +6,13 @@ type Visible = (state: RootState) => boolean
 export type ButtonType = { title: string, key: string, icon: IconName, visible?: Visible, active?: Visible }
 function tButton<V extends ButtonType, T extends { [key in string]: V }>(o: T): T { return o }
 export const buttons = tButton({
+  classificam:     { title: 'Go to PSU site',     key: '', icon: 'classifi-cam' },
   getOS:           { title: 'Get OS information', key: '', icon: 'bi-cpu' },
   notification:    { title: 'Notification',       key: '', icon: 'bi-bell' },
   openFolder:      { title: 'Open folder',        key: '', icon: 'bi-folder2-open' },
+  openCamera:      { title: 'Open camera',        key: '', icon: 'bi-camera' },
+  openHome:        { title: 'Goto home screen',   key: '', icon: 'bi-house' },
+  openImage:       { title: 'Open image',         key: '', icon: 'bi-image' },
   panelBottomHide: { title: 'Hide bottom panel',  key: '', icon: 'bi-arrow-down-square-fill',  visible: (s) => s.app.panels.bottom.visible },
   panelBottomShow: { title: 'Show bottom panel',  key: '', icon: 'bi-arrow-down-square',       visible: (s) => !s.app.panels.bottom.visible },
   panelLeftHide:   { title: 'Hide left panel',    key: '', icon: 'bi-arrow-left-square-fill',  visible: (s) => s.app.panels.left.visible },

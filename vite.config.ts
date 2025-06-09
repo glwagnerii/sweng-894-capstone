@@ -22,5 +22,6 @@ export default defineConfig({
       ignored: ['**/src-tauri/**'],
     },
   },
+  publicDir: 'static',
   plugins: [tailwindcss(), svelte()],
 })
