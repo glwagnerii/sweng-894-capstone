@@ -1,9 +1,17 @@
 <script lang='ts'>
   import { Button } from '../components'
   import { openUrl } from '@tauri-apps/plugin-opener'
+  import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
+  import { message } from '@tauri-apps/plugin-dialog'
 
   const title = ''
   const openGoogle = async () => { await openUrl('https://www.google.com') }
+
+  const getOS = async () => {
+    const info = `Platform: ${platform()}\nVersion: ${version()}\nType: ${type()}\nArch: ${arch()}\nLocale: ${await locale()}`
+    await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
+    console.log(info)
+  }
 </script>
 
 <div id='titlebar' class='border-b flex justify-between items-center h-14 w-full select-none text-xl whitespace-normal overflow-hidden drag'>
@@ -19,6 +27,9 @@
   <div class='titlebar-right flex justify-end items-center h-full min-w-min nodrag order-2 px-2 space-x-2'>
     <Button name='themeLight' iconClass='h-10'/>
     <Button name='themeDark'  iconClass='h-10'/>
+    <Button name='viewPath'   iconClass='h-10'/>
+    <Button name='getOS'      iconClass='h-10' onClick={() => getOS()}/>
+    <Button name='viewHome'   iconClass='h-10'/>
   </div>
 </div>
 

@@ -27,8 +27,8 @@
 
 <div id='activitybar' class='border-r flex flex-col flex-none justify-between absolute top-0 left-0 h-[var(--h-layout)] w-12'>
   <div class='tb tb-abTop flex flex-col justify-center items-center'>
-    <Button name='showLeft1'/>
-    <Button name='showLeft2'/>
+    <!-- <Button name='showLeft1'/>
+    <Button name='showLeft2'/> -->
   </div>
   <div class='tb tb-abBottom flex flex-col justify-center items-center'>
     <Button name='themeLight'/>
