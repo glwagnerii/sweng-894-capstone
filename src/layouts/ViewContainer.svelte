@@ -7,7 +7,6 @@
   const Panel = $derived(views[$selected].component)
 </script>
 
-<!-- <div id='view' class='border-r flex flex-row flex-none absolute top-0 left-12 h-[var(--h-layout)] w-[var(--w-panel-left)] overflow-hidden {$visible ? 'visible' : 'hidden'}'> -->
-<div id='view'>
+<div id='view' class="flex-1 overflow-auto">
   {#if $visible}<Panel />{/if}
 </div>

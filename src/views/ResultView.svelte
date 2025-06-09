@@ -4,7 +4,7 @@
 
 </script>
 
-<div class="min-h-screen bg-[#FAF9F6] p-4 flex flex-col items-center space-y-6 font-sans text-gray-900">
+<div class="bg-[#FAF9F6] p-4 flex flex-col items-center space-y-6 font-sans text-gray-900">
   <h1 class="text-2xl font-bold mb-2">Classification Results</h1>
 
   <!-- Image Preview -->

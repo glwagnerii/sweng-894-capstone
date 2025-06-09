@@ -1,7 +1,7 @@
 <script lang="ts">
 </script>
 
-<div class="min-h-screen flex flex-col items-center justify-start p-4 bg-[#FAF9F6] space-y-6 text-gray-900 font-sans">
+<div class="flex flex-col items-center justify-start p-4 bg-[#FAF9F6] space-y-6 text-gray-900 font-sans">
 
   <img src="photos/ClassifiCamLogo.png" alt="ClassifiCam Logo" class="w-64 h-60 object-cover rounded-xl shadow-md" />
 

@@ -18,10 +18,8 @@
 
 <svelte:window on:resize={handleResize} onkeydown={handleKeydown}/>
 
-<div id='classicam' class="flex flex-col h-screen w-screen overflow-hidden" data-theme={$isDark ? 'dark' : 'light'} >
+<div id='classicam' class="flex flex-col h-dvh w-dvw overflow-hidden" data-theme={$isDark ? 'dark' : 'light'} >
   <TitleBar />
-  <div class="flex-1 overflow-auto">
-    <ViewContainer />
-  </div>
+  <ViewContainer />
   <StatusBar />
 </div>
