@@ -32,7 +32,7 @@
   // const navigate = useNavigate()
 </script>
 
-<div class="p-4 min-h-screen bg-[#FAF9F6] font-sans text-gray-900">
+<div class="p-4 bg-[#FAF9F6] font-sans text-gray-900">
 
   <!-- Recipe list -->
   <div class="space-y-4">
