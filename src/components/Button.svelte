@@ -2,7 +2,7 @@
   import type { HTMLButtonAttributes } from 'svelte/elements'
 
   type OnClick = (button: ButtonName) => void
-  type Props = { name: ButtonName, disabled?: boolean, onClick?: OnClick, btnClass?: string, iconClass?: string }
+  type Props = { name: ButtonName, disabled?: boolean, onClick?: OnClick, btnClass?: string, iconClass?: string, label?: string }
   export type ButtonProps = HTMLButtonAttributes & Props
 </script>
 
@@ -12,7 +12,7 @@
   import { Icon } from '.'
   import clsx from 'clsx'
 
-  let { name, disabled, onClick, btnClass, iconClass, children, ...restProps }: ButtonProps = $props()
+  let { name, disabled, onClick, btnClass, iconClass, label = '', children, ...restProps }: ButtonProps = $props()
   const dispatch = useDispatch()
 
   const onClickDefault = (button: ButtonName) => { dispatch({ type: `app/${button}` }) }
@@ -23,15 +23,19 @@
   const isactive = useSelector(button.active  || (() => false))
 
   const classes = $derived(clsx('btn', 'btn-${name}', $isactive ? 'btn-active' : '', btnClass))
-
 </script>
 
 {#if $visible}
-  <button title={button.title} {disabled} class={classes} onclick={() => { if (onClick) { onClick(name) } }} {...restProps}>
-    {#if children}
-      {@render children()}
-    {:else}
-      <Icon name={button.icon} iconClass={iconClass} />
+  <div class="flex flex-col items-center">
+    <button title={button.title} {disabled} class={classes} onclick={() => { if (onClick) { onClick(name) } }} {...restProps}>
+      {#if children}
+        {@render children()}
+      {:else}
+        <Icon name={button.icon} iconClass={iconClass} />
+      {/if}
+    </button>
+    {#if label}
+      <span class="text-xs mt-1">{label}</span>
     {/if}
-  </button>
+  </div>
 {/if}

@@ -1,30 +1,27 @@
 <script lang='ts'>
-  import type { ChangeEventHandler } from 'svelte/elements'
-  import { useSelector, useDispatch } from '../store'
   import { Button } from '../components'
-  import { ZOOM_MIN, ZOOM_MAX } from '../constants'
+  import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
+  import { open, message } from '@tauri-apps/plugin-dialog'
 
-  const dispatch = useDispatch()
-  const zoom = useSelector((state) => state.app.zoom)
+  const openFolder = async () => {
+    const file = await open({ multiple: false, directory: false })
+    await message(`You selected: ${file}`, { title: 'Tauri', kind:'info' })
+  }
 
-  const onchange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (e && e.currentTarget) {
-      dispatch({ type: 'app/zoomSlide', payload: e.currentTarget.value })
-    }
+  const getOS = async () => {
+    const info = `Platform: ${platform()}, Version: ${version()}, Type: ${type()}, Arch: ${arch()}, Locale: ${await locale()}`
+    console.log(info)
   }
 </script>
 
-<div id='statusbar' class='border-t flex justify-between items-center absolute top-[calc(100vh-32px)] left-0 h-8 w-screen px-6 select-none text-sm'>
-    <div class='statusbar-left flex justify-start items-center h-full'>
-      left
-    </div>
-    <div class='statusbar-right flex flex-row justify-end items-center h-full'>
-      <Button name='zoomDecrease'/>
-      <input class='range appearance-none h-0.5 w-16' type='range' min={ZOOM_MIN} max={ZOOM_MAX} value={$zoom.level} onchange={onchange} />
-      <Button name='zoomIncrease'/>
-      <Button name='zoomReset' btnClass='w-14'>{$zoom.level}%</Button>
-      <Button name='zoomFit'/>
-    </div>
+<div id='statusbar' class='border-t flex items-center h-18 w-full px-4 select-none text-base'>
+  <div class="flex flex-1 flex-row justify-evenly items-center h-full space-x-2">
+    <Button name='openHome'   iconClass='h-10' label="Home"/>
+    <Button name='openCamera'   iconClass='h-10' label="Camera"/>
+    <Button name='openImage'    iconClass='h-10' label="Image"/>
+    <Button name='openFolder'   iconClass='h-10' label="Models"   onClick={() => openFolder()}/>
+    <Button name='getOS'        iconClass='h-10' label="Info"   onClick={() => getOS()}/>
+  </div>
 </div>
 
 <style lang="postcss">
