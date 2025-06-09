@@ -1,8 +1,3 @@
-export { default as PluginFS } from './PluginFS.svelte'
-export { default as PluginFS2 } from './PluginFS2.svelte'
-export { default as PluginHTTP } from './PluginHTTP.svelte'
 export { default as PluginNotification } from './PluginNotification.svelte'
-export { default as PluginOpener } from './PluginOpener.svelte'
 export { default as PluginOS } from './PluginOS.svelte'
 export { default as PluginStore } from './PluginStore.svelte'
-export { default as PluginWebRTC } from './PluginWebRTC.svelte'

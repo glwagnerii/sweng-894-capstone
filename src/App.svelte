@@ -1,7 +1,6 @@
 <script lang="ts">
   import { useSelector, useDispatch } from './store'
-  import { TitleBar, StatusBar } from './layouts'
-  import { ViewResults } from './screens'
+  import { StatusBar, TitleBar, ViewContainer } from './layouts'
 
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
@@ -22,8 +21,7 @@
 <div id='classicam' class="flex flex-col h-screen w-screen overflow-hidden" data-theme={$isDark ? 'dark' : 'light'} >
   <TitleBar />
   <div class="flex-1 overflow-auto">
-    <!-- <ViewHome /> -->
-    <ViewResults />
+    <ViewContainer />
   </div>
   <StatusBar />
 </div>

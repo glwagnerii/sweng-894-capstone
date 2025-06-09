@@ -1,3 +1,0 @@
-<div>
-  Right
-</div>
