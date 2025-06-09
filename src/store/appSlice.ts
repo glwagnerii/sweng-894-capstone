@@ -26,7 +26,7 @@ const detectPlatform = () => {
 }
 
 const app: App = {
-  titleBar: { title: 'Classi-Cam', visible: true },
+  titleBar: { title: 'Classifi-Cam', visible: true },
   panels: {
     left:   { visible: false, size: 200, cssVar: '--w-panel-left',   selected: 'left1' },
     right:  { visible: false, size: 200, cssVar: '--w-panel-right',  selected: 'right' },

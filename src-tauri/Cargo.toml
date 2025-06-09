@@ -1,10 +1,10 @@
 [package]
-name = "app"
+name = "Classifi-Cam"
 version = "0.1.0"
-description = "A Tauri App"
-authors = ["you"]
-license = ""
-repository = ""
+description = "An AI app to classify your images"
+authors = ["Gerry Wagner", "Tom Smiley", "Victoria Reyna"]
+license = "MIT"
+repository = "https://github.com/glwagnerii/sweng-894-capstone"
 edition = "2021"
 rust-version = "1.77.2"
 include = ["resources/images/*"]
