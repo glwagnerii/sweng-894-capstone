@@ -11,7 +11,11 @@
     "sql:default",
     {
       "identifier": "http:default",
-      "allow": [{ "url": "https://fakestoreapi.com" }]
+      "allow": [
+        { "url": "https://fakestoreapi.com" }, 
+        { "url": "https://www.themealdb.com" },
+        { "url": "https://www.youtube.com" }
+      ]
     },
     {
       "identifier": "fs:scope",

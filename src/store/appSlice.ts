@@ -23,7 +23,8 @@ const app: App = {
   view:     { selected:'home', visible:true },
   theme:    {
     name: detectPlatform(),
-    isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
+    // isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
+    isDark: true,
   },
 }
 
@@ -31,6 +32,7 @@ export const appSlice = createSlice({
   name: 'app',
   initialState: app,
   reducers: {
+    showMenu:    (state) => { state.view.selected = 'home' },
     themeDark:   (state) => { state.theme.isDark = true },
     themeLight:  (state) => { state.theme.isDark = false },
     viewCamera:  (state) => { state.view.selected = 'camera' },
