@@ -22,6 +22,7 @@
     <div class='block flex-shrink truncate selected'>{title}</div>
   </div>
   <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
+    <Button name='showMenu'/>
     <Button name='themeLight'/>
     <Button name='themeDark'/>
     <Button name='viewPath'/>

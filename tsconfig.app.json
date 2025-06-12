@@ -15,6 +15,7 @@
     "checkJs": true,
     "isolatedModules": true,
     "moduleDetection": "force",
+    "types": ["@testing-library/jest-dom"]
   },
   "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
 }
