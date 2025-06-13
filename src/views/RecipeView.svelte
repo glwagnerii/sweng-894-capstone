@@ -32,10 +32,10 @@
   // const navigate = useNavigate()
 </script>
 
-<div class="p-4 min-h-screen bg-[#FAF9F6] font-sans text-gray-900">
+<div class="p-4 bg-[#FAF9F6] font-sans text-gray-900">
 
   <!-- Recipe list -->
-  <div class="space-y-4">
+  <div class="space-y-4" data-testid="recipe-view">
     {#each recipes as recipe (recipe.title)}
       <div class="flex items-center bg-white rounded-xl p-3 shadow-md">
         <img src={recipe.image} alt={recipe.title} class="w-16 h-16 rounded-lg object-cover mr-4" />

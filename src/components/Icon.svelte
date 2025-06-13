@@ -6,7 +6,7 @@
   import { icons, type IconName, type IconType } from '../constants'
   import clsx from 'clsx'
 
-  let { name, iconClass = 'h-5 w-5' }: IconProps = $props()
+  let { name, iconClass }: IconProps = $props()
 
   const icon: IconType = icons[name]
   const viewbox = icon.viewbox ?? '0 0 16 16'
@@ -21,7 +21,7 @@
         strokeWidth: strokeWidth,
         strokeDasharray: icon.strokeDasharray,
       }
-  const classes = clsx('icon', 'icon-${name}', iconClass)
+  const classes = clsx('icon', `icon-${name}`, iconClass)
 </script>
 
 <svg xmlns="http://www.w3.org/2000/svg" class={classes} viewBox={viewbox} {...myprops}>

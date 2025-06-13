@@ -14,27 +14,25 @@
   }
 </script>
 
-<div id='titlebar' class='border-b flex justify-between items-center h-14 w-full select-none text-xl whitespace-normal overflow-hidden drag'>
-  <div class='titlebar-left flex justify-start items-center h-full min-w-min nodrag order-0'>
-    <div class='title-bar-logo flex justify-start items-center h-full px-2'>
-      <Button name='classificam' iconClass='h-10' onClick={() => openGoogle()}/>
-      <div class='app-name px-2'>Classifi-Cam</div>
-    </div>
+<div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>
+  <div class='flex items-center h-full min-w-min nodrag order-0'>
+    <Button name='classificam' onClick={() => openGoogle()} labelRight>Classifi-Cam</Button>
   </div>
-  <div class='titlebar-center flex items-center justify-center my-0 mx-2 h-full max-w-max min-w-0 order-1'>
-    <div class='window-title block basis-auto flex-shrink flex-grow-0 mx-0 truncate selected'>{title}</div>
+  <div class='flex items-center justify-center mx-2 h-full max-w-max min-w-0 order-1'>
+    <div class='block flex-shrink truncate selected'>{title}</div>
   </div>
-  <div class='titlebar-right flex justify-end items-center h-full min-w-min nodrag order-2 px-2 space-x-2'>
-    <Button name='themeLight' iconClass='h-10'/>
-    <Button name='themeDark'  iconClass='h-10'/>
-    <Button name='viewPath'   iconClass='h-10'/>
-    <Button name='getOS'      iconClass='h-10' onClick={() => getOS()}/>
-    <Button name='viewHome'   iconClass='h-10'/>
+  <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
+    <Button name='showMenu'/>
+    <Button name='themeLight'/>
+    <Button name='themeDark'/>
+    <Button name='viewPath'/>
+    <Button name='getOS' onClick={() => getOS()}/>
+    <Button name='viewHome'/>
   </div>
 </div>
 
 <style lang="postcss">
   @reference "tailwindcss";
-  #titlebar :global(.btn) { @apply h-full px-2; }
-  #titlebar :global(.icon-psu) { @apply w-8 text-blue-800 bg-white; }
+  #titlebar :global(.btn)  { @apply py-2 h-full px-1; }
+  #titlebar :global(.icon) { @apply h-10; }
 </style>
