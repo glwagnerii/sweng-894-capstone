@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
 import { svelte } from '@sveltejs/vite-plugin-svelte'
+import { svelteTesting } from '@testing-library/svelte/vite'
 import tailwindcss from '@tailwindcss/vite'
 
 const host = process.env.TAURI_DEV_HOST
@@ -23,5 +24,14 @@ export default defineConfig({
     },
   },
   publicDir: 'static',
-  plugins: [tailwindcss(), svelte()],
+  test: {
+    coverage: {
+      provider: 'v8',
+      exclude: [
+        'src-tauri', 'src/plugins', 'dist', '.ignore', '.venv', '**/index.ts', '**/*.config.*',
+      ],
+    },
+    environment: 'jsdom',
+  },
+  plugins: [tailwindcss(), svelte(), svelteTesting()],
 })
