@@ -1,47 +1,59 @@
-<script>
+<script lang='ts'>
   import { onMount, onDestroy } from 'svelte'
 
-  const constraints = (window.constraints = {
-    audio: true,
-    video: true,
-  })
-
-  function handleSuccess(stream) {
-    const video = document.querySelector('video')
-    window.stream = stream
-    video.srcObject = stream
-  }
-
-  function handleError(error) {
-
-  }
+  let videoElement: HTMLVideoElement | null = null
+  let stream: MediaStream | null = null
+  let errorMessage = ''
+  let isPaused = false
 
   onMount(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints)
-      handleSuccess(stream)
+      stream = await navigator.mediaDevices.getUserMedia({ video: true })
+      if (videoElement) { videoElement.srcObject = stream }
     }
-    catch (e) {
-      if (e.name === 'ConstraintNotSatisfiedError') {
-        const v = constraints.video
-        console.log(`The resolution ${v.width.exact}x${v.height.exact} px is not supported by your device.`)
-      }
-      else if (e.name === 'PermissionDeniedError') {
-        console.log(
-          'Permissions have not been granted to use your camera and '
-          + 'microphone, you need to allow the page access to your devices in '
-          + 'order for the demo to work.',
-        )
-      }
-      console.log(`getUserMedia error: ${e.name}`, e)
+    catch (error) {
+      console.error('Error accessing webcam:', error)
+      if (error instanceof Error) { errorMessage = 'Camera access denied or error: ' + error.message }
+      else { errorMessage = 'Camera access denied or unknown error' }
     }
   })
 
-  onDestroy(() => { window.stream.getTracks().forEach(function (track) { track.stop() }) })
+  function stopStream() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop())
+      if (videoElement) { videoElement.srcObject = null }
+    }
+  }
+
+  function togglePausePlay() {
+    if (!videoElement) return
+    if (videoElement.paused) {
+      videoElement.play()
+      isPaused = false
+    }
+    else {
+      videoElement.pause()
+      isPaused = true
+    }
+  }
+
+  onDestroy(stopStream)
 </script>
 
-<div class="flex flex-col gap-2">
-  <video id="localVideo" autoplay playsinline>
-    <track kind="captions" />
-  </video>
+<div>
+  {#if errorMessage}
+    <p class="error">{errorMessage}</p>
+  {:else}
+    <video class="w-full h-auto rounded-lg shadow-lg" bind:this={videoElement} autoplay>
+      <track kind="captions" label="No captions available" />
+      Video is not supported.
+    </video>
+    <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded" on:click={togglePausePlay}>
+      {isPaused ? 'Play' : 'Pause'}
+    </button>
+  {/if}
 </div>
+
+<style lang="postcss">
+  @reference "tailwindcss";
+</style>
