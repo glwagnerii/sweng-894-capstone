@@ -18,7 +18,7 @@ const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialSta
   }
 }
 
-const store = configureStore({
+export const store = configureStore({
   reducer: {
     [appSlice.name]: appSlice.reducer,
   },

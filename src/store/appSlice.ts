@@ -7,7 +7,7 @@ export interface App {
   theme:    { name: string, isDark: boolean }
 }
 
-const detectPlatform = () => {
+export const detectPlatform = () => {
   const ua = navigator.userAgent.toLowerCase()
   console.log(ua)
   if (/iphone|ipad|ipod/.test(ua)) return 'ios'
