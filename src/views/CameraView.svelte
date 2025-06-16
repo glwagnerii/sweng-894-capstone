@@ -1,60 +1,59 @@
-<script>
-  import { onMount, onDestroy } from 'svelte';
-  let captured = false;
+<script lang='ts'>
+  import { onMount, onDestroy } from 'svelte'
 
-  const constraints = {
-    audio: true,
-    video: true,
-  };
+  let videoElement: HTMLVideoElement | null = null
+  let stream: MediaStream | null = null
+  let errorMessage = ''
+  let isPaused = false
 
-  function handleSuccess(stream) {
-    const video = document.querySelector('video');
-    window.stream = stream;
-    video.srcObject = stream;
-  }
-
-  function handleError(error) {
-    console.log('Error accessing media devices:', error);
-  }
-
-  async function startCamera() {
+  onMount(async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      handleSuccess(stream);
-    } catch (e) {
-      handleError(e);
+      stream = await navigator.mediaDevices.getUserMedia({ video: true })
+      if (videoElement) { videoElement.srcObject = stream }
+    }
+    catch (error) {
+      console.error('Error accessing webcam:', error)
+      if (error instanceof Error) { errorMessage = 'Camera access denied or error: ' + error.message }
+      else { errorMessage = 'Camera access denied or unknown error' }
+    }
+  })
+
+  function stopStream() {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop())
+      if (videoElement) { videoElement.srcObject = null }
     }
   }
 
-  function capturePhoto() {
-    captured = true; // Simulate preview logic
+  function togglePausePlay() {
+    if (!videoElement) return
+    if (videoElement.paused) {
+      videoElement.play()
+      isPaused = false
+    }
+    else {
+      videoElement.pause()
+      isPaused = true
+    }
   }
 
-  onMount(() => {
-    startCamera();
-  });
-
-  onDestroy(() => {
-    window.stream?.getTracks().forEach(track => track.stop());
-  });
+  onDestroy(stopStream)
 </script>
 
-<div class="flex flex-col gap-2" data-testid="camera-feed">
-  <video id="localVideo" autoplay playsinline>
-    <track kind="captions" />
-  </video>
-
-  <button
-    class="bg-green-600 text-white px-4 py-2 mt-4 rounded"
-    on:click={capturePhoto}
-    data-testid="capture-button"
-  >
-    Capture
-  </button>
-
-  {#if captured}
-    <div class="mt-4 p-2 bg-gray-200 text-center rounded" data-testid="photo-preview">
-      Preview simulated
-    </div>
+<div>
+  {#if errorMessage}
+    <p class="error">{errorMessage}</p>
+  {:else}
+    <video class="w-full h-auto rounded-lg shadow-lg" bind:this={videoElement} autoplay>
+      <track kind="captions" label="No captions available" />
+      Video is not supported.
+    </video>
+    <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded" on:click={togglePausePlay}>
+      {isPaused ? 'Play' : 'Pause'}
+    </button>
   {/if}
 </div>
+
+<style lang="postcss">
+  @reference "tailwindcss";
+</style>

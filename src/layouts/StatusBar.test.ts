@@ -3,7 +3,8 @@ import { vi } from 'vitest'
 
 import { describe, it, expect } from 'vitest'
 import { render, fireEvent } from '@testing-library/svelte'
-import StatusBar from './StatusBar.svelte' // Update path as needed
+import '@testing-library/jest-dom/vitest'
+import { StatusBar } from './'
 
 // Mock tauri dialog plugin
 vi.mock('@tauri-apps/plugin-dialog', () => ({
@@ -17,17 +18,49 @@ const getDialogMocks = async () => {
 }
 
 describe('StatusBar', () => {
-  it('renders all buttons', () => {
-    const { getByText } = render(StatusBar)
-    expect(getByText('Camera')).toBeTruthy()
-    expect(getByText('Library')).toBeTruthy()
-    expect(getByText('Results')).toBeTruthy()
-    expect(getByText('Recipe')).toBeTruthy()
-    expect(getByText('HTTP')).toBeTruthy()
-    expect(getByText('Models')).toBeTruthy()
+  it('renders an view camera button', () => {
+    const { container } = render(StatusBar)
+    const btn = container.querySelector('.btn-viewCamera')
+    expect(btn).toBeInTheDocument()
+    expect(btn).toHaveTextContent('Camera')
   })
 
-  it('calls open and message when Models button is clicked', async () => {
+  it('renders an view library button', () => {
+    const { container } = render(StatusBar)
+    const btn = container.querySelector('.btn-viewLibrary')
+    expect(btn).toBeInTheDocument()
+    expect(btn).toHaveTextContent('Library')
+  })
+
+  it('renders an view results button', () => {
+    const { container } = render(StatusBar)
+    const btn = container.querySelector('.btn-viewResult')
+    expect(btn).toBeInTheDocument()
+    expect(btn).toHaveTextContent('Results')
+  })
+
+  it('renders an view reciope button', () => {
+    const { container } = render(StatusBar)
+    const btn = container.querySelector('.btn-viewRecipe')
+    expect(btn).toBeInTheDocument()
+    expect(btn).toHaveTextContent('Recipe')
+  })
+
+  it('renders an view http button', () => {
+    const { container } = render(StatusBar)
+    const btn = container.querySelector('.btn-viewHttp')
+    expect(btn).toBeInTheDocument()
+    expect(btn).toHaveTextContent('HTTP')
+  })
+
+  it('renders an view http button', () => {
+    const { container } = render(StatusBar)
+    const btn = container.querySelector('.btn-openFolder')
+    expect(btn).toBeInTheDocument()
+    expect(btn).toHaveTextContent('Models')
+  })
+
+  it('calls open and message dialogs when Models button is clicked', async () => {
     const { getByText } = render(StatusBar)
     const { open, message } = await getDialogMocks()
     await fireEvent.click(getByText('Models'))

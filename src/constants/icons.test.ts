@@ -11,7 +11,7 @@ describe('icons', () => {
     expect(nonEmptyPaths.length).toBeGreaterThan(0)
   })
 
-  it('should not have any icon with an empty string path except for the empty string key', () => {
+  it('should have paths for the non-empty string keys', () => {
     for (const [key, icon] of Object.entries(icons)) {
       if (key !== '') {
         expect(icon.path).not.toBe('')
