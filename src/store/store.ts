@@ -1,12 +1,8 @@
-import { configureStore, type EnhancedStore, type StoreEnhancer } from '@reduxjs/toolkit'
+import { configureStore, type StoreEnhancer } from '@reduxjs/toolkit'
 import { derived, type Readable } from 'svelte/store'
-
 import { appSlice } from './appSlice'
 
-// create an enhancer to use redux store as svelte store (must prepend default enhancers)
-// svelte store subscribe signature ...subscribe(listener: ListenerCallback): Unsubscribe
-//   our listener is "fn" and the reduxStore unsubscribe will unsubscribe from svelte store too
-
+// Svelte store enhancer so Redux store can behave like a Svelte readable
 const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialState) => {
   const reduxStore = createStore(reducer, initialState)
   return {
@@ -18,6 +14,7 @@ const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialSta
   }
 }
 
+// Create the enhanced Redux store
 export const store = configureStore({
   reducer: {
     [appSlice.name]: appSlice.reducer,
@@ -25,10 +22,15 @@ export const store = configureStore({
   enhancers: (gDE) => gDE().prepend(svelteStoreEnhancer),
 })
 
+// Export types for state, dispatch, etc.
 export type RootState = ReturnType<typeof store.getState>
-export type SvelteStore = EnhancedStore<RootState> & Readable<RootState>
 export type AppDispatch = typeof store.dispatch
-export type AppStore = ReturnType<typeof configureStore>
+export type AppStore = typeof store
+export type SvelteStore = typeof store & Readable<RootState>
 
+// Use to dispatch Redux actions
 export const useDispatch = (): AppDispatch => store.dispatch
-export const useSelector = <S>(selector: (state: RootState) => S): Readable<S> => derived(store as SvelteStore, ($state: RootState) => selector($state))
+
+// Use to access derived state as a Svelte store
+export const useSelector = <S>(selector: (state: RootState) => S): Readable<S> =>
+  derived(store as SvelteStore, ($state) => selector($state))
