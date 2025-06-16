@@ -4,7 +4,7 @@
   let videoElement: HTMLVideoElement | null = null
   let stream: MediaStream | null = null
   let errorMessage = ''
-  let isPaused = false
+  // let isPaused = false
 
   onMount(async () => {
     try {
@@ -25,17 +25,17 @@
     }
   }
 
-  function togglePausePlay() {
-    if (!videoElement) return
-    if (videoElement.paused) {
-      videoElement.play()
-      isPaused = false
-    }
-    else {
-      videoElement.pause()
-      isPaused = true
-    }
-  }
+  // function togglePausePlay() {
+  //   if (!videoElement) return
+  //   if (videoElement.paused) {
+  //     videoElement.play()
+  //     isPaused = false
+  //   }
+  //   else {
+  //     videoElement.pause()
+  //     isPaused = true
+  //   }
+  // }
 
   onDestroy(stopStream)
 </script>
@@ -44,13 +44,13 @@
   {#if errorMessage}
     <p class="error">{errorMessage}</p>
   {:else}
-    <video class="w-full h-auto rounded-lg shadow-lg" bind:this={videoElement} autoplay>
+    <video class="w-full h-auto rounded-lg shadow-lg" bind:this={videoElement} autoplay playsinline>
       <track kind="captions" label="No captions available" />
       Video is not supported.
     </video>
-    <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded" on:click={togglePausePlay}>
+    <!-- <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded" on:click={togglePausePlay}>
       {isPaused ? 'Play' : 'Pause'}
-    </button>
+    </button> -->
   {/if}
 </div>
 

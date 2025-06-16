@@ -9,9 +9,7 @@ const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialSta
     ...reduxStore,
     subscribe(fn: (value: ReturnType<typeof reduxStore.getState>) => void) {
       fn(reduxStore.getState())
-      return reduxStore.subscribe(() => {
-        fn(reduxStore.getState())
-      })
+      return reduxStore.subscribe(() => { fn(reduxStore.getState()) })
     },
   }
 }
