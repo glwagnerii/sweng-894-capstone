@@ -11,6 +11,7 @@ export const buttons = tButton({
   notification:    { title: 'Notification',       key: '', icon: 'bi-bell' },
   openFolder:      { title: 'Open folder',        key: '', icon: 'bi-folder2-open' },
   showMenu:        { title: 'Show the menu',      key: '', icon: 'bi-list' },
+  takePhoto:       { title: 'Take Photo',         key: '', icon: 'bi-camera' },
   themeDark:       { title: 'Set theme to dark',  key: '', icon: 'bi-moon', visible: (s) => !s.app.theme.isDark },
   themeLight:      { title: 'Set theme to light', key: '', icon: 'bi-sun',  visible: (s) => s.app.theme.isDark },
   viewCamera:      { title: 'Open camera',        key: '', icon: 'bi-camera',               active: (s) => s.app.view.selected === 'camera' },

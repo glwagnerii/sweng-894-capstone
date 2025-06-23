@@ -45,7 +45,7 @@ describe('LibraryView Component', () => {
     const error = new Error('readDir failed')
     const { readDir } = await import('@tauri-apps/plugin-fs')
 
-    // @ts-ignore
+    // @ts-expect-error: mockRejectedValueOnce is not typed on readDir but is available due to vi.fn()
     readDir.mockRejectedValueOnce(error)
     const consoleErrorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
 
