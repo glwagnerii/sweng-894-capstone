@@ -3,6 +3,7 @@
   import { openUrl } from '@tauri-apps/plugin-opener'
   import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
   import { message } from '@tauri-apps/plugin-dialog'
+  import { invoke } from '@tauri-apps/api/core'
 
   const title = ''
   const openGoogle = async () => { await openUrl('https://www.google.com') }
@@ -12,6 +13,12 @@
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
     console.log(info)
   }
+
+  async function greet() {
+    const info = await invoke('greet', { name: 'gerry' }) as string
+    await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
+  }
+
 </script>
 
 <div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>
@@ -22,7 +29,7 @@
     <div class='block flex-shrink truncate selected'>{title}</div>
   </div>
   <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
-    <Button name='showMenu'/>
+    <Button name='showMenu' onClick={() => greet()}/>
     <Button name='themeLight'/>
     <Button name='themeDark'/>
     <Button name='viewPath'/>
