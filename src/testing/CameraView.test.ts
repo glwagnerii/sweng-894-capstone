@@ -6,16 +6,16 @@ import CameraView from '../views/CameraView.svelte'
 
 const mockDevices = [
   { deviceId: '1', kind: 'videoinput', label: 'Front Camera' },
-  { deviceId: '2', kind: 'videoinput', label: 'Back Camera' }
+  { deviceId: '2', kind: 'videoinput', label: 'Back Camera' },
 ]
 
 describe('CameraView Component', () => {
-  let mockGetUserMedia: any
-  let mockEnumerateDevices: any
+  let mockGetUserMedia: ReturnType<typeof vi.fn>
+  let mockEnumerateDevices: ReturnType<typeof vi.fn>
 
   beforeEach(() => {
     mockGetUserMedia = vi.fn().mockResolvedValue({
-      getTracks: () => [{ stop: vi.fn() }]
+      getTracks: () => [{ stop: vi.fn() }],
     })
 
     mockEnumerateDevices = vi.fn().mockResolvedValue(mockDevices)
@@ -24,8 +24,8 @@ describe('CameraView Component', () => {
       writable: true,
       value: {
         getUserMedia: mockGetUserMedia,
-        enumerateDevices: mockEnumerateDevices
-      }
+        enumerateDevices: mockEnumerateDevices,
+      },
     })
 
     // Mock localStorage
@@ -33,9 +33,9 @@ describe('CameraView Component', () => {
       value: {
         setItem: vi.fn(),
         getItem: vi.fn(),
-        clear: vi.fn()
+        clear: vi.fn(),
       },
-      writable: true
+      writable: true,
     })
   })
 
@@ -56,7 +56,7 @@ describe('CameraView Component', () => {
 
     await waitFor(() => {
       expect(
-        getByText((content) => content.toLowerCase().includes('error'))
+        getByText((content) => content.toLowerCase().includes('error')),
       ).toBeInTheDocument()
     })
   })
@@ -90,7 +90,7 @@ describe('CameraView Component', () => {
 
     await waitFor(() => {
       expect(
-        getByText((content) => content.toLowerCase().includes('error'))
+        getByText((content) => content.toLowerCase().includes('error')),
       ).toBeInTheDocument()
     })
   })

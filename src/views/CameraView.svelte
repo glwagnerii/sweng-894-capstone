@@ -16,7 +16,7 @@
   onMount(() => {
     const platform = detectPlatform()           // Get platform string
     isMobile = platform === 'ios' || platform === 'android' // Set boolean
-  });
+  })
 
   function stopStream() {
     if (stream) {
@@ -29,12 +29,13 @@
     stopStream()
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        video: { deviceId: { exact: deviceId } }
+        video: { deviceId: { exact: deviceId } },
       })
       if (videoElement) {
         videoElement.srcObject = stream
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error starting camera with deviceId', deviceId, error)
 
       // Try fallback if constraint was too strict
@@ -47,14 +48,16 @@
           }
           errorMessage = ''
           return
-        } catch (fallbackError) {
-          console.error('Fallback also failed:', fallbackError)
-          errorMessage =
-            fallbackError instanceof Error ? fallbackError.message : 'Fallback camera error'
         }
-      } else {
-        errorMessage =
-          error instanceof Error ? 'Camera error: ' + error.message : 'Unknown camera error'
+        catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError)
+          errorMessage
+            = fallbackError instanceof Error ? fallbackError.message : 'Fallback camera error'
+        }
+      }
+      else {
+        errorMessage
+          = error instanceof Error ? 'Camera error: ' + error.message : 'Unknown camera error'
       }
     }
   }
@@ -69,14 +72,16 @@
 
       if (isMobile) {
         stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment' }
+          video: { facingMode: 'environment' },
         })
         if (videoElement) videoElement.srcObject = stream
-      } else if (videoDevices.length > 0) {
+      }
+      else if (videoDevices.length > 0) {
         selectedDeviceId = videoDevices[0].deviceId
         await startStream(selectedDeviceId)
       }
-    } catch (err) {
+    }
+    catch (err) {
       errorMessage = err instanceof Error ? err.message : 'Unknown initialization error'
     }
   }
@@ -121,7 +126,6 @@
     previewImage = null
   }
 
-
   // function togglePausePlay() {
   //   if (!videoElement) return
   //   if (videoElement.paused) {
@@ -160,7 +164,7 @@
       <div class="mt-4">
         <label for="cameraSelect" class="block text-sm mb-1">Select Camera</label>
         <select id="cameraSelect" bind:value={selectedDeviceId} on:change={handleCameraChange} class="w-full border p-2 rounded">
-          {#each videoDevices as device}
+          {#each videoDevices as device (device.deviceId)}
             <option value={device.deviceId}>{device.label || 'Camera'}</option>
           {/each}
         </select>
