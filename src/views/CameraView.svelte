@@ -74,13 +74,13 @@
     if (Array.isArray(detections)) {
       detArray = detections
     }
-    else if (detections && typeof detections === 'object' && 'Ok' in detections) {
-      detArray = detections.Ok
-    }
-    else if (detections && typeof detections === 'object' && 'Err' in detections) {
-      errorMessage = 'Inference failed: ' + detections.Err
-      return
-    }
+    // else if (detections && typeof detections === 'object' && 'Ok' in detections) {
+    //   detArray = detections.Ok
+    // }
+    // else if (detections && typeof detections === 'object' && 'Err' in detections) {
+    //   errorMessage = 'Inference failed: ' + detections.Err
+    //   return
+    // }
 
     for (const det of detArray) {
       // Scale bbox coordinates
