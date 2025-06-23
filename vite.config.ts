@@ -26,7 +26,7 @@ export default defineConfig({
   },
   publicDir: 'static',
   test: {
-    globals: true, //Enables global `expect`, `describe`, etc.
+    globals: true, // Enables global `expect`, `describe`, etc.
     coverage: {
       provider: 'v8',
       exclude: [
@@ -43,6 +43,12 @@ export default defineConfig({
       $components: path.resolve(__dirname, 'src/components'),
       $lib: path.resolve(__dirname, 'src/lib'),
       $store: path.resolve(__dirname, 'src/store'),
+    },
+  },
+
+  build: {
+    rollupOptions: {
+      external: ['@tauri-apps/api'],
     },
   },
 })
