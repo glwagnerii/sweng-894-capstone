@@ -1,121 +1,184 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { invoke } from '@tauri-apps/api/core'
+  import { detectPlatform } from '../store/appSlice'
 
-  let videoEl: HTMLVideoElement | null = null
+  let videoElement: HTMLVideoElement | null = null
+  let canvasElement: HTMLCanvasElement | null = null
   let stream: MediaStream | null = null
-  let canvasEl: HTMLCanvasElement
-  type Detection = { bbox: [number, number, number, number], class: string, score: number }
-  let detections: Detection[] = []
   let errorMessage = ''
+  let isMobile = false
+  let videoDevices: MediaDeviceInfo[] = []
+  let selectedDeviceId: string = ''
 
-  // Start the camera when the component mounts
-  onMount(async () => {
-    try {
-      stream = await navigator.mediaDevices.getUserMedia({ video: true })
-      if (videoEl) { videoEl.srcObject = stream }
-      window.addEventListener('resize', drawDetections)
-    }
-    catch (error) {
-      console.error('Error accessing webcam:', error)
-      if (error instanceof Error) { errorMessage = 'Camera access denied or error: ' + error.message }
-      else { errorMessage = 'Camera access denied or unknown error' }
-    }
+  let previewImage: string | null = null
+  let isPreviewing = false
+
+  onMount(() => {
+    const platform = detectPlatform()           // Get platform string
+    isMobile = platform === 'ios' || platform === 'android' // Set boolean
   })
-
-  onDestroy(() => {
-    stopStream()
-    window.removeEventListener('resize', drawDetections)
-  })
-
-  async function captureAndInfer() {
-    // Stop the camera stream before inference
-
-    // Capture current frame from video
-    const ctx = canvasEl.getContext('2d')
-    if (!ctx || !videoEl) return
-    // Set canvas size to match video display size
-    canvasEl.width = videoEl.videoWidth
-    canvasEl.height = videoEl.videoHeight
-    ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height)
-    const dataUrl = canvasEl.toDataURL('image/jpeg')
-    console.log(dataUrl)
-    const base64 = dataUrl.split(',')[1] // <-- Pass this to backend
-
-    stopStream()
-
-    // Pass the base64 image to the Tauri backend
-    try {
-      detections = await invoke('infer_frame', { base64 }) // <-- Pass as { base64 }
-      drawDetections()
-    }
-    catch (e) {
-      errorMessage = 'Inference failed: ' + e
-    }
-  }
-
-  function drawDetections() {
-    if (!canvasEl || !videoEl) return
-    // Always match canvas size to video display size
-    canvasEl.width = videoEl.clientWidth
-    canvasEl.height = videoEl.clientHeight
-    const ctx = canvasEl.getContext('2d')
-    if (!ctx) return
-    ctx.clearRect(0, 0, canvasEl.width, canvasEl.height)
-
-    // Get scaling factors between original video and displayed video
-    const videoWidth = videoEl.videoWidth
-    const videoHeight = videoEl.videoHeight
-    const scaleX = canvasEl.width / videoWidth
-    const scaleY = canvasEl.height / videoHeight
-
-    // Handle the case where detections is a result object (from Tauri)
-    let detArray: Detection[] = []
-    if (Array.isArray(detections)) {
-      detArray = detections
-    }
-    // else if (detections && typeof detections === 'object' && 'Ok' in detections) {
-    //   detArray = detections.Ok
-    // }
-    // else if (detections && typeof detections === 'object' && 'Err' in detections) {
-    //   errorMessage = 'Inference failed: ' + detections.Err
-    //   return
-    // }
-
-    for (const det of detArray) {
-      // Scale bbox coordinates
-      const [x, y, w, h] = det.bbox
-      const sx = x * scaleX
-      const sy = y * scaleY
-      const sw = w * scaleX
-      const sh = h * scaleY
-      ctx.strokeStyle = 'red'
-      ctx.lineWidth = 2
-      ctx.strokeRect(sx, sy, sw, sh)
-      ctx.fillStyle = 'red'
-      ctx.fillText(`${det.class} (${(det.score * 100).toFixed(1)}%)`, sx, sy - 5)
-    }
-  }
 
   function stopStream() {
     if (stream) {
       stream.getTracks().forEach((track) => track.stop())
-      if (videoEl) { videoEl.srcObject = null }
-      stream = null
+      if (videoElement) videoElement.srcObject = null
     }
   }
+
+  async function startStream(deviceId: string) {
+    stopStream()
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { deviceId: { exact: deviceId } },
+      })
+      if (videoElement) {
+        videoElement.srcObject = stream
+      }
+    }
+    catch (error) {
+      console.error('Error starting camera with deviceId', deviceId, error)
+
+      // Try fallback if constraint was too strict
+      if (error instanceof DOMException && (error.name === 'OverconstrainedError' || error.name === 'NotFoundError')) {
+        try {
+          console.warn('Falling back to default camera...')
+          stream = await navigator.mediaDevices.getUserMedia({ video: true })
+          if (videoElement) {
+            videoElement.srcObject = stream
+          }
+          errorMessage = ''
+          return
+        }
+        catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError)
+          errorMessage
+            = fallbackError instanceof Error ? fallbackError.message : 'Fallback camera error'
+        }
+      }
+      else {
+        errorMessage
+          = error instanceof Error ? 'Camera error: ' + error.message : 'Unknown camera error'
+      }
+    }
+  }
+
+  async function initCamera() {
+    const platform = detectPlatform()
+    const isMobile = platform === 'android' || platform === 'ios'
+
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices()
+      videoDevices = devices.filter((d) => d.kind === 'videoinput')
+
+      if (isMobile) {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' },
+        })
+        if (videoElement) videoElement.srcObject = stream
+      }
+      else if (videoDevices.length > 0) {
+        selectedDeviceId = videoDevices[0].deviceId
+        await startStream(selectedDeviceId)
+      }
+    }
+    catch (err) {
+      errorMessage = err instanceof Error ? err.message : 'Unknown initialization error'
+    }
+  }
+
+  function handleCameraChange(event: Event) {
+    const target = event.target as HTMLSelectElement
+    selectedDeviceId = target.value
+    startStream(selectedDeviceId)
+  }
+
+  function takePhoto() {
+    if (!videoElement || !canvasElement) {
+      console.warn('Missing video or canvas element.')
+      return
+    }
+
+    const context = canvasElement.getContext('2d')
+    if (!context) {
+      console.warn('Canvas context not available.')
+      return
+    }
+
+    canvasElement.width = videoElement.videoWidth
+    canvasElement.height = videoElement.videoHeight
+    context.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height)
+
+    previewImage = canvasElement.toDataURL('image/png')
+    isPreviewing = true
+  }
+
+  function confirmPhoto() {
+    if (previewImage) {
+      localStorage.setItem('capturedPhoto', previewImage)
+      console.log('Photo saved.')
+      isPreviewing = false
+      previewImage = null
+    }
+  }
+
+  function retakePhoto() {
+    isPreviewing = false
+    previewImage = null
+  }
+
+  // function togglePausePlay() {
+  //   if (!videoElement) return
+  //   if (videoElement.paused) {
+  //     videoElement.play()
+  //     isPaused = false
+  //   }
+  //   else {
+  //     videoElement.pause()
+  //     isPaused = true
+  //   }
+  // }
+
+  onMount(initCamera)
+  onDestroy(stopStream)
 </script>
 
-<div class="relative w-full max-w-2xl mx-auto">
+<div>
   {#if errorMessage}
-    <p class="error">{errorMessage}</p>
+    <p class="error text-red-600 text-sm">{errorMessage}</p>
+  {:else if isPreviewing && previewImage}
+    <div class="text-center">
+      <img src={previewImage} alt="Preview" class="rounded shadow mx-auto max-w-full max-h-[70vh]" />
+      <div class="mt-4 flex justify-center gap-4">
+        <button on:click={confirmPhoto} class="px-4 py-2 bg-green-700 text-white rounded">Confirm</button>
+        <button on:click={retakePhoto} class="px-4 py-2 bg-yellow-600 text-white rounded">Retake</button>
+      </div>
+    </div>
   {:else}
-    <video bind:this={videoEl} autoplay playsinline class="w-full h-auto rounded-lg shadow-lg" id="video-el">
-      <track kind="captions" label="No captions available" />
-      Video is not supported.
+    <video bind:this={videoElement} autoplay playsinline class="w-full h-auto rounded shadow">
+      <track kind="captions" label="camera stream" />
     </video>
-    <canvas bind:this={canvasEl} class="absolute top-0 left-0 w-full h-full pointer-events-none rounded-lg" id="canvas-el"></canvas>
-    <button on:click={captureAndInfer}>Detect</button>
+
+    <canvas bind:this={canvasElement} class="hidden"></canvas>
+
+    {#if !isMobile && videoDevices.length > 1}
+      <div class="mt-4">
+        <label for="cameraSelect" class="block text-sm mb-1">Select Camera</label>
+        <select id="cameraSelect" bind:value={selectedDeviceId} on:change={handleCameraChange} class="w-full border p-2 rounded">
+          {#each videoDevices as device (device.deviceId)}
+            <option value={device.deviceId}>{device.label || 'Camera'}</option>
+          {/each}
+        </select>
+      </div>
+    {/if}
+
+    <div class="mt-4 text-center">
+      <button
+        on:click={takePhoto}
+        class="px-5 py-2 rounded text-white bg-green-700 hover:bg-green-800 border-2 border-[#d2b48c] shadow-md"
+      >
+        Take Photo
+      </button>
+    </div>
   {/if}
 </div>
 
