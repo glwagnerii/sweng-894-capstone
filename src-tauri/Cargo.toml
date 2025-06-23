@@ -7,9 +7,7 @@ license = "MIT"
 repository = "https://github.com/glwagnerii/sweng-894-capstone"
 edition = "2021"
 rust-version = "1.77.2"
-include = ["resources/images/*"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+include = ["resources/**/*"]
 
 [lib]
 name = "app_lib"
@@ -22,6 +20,7 @@ tauri-build = { version = "2.2.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
+ort = "2.0.0-rc.10"
 tauri = { version = "2.5.0", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-os = "2"
@@ -33,6 +32,11 @@ tauri-plugin-notification = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-clipboard-manager = "2"
+base64 = "0.22"
+image = "0.25"
+arcstr = "1.2.0"
+serde_yaml = "0.9.34"
+ndarray = "0.16.1"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"
