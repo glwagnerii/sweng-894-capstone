@@ -1,0 +1,67 @@
+[data-theme='light'] {
+  default: false;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: oklch(100% 0 0);
+  --color-base-200: oklch(95% 0.038 75.164);
+  --color-base-300: oklch(89% 0.196 126.665);
+  --color-base-content: oklch(21% 0.006 285.885);
+  --color-primary: oklch(27% 0.072 132.109);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(42% 0.095 57.708);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(45% 0.124 130.933);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(64% 0.2 131.684);
+  --color-neutral-content: oklch(0% 0 0);
+  --color-info: oklch(79% 0.209 151.711);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(93% 0.127 124.321);
+  --color-success-content: oklch(0% 0 0);
+  --color-warning: oklch(94% 0.129 101.54);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(88% 0.062 18.334);
+  --color-error-content: oklch(0% 0 0);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+[data-theme='dark'] {
+  default: false;
+  prefersdark: false;
+  color-scheme: "dark";
+  --color-base-100: oklch(40% 0.101 131.063);
+  --color-base-200: oklch(27% 0.072 132.109);
+  --color-base-300: oklch(26% 0.051 172.552);
+  --color-base-content: oklch(100% 0 0);
+  --color-primary: oklch(27% 0.077 45.635);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(42% 0.095 57.708);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(55% 0.163 48.998);
+  --color-accent-content: oklch(0% 0 0);
+  --color-neutral: oklch(14% 0.005 285.823);
+  --color-neutral-content: oklch(100% 0 0);
+  --color-info: oklch(92% 0.12 95.746);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(76% 0.233 130.85);
+  --color-success-content: oklch(0% 0 0);
+  --color-warning: oklch(85% 0.199 91.936);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(70% 0.191 22.216);
+  --color-error-content: oklch(0% 0 0);
+  --radius-selector: 0.5rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}

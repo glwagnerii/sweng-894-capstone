@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 @plugin "daisyui";
-@import './themes.css';
+@import './themes/theme.css';
 @config '../tailwind.config.js';
 
 @custom-variant dark (&:where(.dark, .dark *));

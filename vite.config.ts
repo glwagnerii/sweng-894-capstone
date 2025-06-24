@@ -43,6 +43,8 @@ export default defineConfig({
       $components: path.resolve(__dirname, 'src/components'),
       $lib: path.resolve(__dirname, 'src/lib'),
       $store: path.resolve(__dirname, 'src/store'),
+      // Explicitly alias @tauri-apps/api to avoid Vite resolution errors
+      '@tauri-apps/api': path.resolve(__dirname, 'node_modules/@tauri-apps/api'),
     },
   },
 

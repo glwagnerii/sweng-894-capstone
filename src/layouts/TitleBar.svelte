@@ -4,6 +4,7 @@
   import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
   import { message } from '@tauri-apps/plugin-dialog'
   import { invoke } from '@tauri-apps/api/core'
+  import { setTheme } from '../themes/themeSet'
 
   const title = ''
   const openGoogle = async () => { await openUrl('https://www.google.com') }
@@ -30,8 +31,8 @@
   </div>
   <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
     <Button name='showMenu' onClick={() => greet()}/>
-    <Button name='themeLight'/>
-    <Button name='themeDark'/>
+    <Button name='themeLight' onClick={() => setTheme('light')} />
+    <Button name='themeDark' onClick={() => setTheme('dark')} />
     <Button name='viewPath'/>
     <Button name='getOS' onClick={() => getOS()}/>
     <Button name='viewHome'/>

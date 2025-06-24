@@ -1,25 +1,37 @@
 <script lang="ts">
-  import { useSelector, useDispatch } from './store'
+  import { onMount } from 'svelte'
+  import { useDispatch, useSelector } from './store'
   import { StatusBar, TitleBar, ViewContainer } from './layouts'
-
   import { setContext } from 'svelte'
   import { writable } from 'svelte/store'
-  // import Colors from './components/Colors.svelte'
+  import { setThemeByTime } from './themes/themeSet'
 
   const count = writable(0)
   setContext('count', count)
 
   const dispatch = useDispatch()
-  const isDark = useSelector((state) => state.app.theme.isDark)
 
-  const handleResize = () => { dispatch({ type: 'app/windowResize' }) }
-  const handleKeydown = (e: KeyboardEvent) => { console.log(e.key) }
+  const handleResize = () => dispatch({ type: 'app/windowResize' })
+  const handleKeydown = (e: KeyboardEvent) => console.log(e.key)
+
+  // Detect theme on app load
+  onMount(() => {
+    setThemeByTime()
+  })
+
+  // Correctly use Svelte store (not window binding!)
+  const isDarkStore = useSelector((state) => state.app.theme.isDark)
+  let isDark = false
+  isDarkStore.subscribe(value => isDark = value)
+
+  $: theme = isDark ? 'dark' : 'light'
 </script>
 
-<svelte:window on:resize={handleResize} onkeydown={handleKeydown}/>
+<svelte:window on:resize={handleResize} on:keydown={handleKeydown} />
 
-<div id="classicam" class="flex flex-col h-dvh w-dvw overflow-hidden bg-[#fdf3e6]" data-theme={$isDark ? 'dark' : 'light'}>
+<div id="classicam" data-theme={theme} class="flex flex-col h-dvh w-dvw overflow-hidden">
   <TitleBar />
   <ViewContainer />
   <StatusBar />
 </div>
+
