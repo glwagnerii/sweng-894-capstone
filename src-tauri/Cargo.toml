@@ -20,7 +20,7 @@ tauri-build = { version = "2.2.0", features = [] }
 serde_json = "1.0"
 serde = { version = "1.0", features = ["derive"] }
 log = "0.4"
-ort = "2.0.0-rc.10"
+ort = "2.0.0-rc.9"
 tauri = { version = "2.5.0", features = [] }
 tauri-plugin-log = "2"
 tauri-plugin-os = "2"
@@ -37,6 +37,8 @@ image = "0.25"
 arcstr = "1.2.0"
 serde_yaml = "0.9.34"
 ndarray = "0.16.1"
+usls = "0.1.0-beta.2"
+anyhow = "1.0"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"
