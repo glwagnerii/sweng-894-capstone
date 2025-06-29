@@ -4,7 +4,7 @@
 
 </script>
 
-<div class="bg-[#FAF9F6] p-4 flex flex-col items-center space-y-6 font-sans text-gray-900">
+<div class="p-4 flex flex-col items-center space-y-6 font-sans">
   <h1 class="text-2xl font-bold mb-2">Classification Results</h1>
 
   <!-- Image Preview -->
@@ -13,8 +13,7 @@
   <!-- Classification Results -->
   <div class="flex flex-wrap justify-center gap-2">
     {#each classifications as item (item)}
-      <div class="bg-green-800 text-white font-semibold py-2 px-4 rounded-full text-sm">{item}</div>
+      <div class="font-semibold py-2 px-4 rounded-full text-sm bg-secondary">{item}</div>
     {/each}
   </div>
-
 </div>
