@@ -15,39 +15,38 @@
   }
 
   const usls = async () => {
-    const info = await invoke('infer_frame', { "base64": ""}) as string
+    const info = await invoke('infer_image_from_base64', { base64: '' }) as string
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
     console.log(info)
   }
-
 
   async function greet() {
     const info = await invoke('greet', { name: 'gerry' }) as string
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
   }
 
+  const btnClass = 'btn-secondary btn-ghost border-none shadow-none transition-colors py-2 h-full px-1'
 </script>
 
 <div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>
   <div class='flex items-center h-full min-w-min nodrag order-0'>
-    <Button name='classificam' onClick={() => openGoogle()} labelRight>Classifi-Cam</Button>
+    <Button name='classificam' btnClass={btnClass} onClick={() => openGoogle()} labelRight>Classifi-Cam</Button>
   </div>
   <div class='flex items-center justify-center mx-2 h-full max-w-max min-w-0 order-1'>
     <div class='block flex-shrink truncate selected'>{title}</div>
   </div>
   <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
-    <Button name='showMenu' onClick={() => greet()}/>
-    <Button name='themeLight'/>
-    <Button name='themeDark'/>
-    <Button name='viewPath'/>
-    <Button name='getOS' onClick={() => getOS()}/>
-    <Button name='viewHome'/>
-    <Button name='plane' onClick={() => usls()}/>
+    <Button name='showMenu'   btnClass={btnClass} iconClass='h-10' onClick={() => greet()}/>
+    <Button name='themeLight' btnClass={btnClass}/>
+    <Button name='themeDark'  btnClass={btnClass}/>
+    <Button name='viewPath'   btnClass={btnClass}/>
+    <Button name='getOS'      btnClass={btnClass} onClick={() => getOS()}/>
+    <Button name='viewHome'   btnClass={btnClass}/>
+    <Button name='plane'      btnClass={btnClass} onClick={() => usls()}/>
   </div>
 </div>
 
 <style lang="postcss">
   @reference "tailwindcss";
-  #titlebar :global(.btn)  { @apply py-2 h-full px-1; }
   #titlebar :global(.icon) { @apply h-10; }
 </style>
