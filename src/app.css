@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 @plugin "daisyui";
+
 @import './themes.css';
 @config '../tailwind.config.js';
-
-@custom-variant dark (&:where(.dark, .dark *));
 
 :focus { outline: none; }
