@@ -14,11 +14,21 @@
     console.log(info)
   }
 
-  const usls = async () => {
-    const info = await invoke('infer_image_from_base64', { base64: '' }) as string
-    await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
-    console.log(info)
-  }
+ const usls = async () => {
+  const info = await invoke('infer_frame', { base64: 'gerry' }) as Array<{ class: string; score: number; bbox: [number, number, number, number] }>
+  
+  // Build a multiline string of all results
+  const fullMessage = info.map((item, index) => 
+    `#${index + 1}
+      Class: ${item.class}
+      Score: ${item.score.toFixed(2)}
+      BBox: [${item.bbox.join(', ')}]`
+  ).join('\n\n')
+
+  await message(fullMessage, {title: 'Classific-Cam OS Information', kind: 'info'})
+
+  console.log(info)
+}
 
   async function greet() {
     const info = await invoke('greet', { name: 'gerry' }) as string
