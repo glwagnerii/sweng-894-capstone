@@ -14,6 +14,13 @@
     console.log(info)
   }
 
+  const usls = async () => {
+    const info = await invoke('infer_frame', { "base64": ""}) as string
+    await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
+    console.log(info)
+  }
+
+
   async function greet() {
     const info = await invoke('greet', { name: 'gerry' }) as string
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
@@ -35,6 +42,7 @@
     <Button name='viewPath'/>
     <Button name='getOS' onClick={() => getOS()}/>
     <Button name='viewHome'/>
+    <Button name='plane' onClick={() => usls()}/>
   </div>
 </div>
 
