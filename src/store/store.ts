@@ -1,6 +1,7 @@
 import { configureStore, type StoreEnhancer } from '@reduxjs/toolkit'
 import { derived, type Readable } from 'svelte/store'
 import { appSlice } from './appSlice'
+import { api } from './api'
 
 // Svelte store enhancer so Redux store can behave like a Svelte readable
 const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialState) => {
@@ -18,7 +19,10 @@ const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialSta
 export const store = configureStore({
   reducer: {
     [appSlice.name]: appSlice.reducer,
+    [api.reducerPath]: api.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(api.middleware),
   enhancers: (gDE) => gDE().prepend(svelteStoreEnhancer),
 })
 

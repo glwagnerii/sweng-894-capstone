@@ -1,15 +1,38 @@
 import { describe, it, expect } from 'vitest'
 import { buttons } from './'
-import { type App } from '../store'
+import { type RootState } from '../store'
 import { type ViewName } from '../views'
 
 // Mock RootState for visible/active tests
 
-const mockState = (isDark: boolean, selected: ViewName): { app: App } => ({
+const mockState = (isDark: boolean, selected: ViewName): RootState => ({
   app: {
     titleBar: { title: 'Mock Title', visible: true },
     theme: { name: isDark ? 'dark' : 'light', isDark },
     view: { selected, visible: true },
+    selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'] },
+    ingredient: { name:'beef' },
+    recipe:     { id: '53071 ' },
+  },
+  api: {
+    queries: {},
+    mutations: {},
+    provided: {
+      tags: {},
+      keys: {},
+    },
+    subscriptions: {},
+    config: {
+      reducerPath: 'api',
+      online: true,
+      focused: true,
+      middlewareRegistered: true,
+      refetchOnMountOrArgChange: false,
+      refetchOnReconnect: false,
+      refetchOnFocus: false,
+      keepUnusedDataFor: 60,
+      invalidationBehavior: 'delayed',
+    },
   },
 })
 
