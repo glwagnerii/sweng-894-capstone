@@ -2,7 +2,7 @@
 
 import { describe, it, expect } from 'vitest'
 import { render } from '@testing-library/svelte'
-import HomeView from '../views/HomeView.svelte'
+import { HomeView } from '../views'
 import '@testing-library/jest-dom'
 
 describe('HomeView Component', () => {

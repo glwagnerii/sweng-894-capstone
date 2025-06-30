@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { render, fireEvent, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
-import CameraView from '../views/CameraView.svelte'
+import { CameraView } from '../views'
 
 const mockDevices = [
   { deviceId: '1', kind: 'videoinput', label: 'Front Camera' },
@@ -75,7 +75,6 @@ describe('CameraView Component', () => {
 
   it('displays an error if getUserMedia fails with known error', async () => {
     navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue(new Error('Permission denied'))
-
     const { getByText } = render(CameraView)
 
     await waitFor(() => {
@@ -85,7 +84,6 @@ describe('CameraView Component', () => {
 
   it('displays a generic error if getUserMedia fails with unknown type', async () => {
     navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue('unknown string')
-
     const { getByText } = render(CameraView)
 
     await waitFor(() => {

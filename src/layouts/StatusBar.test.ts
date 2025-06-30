@@ -18,42 +18,42 @@ const getDialogMocks = async () => {
 }
 
 describe('StatusBar', () => {
-  it('renders an view camera button', () => {
+  it('renders an view Camera button', () => {
     const { container } = render(StatusBar)
     const btn = container.querySelector('.btn-viewCamera')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Camera')
   })
 
-  it('renders an view library button', () => {
+  it('renders an view Library button', () => {
     const { container } = render(StatusBar)
     const btn = container.querySelector('.btn-viewLibrary')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Library')
   })
 
-  it('renders an view results button', () => {
+  it('renders an view Results button', () => {
     const { container } = render(StatusBar)
     const btn = container.querySelector('.btn-viewResult')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Results')
   })
 
-  it('renders an view reciope button', () => {
+  it('renders an view Recipe button', () => {
     const { container } = render(StatusBar)
     const btn = container.querySelector('.btn-viewRecipe')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Recipe')
   })
 
-  it('renders an view http button', () => {
+  it('renders an view Details button', () => {
     const { container } = render(StatusBar)
     const btn = container.querySelector('.btn-viewHttp')
     expect(btn).toBeInTheDocument()
-    expect(btn).toHaveTextContent('HTTP')
+    expect(btn).toHaveTextContent('Details')
   })
 
-  it('renders an view http button', () => {
+  it('renders an view Models button', () => {
     const { container } = render(StatusBar)
     const btn = container.querySelector('.btn-openFolder')
     expect(btn).toBeInTheDocument()

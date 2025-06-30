@@ -27,13 +27,11 @@ export default defineConfig({
   publicDir: 'static',
   test: {
     globals: true, // Enables global `expect`, `describe`, etc.
+    environment: 'jsdom',
     coverage: {
       provider: 'v8',
-      exclude: [
-        'src-tauri', 'src/plugins', 'dist', '.ignore', '.venv', '**/index.ts', '**/*.config.*', '**/*.d.ts',
-      ],
+      exclude: ['src-tauri', 'src/plugins', 'dist', '.ignore', '.venv', '**/index.ts', '**/*.config.*', '**/*.d.ts'],
     },
-    environment: 'jsdom',
   },
   plugins: [tailwindcss(), svelte(), svelteTesting()],
 
