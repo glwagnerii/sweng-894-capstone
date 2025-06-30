@@ -1,6 +1,43 @@
 mod model;
 use model::{YoloModelSession, Detection};
 
+use anyhow::Result;
+use usls::{models::YOLO, Config, DataLoader, Version};
+
+pub fn det_to_detections(y: &usls::Y) -> Vec<Detection> {
+    let mut detections = Vec::new();
+    if let Some(hbbs) = y.hbbs() {
+        for hbb in hbbs {
+            if let (Some(name), Some(score)) = (hbb.name(), hbb.confidence()) {
+                let (x1, y1, x2, y2) = hbb.xyxy();
+                let bbox = [x1, y1, x2 - x1, y2 - y1];
+                detections.push(Detection { class: name.to_string(), score, bbox });
+            }
+        }
+    }
+    detections
+}
+
+#[tauri::command]
+fn doit() -> Result<Vec<Detection>, String> {
+    let mut config = Config::yolo()
+        .with_model_file("resources/models/yolo11n.onnx")
+        .with_version(Version::new(11, 0))
+        .with_class_confs(&[0.2, 0.15]);
+
+    let mut model = YOLO::new(config).unwrap();
+    let img = image::open("resources/images/bailey.jpeg").unwrap();
+    let detections = model.forward(&[img.into()]).unwrap();
+
+    if let Some(det) = detections.first() {
+        let converted: Vec<Detection> = det_to_detections(det);
+        Ok(converted)
+    } else {
+        Err("No detections found".to_string())
+    }
+}
+
+
 #[tauri::command]
 fn greet(_name: &str) -> String {
     // Load YOLO model session with ONNX and YAML
@@ -122,7 +159,7 @@ pub fn run() {
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![greet, infer_frame])
+        .invoke_handler(tauri::generate_handler![greet, infer_frame, doit])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

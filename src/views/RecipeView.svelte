@@ -1,49 +1,60 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { useSelector, useDispatch } from '../store'
+  const dispatch = useDispatch()
 
-  let recipes: { title: string, duration: string, ingredients: number, image: string }[] = []
+  const ingredient = useSelector((state) => state.app.ingredient.name)
+  const url = $derived(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${$ingredient}`)
 
-  // Dummy recipes for now
-  const allRecipes = [
-    {
-      title: 'Roasted Vegetable Medley',
-      duration: '35 min',
-      ingredients: 3,
-      image: 'photos/veggie-medley.jpg',
-    },
-    {
-      title: 'Stuffed Bell Peppers',
-      duration: '50 min',
-      ingredients: 3,
-      image: 'photos/stuffed-peppers.jpg',
-    },
-    {
-      title: 'Tomato and Garlic Soup',
-      duration: '30 min',
-      ingredients: 2,
-      image: 'photos/tomato-soup.jpg',
-    },
-  ]
+  type Meal = {
+    strMeal: string
+    strMealThumb: string
+    idMeal: string
+  }
 
-  onMount(() => {
-    recipes = allRecipes // Future: filter based on identified ingredients
-  })
+  let recipes = $state<Meal[]>([])
+  let loading = $state(true)
+  let error = $state<string | null>(null)
 
-  // const navigate = useNavigate()
+  async function fetchRecipes() {
+    loading = true
+    error = null
+    try {
+      const res = await fetch(url)
+      const data = await res.json()
+      recipes = data.meals as Meal[]
+    }
+    catch { console.log('Failed to load recipes.') }
+    finally { loading = false }
+  }
+
+  function handleRecipeClick(idMeal: string) {
+    dispatch({ type: 'app/showRecipe', payload: { id: idMeal } })
+  }
+
+  onMount(() => { fetchRecipes() })
 </script>
 
-<div class="p-4 bg-[#FAF9F6] font-sans text-gray-900">
-
-  <!-- Recipe list -->
-  <div class="space-y-4" data-testid="recipe-view">
-    {#each recipes as recipe (recipe.title)}
-      <div class="flex items-center bg-white rounded-xl p-3 shadow-md">
-        <img src={recipe.image} alt={recipe.title} class="w-16 h-16 rounded-lg object-cover mr-4" />
-        <div>
-          <p class="font-semibold">{recipe.title}</p>
-          <p class="text-sm text-gray-600">{recipe.duration} • {recipe.ingredients} ing</p>
-        </div>
-      </div>
-    {/each}
-  </div>
+<div class="p-4">
+  {#if loading}
+    <p>Loading recipes...</p>
+  {:else if error}
+    <p class="text-red-500">{error}</p>
+  {:else}
+    <!-- Recipe list in two columns -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-testid="recipe-view">
+      {#each recipes as recipe (recipe.idMeal)}
+        <button
+          type="button"
+          class="flex bg-base-200 items-center rounded-xl p-3 shadow-md w-full text-left hover:bg-base-300 transition"
+          onclick={() => handleRecipeClick(recipe.idMeal)}
+        >
+          <img src={recipe.strMealThumb} alt={recipe.strMeal} class="w-16 h-16 rounded-lg object-cover mr-4" />
+          <div>
+            <p class="font-semibold">{recipe.strMeal}</p>
+          </div>
+        </button>
+      {/each}
+    </div>
+  {/if}
 </div>
