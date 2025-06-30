@@ -1,105 +1,21 @@
-// mod model2;
-
-// use tauri::Manager;
-
-// #[tauri::command]
-// fn hello() -> String {
-//     "bar".into()
-// }
-
-// #[tauri::command]
-// fn greet(_name: &str) -> String {
-//     "👋 Hello from YOLO USLS Tauri app!".into()
-// }
-
-// #[tauri::command]
-// fn infer_image_from_path(image_path: String) -> Result<String, String> {
-//     let model_path = "resources/models/yolo11n.onnx";
-//     model2::infer_from_image_path(&image_path, model_path)
-//         .map_err(|e| format!("❌ Inference failed: {}", e))
-// }
-
-// #[tauri::command]
-// fn infer_image_from_base64(base64: String) -> Result<String, String> {
-//     let model_path = "resources/models/yolo11n.onnx";
-//     model2::infer_from_base64(&base64, model_path)
-//         .map_err(|e| format!("❌ Inference failed: {}", e))
-// }
-
-// #[cfg_attr(mobile, tauri::mobile_entry_point)]
-// pub fn run() {
-//     let mut builder = tauri::Builder::default()
-//         .plugin(tauri_plugin_clipboard_manager::init())
-//         .plugin(tauri_plugin_dialog::init())
-//         .plugin(tauri_plugin_fs::init())
-//         .plugin(tauri_plugin_http::init())
-//         .plugin(
-//             tauri_plugin_log::Builder::default()
-//                 .level(log::LevelFilter::Info)
-//                 .build(),
-//         )
-//         .plugin(tauri_plugin_notification::init())
-//         .plugin(tauri_plugin_opener::init())
-//         .plugin(tauri_plugin_os::init())
-//         .plugin(tauri_plugin_sql::Builder::new().build())
-//         .plugin(tauri_plugin_store::Builder::new().build());
-
-//     #[cfg(desktop)]
-//     {
-//         builder = builder.plugin(tauri_plugin_window_state::Builder::default().build());
-//     }
-
-//     builder
-//         .invoke_handler(tauri::generate_handler![
-//             hello,
-//             greet,
-//             infer_image_from_path,
-//             infer_image_from_base64
-//         ])
-//         .run(tauri::generate_context!())
-//         .expect("error while running Tauri application");
-// }
-
-// OLD lib
 mod model;
 use model::{YoloModelSession, Detection};
 
 use anyhow::Result;
 use usls::{models::YOLO, Config, DataLoader, Version};
 
-// pub fn det_to_detections(det: &usls::Y) -> Vec<Detection> {
-//     // usls::Y::hbbs() returns a slice of Hbb objects
-//     det.hbbs().iter().map(|hbb| Detection {
-//         class: hbb.name.clone().unwrap_or_else(|| "unknown".to_string()),
-//         score: hbb.confidence.unwrap_or(0.0),
-//         bbox: [
-//             hbb.xyxy[0] as f32,
-//             hbb.xyxy[1] as f32,
-//             hbb.xyxy[2] as f32,
-//             hbb.xyxy[3] as f32,
-//         ],
-//     }).collect()
-// }
-
-pub fn det_to_detections(det: &usls::Y) -> Vec<Detection> {
-    let converted: Vec<Detection> = vec![
-        Detection {
-            class: "dog".to_string(),
-            score: 0.91,
-            bbox: [173.8, 238.3, 553.9, 929.9],
-        },
-        Detection {
-            class: "couch".to_string(),
-            score: 0.85,
-            bbox: [0.35, 56.96, 540.67, 540.94],
-        },
-        Detection {
-            class: "remote".to_string(),
-            score: 0.34,
-            bbox: [586.5, 156.99, 720.78, 184.19],
-        },
-    ];
-    converted
+pub fn det_to_detections(y: &usls::Y) -> Vec<Detection> {
+    let mut detections = Vec::new();
+    if let Some(hbbs) = y.hbbs() {
+        for hbb in hbbs {
+            if let (Some(name), Some(score)) = (hbb.name(), hbb.confidence()) {
+                let (x1, y1, x2, y2) = hbb.xyxy();
+                let bbox = [x1, y1, x2 - x1, y2 - y1];
+                detections.push(Detection { class: name.to_string(), score, bbox });
+            }
+        }
+    }
+    detections
 }
 
 #[tauri::command]
