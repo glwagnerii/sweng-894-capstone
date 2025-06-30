@@ -10,6 +10,9 @@ const mockState = (isDark: boolean, selected: ViewName): { app: App } => ({
     titleBar: { title: 'Mock Title', visible: true },
     theme: { name: isDark ? 'dark' : 'light', isDark },
     view: { selected, visible: true },
+    selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'] },
+    ingredient: { name:'beef' },
+    recipe:     { id: '53071 ' },
   },
 })
 
