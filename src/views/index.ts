@@ -7,8 +7,9 @@ import LibraryView from './LibraryView.svelte'
 import PathView from './PathView.svelte'
 import RecipeView from './RecipeView.svelte'
 import ResultView from './ResultView.svelte'
+import HistoryView from './HistoryView.svelte'
 
-export { HomeView, LibraryView, PathView, RecipeView, ResultView }
+export { HomeView, LibraryView, PathView, RecipeView, ResultView, HistoryView }
 export type ViewType = { component: Component }
 
 function tView<V extends ViewType, T extends { [key in string]: V }>(o: T): T { return o } // ensure type of value object
@@ -20,5 +21,6 @@ export const views = tView({
   library: { component: LibraryView },
   recipe:  { component: RecipeView },
   result:  { component: ResultView },
+  history: { component: HistoryView}
 })
 export type ViewName = keyof typeof views

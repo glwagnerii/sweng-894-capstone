@@ -13,7 +13,7 @@ export function setThemeByTime() {
 }
 
 export function setTheme(theme: 'light' | 'dark') {
-  document.documentElement.setAttribute('data-theme', theme)
+  document.documentElement.parentElement?.setAttribute('data-theme', theme)
   localStorage.setItem('theme', theme)
   store.dispatch({
     type: 'app/themeSet',

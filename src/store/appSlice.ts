@@ -42,7 +42,7 @@ export const appSlice = createSlice({
     viewLibrary: (state) => { state.view.selected = 'library' },
     viewPath:    (state) => { state.view.selected = 'path' },
     viewRecipe:  (state) => { state.view.selected = 'recipe' },
-    viewResult:  (state) => { state.view.selected = 'result' },
+    viewHistory: (state) => { state.view.selected = 'history' },
 
     // testing navigation use case
     setView: (state, action: { payload: { selected: ViewName, visible: boolean } }) => {
