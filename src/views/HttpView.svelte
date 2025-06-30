@@ -24,7 +24,7 @@
     error.set(null)
     product.set(null)
     try {
-      const response = await fetch('https://www.themealdb.com/api/json/v1/1/search.php?s=Arrabiata', {
+      const response = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=52772', {
         method: 'GET',
       })
       const data = await response.json()

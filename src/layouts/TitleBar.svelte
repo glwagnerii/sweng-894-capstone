@@ -14,28 +14,33 @@
     console.log(info)
   }
 
- const usls = async () => {
-  const info = await invoke('infer_frame', { base64: 'gerry' }) as Array<{ class: string; score: number; bbox: [number, number, number, number] }>
-  
-  // Build a multiline string of all results
-  const fullMessage = info.map((item, index) => 
-    `#${index + 1}
-      Class: ${item.class}
-      Score: ${item.score.toFixed(2)}
-      BBox: [${item.bbox.join(', ')}]`
-  ).join('\n\n')
+//  const usls = async () => {
+//    const info = await invoke('infer_frame', { base64: 'gerry' }) as Array<{ class: string, score: number, bbox: [number, number, number, number] }>
 
-  await message(fullMessage, {title: 'Classific-Cam OS Information', kind: 'info'})
+//    // Build a multiline string of all results
+//    const fullMessage = info.map((item, index) =>
+//      `#${index + 1}
+//       Class: ${item.class}
+//       Score: ${item.score.toFixed(2)}
+//       BBox: [${item.bbox.join(', ')}]`,
+//    ).join('\n\n')
 
-  console.log(info)
-}
+//    await message(fullMessage, { title: 'Classific-Cam OS Information', kind: 'info' })
+
+//    console.log(info)
+//  }
+
+  const usls = async () => {
+    const info = await invoke('doit') as string
+    await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
+  }
 
   async function greet() {
     const info = await invoke('greet', { name: 'gerry' }) as string
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
   }
 
-  const btnClass = 'btn-secondary btn-ghost border-none shadow-none transition-colors py-2 h-full px-1'
+  const btnClass = 'btn-info border-none shadow-none transition-colors py-2 h-full px-1'
 </script>
 
 <div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>

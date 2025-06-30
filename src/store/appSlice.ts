@@ -2,9 +2,11 @@ import { createSlice } from '@reduxjs/toolkit'
 import { type ViewName } from '../views'
 
 export interface App {
-  titleBar: { title: string, visible: boolean }
-  view:     { selected: ViewName, visible: boolean }
-  theme:    { name: string, isDark: boolean }
+  titleBar:   { title: string, visible: boolean }
+  view:       { selected: ViewName, visible: boolean }
+  theme:      { name: string, isDark: boolean }
+  selected:   { name: string, url: string, ingredients: string[] }
+  ingredient: { name: string }
 }
 
 export const detectPlatform = () => {
@@ -26,12 +28,15 @@ const app: App = {
     // isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
     isDark: true,
   },
+  selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: [] },
+  ingredient: { name:'beef' },
 }
 
 export const appSlice = createSlice({
   name: 'app',
   initialState: app,
   reducers: {
+    selectImage: (state, action) => { state.selected = action.payload; state.view.selected = 'result' },
     showMenu:    (state) => { state.view.selected = 'home' },
     themeDark:   (state) => { state.theme.isDark = true },
     themeLight:  (state) => { state.theme.isDark = false },
