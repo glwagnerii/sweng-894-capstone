@@ -2,7 +2,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
-import ResultView from '../views/ResultView.svelte'
+import { ResultView } from '../views'
 import * as store from '../store'
 
 // Mock the store module

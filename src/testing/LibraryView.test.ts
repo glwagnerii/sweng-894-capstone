@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest'
 import { render, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
-import LibraryView from '../views/LibraryView.svelte'
+import { LibraryView } from '../views'
 
 describe('LibraryView Component', () => {
   it('should load image filenames and render their previews', async () => {
