@@ -1,6 +1,11 @@
 <script lang="ts">
   import { fetch } from '@tauri-apps/plugin-http'
   import { writable } from 'svelte/store'
+  import { useSelector } from '../store'
+  import { onMount } from 'svelte'
+
+  const recipeId = useSelector((state) => state.app.recipe.id)
+  const url = `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${$recipeId}`
 
   type Product = {
     idMeal: string
@@ -24,9 +29,7 @@
     error.set(null)
     product.set(null)
     try {
-      const response = await fetch('https://www.themealdb.com/api/json/v1/1/lookup.php?i=52772', {
-        method: 'GET',
-      })
+      const response = await fetch(url, { method: 'GET' })
       const data = await response.json()
       product.set(data.meals ? data.meals[0] : null)
     }
@@ -38,14 +41,11 @@
       loading.set(false)
     }
   }
-</script>
 
-<button
-  on:click={getProduct}
-  class="btn btn-primary mb-6"
->
-  HTTP
-</button>
+  onMount(() => {
+    getProduct()
+  })
+</script>
 
 {#if $loading}
   <p class="text-info">Loading...</p>

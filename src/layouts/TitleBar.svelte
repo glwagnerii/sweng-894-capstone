@@ -40,7 +40,7 @@
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
   }
 
-  const btnClass = 'btn-info border-none shadow-none transition-colors py-2 h-full px-1'
+  const btnClass = 'btn-ghost border-none shadow-none transition-colors py-2 h-full px-1'
 </script>
 
 <div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>

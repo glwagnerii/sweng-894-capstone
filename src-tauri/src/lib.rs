@@ -67,8 +67,43 @@ use model::{YoloModelSession, Detection};
 use anyhow::Result;
 use usls::{models::YOLO, Config, DataLoader, Version};
 
+// pub fn det_to_detections(det: &usls::Y) -> Vec<Detection> {
+//     // usls::Y::hbbs() returns a slice of Hbb objects
+//     det.hbbs().iter().map(|hbb| Detection {
+//         class: hbb.name.clone().unwrap_or_else(|| "unknown".to_string()),
+//         score: hbb.confidence.unwrap_or(0.0),
+//         bbox: [
+//             hbb.xyxy[0] as f32,
+//             hbb.xyxy[1] as f32,
+//             hbb.xyxy[2] as f32,
+//             hbb.xyxy[3] as f32,
+//         ],
+//     }).collect()
+// }
+
+pub fn det_to_detections(det: &usls::Y) -> Vec<Detection> {
+    let converted: Vec<Detection> = vec![
+        Detection {
+            class: "dog".to_string(),
+            score: 0.91,
+            bbox: [173.8, 238.3, 553.9, 929.9],
+        },
+        Detection {
+            class: "couch".to_string(),
+            score: 0.85,
+            bbox: [0.35, 56.96, 540.67, 540.94],
+        },
+        Detection {
+            class: "remote".to_string(),
+            score: 0.34,
+            bbox: [586.5, 156.99, 720.78, 184.19],
+        },
+    ];
+    converted
+}
+
 #[tauri::command]
-fn doit() -> Result<(), String> {
+fn doit() -> Result<Vec<Detection>, String> {
     let mut config = Config::yolo()
         .with_model_file("resources/models/yolo11n.onnx")
         .with_version(Version::new(11, 0))
@@ -78,11 +113,12 @@ fn doit() -> Result<(), String> {
     let img = image::open("resources/images/bailey.jpeg").unwrap();
     let detections = model.forward(&[img.into()]).unwrap();
 
-    for (i, det) in detections.iter().enumerate() {
-        println!("Detection {}: {:?}", i, det);
+    if let Some(det) = detections.first() {
+        let converted: Vec<Detection> = det_to_detections(det);
+        Ok(converted)
+    } else {
+        Err("No detections found".to_string())
     }
-
-    Ok(())
 }
 
 

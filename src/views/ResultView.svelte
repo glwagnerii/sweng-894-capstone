@@ -1,8 +1,14 @@
 <script lang="ts">
-  import { useSelector } from '../store'
+  import { useSelector, useDispatch } from '../store'
+  const dispatch = useDispatch()
 
   const imageSrc = useSelector((state) => state.app.selected.url)
   const classifications = useSelector((state) => state.app.selected.ingredients)
+
+  function handleClick(item: string) {
+    console.log(item)
+    dispatch({ type: 'app/getRecipes', payload: { name: item, ingredients: $classifications } })
+  }
 </script>
 
 <div class="p-4 flex flex-col items-center space-y-6 font-sans">
@@ -18,7 +24,12 @@
   <!-- Classification Results -->
   <div class="flex flex-wrap justify-center gap-2">
     {#each $classifications as item (item)}
-      <div class="font-semibold py-2 px-4 rounded-full text-sm bg-secondary">{item}</div>
+      <button
+        class="font-semibold py-2 px-4 rounded-full text-sm bg-secondary hover:bg-secondary-focus transition"
+        on:click={() => handleClick(item)}
+      >
+        {item}
+      </button>
     {/each}
   </div>
 </div>

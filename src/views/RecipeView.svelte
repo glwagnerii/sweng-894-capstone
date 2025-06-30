@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { useSelector } from '../store'
+  import { useSelector, useDispatch } from '../store'
+  const dispatch = useDispatch()
 
   const ingredient = useSelector((state) => state.app.ingredient.name)
   const url = $derived(`https://www.themealdb.com/api/json/v1/1/filter.php?i=${$ingredient}`)
@@ -27,6 +28,10 @@
     finally { loading = false }
   }
 
+  function handleRecipeClick(idMeal: string) {
+    dispatch({ type: 'app/showRecipe', payload: { id: idMeal } })
+  }
+
   onMount(() => { fetchRecipes() })
 </script>
 
@@ -39,12 +44,16 @@
     <!-- Recipe list in two columns -->
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-testid="recipe-view">
       {#each recipes as recipe (recipe.idMeal)}
-        <div class="flex bg-base-200 items-center rounded-xl p-3 shadow-md">
+        <button
+          type="button"
+          class="flex bg-base-200 items-center rounded-xl p-3 shadow-md w-full text-left hover:bg-base-300 transition"
+          onclick={() => handleRecipeClick(recipe.idMeal)}
+        >
           <img src={recipe.strMealThumb} alt={recipe.strMeal} class="w-16 h-16 rounded-lg object-cover mr-4" />
           <div>
             <p class="font-semibold">{recipe.strMeal}</p>
           </div>
-        </div>
+        </button>
       {/each}
     </div>
   {/if}

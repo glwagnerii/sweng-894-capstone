@@ -7,6 +7,7 @@ export interface App {
   theme:      { name: string, isDark: boolean }
   selected:   { name: string, url: string, ingredients: string[] }
   ingredient: { name: string }
+  recipe:     { id: string }
 }
 
 export const detectPlatform = () => {
@@ -28,15 +29,18 @@ const app: App = {
     // isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
     isDark: true,
   },
-  selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: [] },
+  selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'] },
   ingredient: { name:'beef' },
+  recipe:     { id: '53071 ' },
 }
 
 export const appSlice = createSlice({
   name: 'app',
   initialState: app,
   reducers: {
+    getRecipes:  (state, action) => { state.ingredient.name = action.payload.name; state.view.selected = 'recipe' },
     selectImage: (state, action) => { state.selected = action.payload; state.view.selected = 'result' },
+    showRecipe:  (state, action) => { state.recipe.id = action.payload.id; state.view.selected = 'http' },
     showMenu:    (state) => { state.view.selected = 'home' },
     themeDark:   (state) => { state.theme.isDark = true },
     themeLight:  (state) => { state.theme.isDark = false },
