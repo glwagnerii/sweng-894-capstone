@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
 import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest'
-import { render } from '@testing-library/svelte'
+import { render, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest' // Enables toBeInTheDocument
 
 import ViewContainer from '../layouts/ViewContainer.svelte'
@@ -15,6 +15,9 @@ beforeAll(() => {
       getUserMedia: vi.fn().mockResolvedValue({
         getTracks: () => [{ stop: vi.fn() }],
       }),
+      enumerateDevices: vi.fn().mockResolvedValue([
+        { kind: 'videoinput', deviceId: 'mock-device', label: 'Mock Camera' },
+      ]),
     },
   })
 })
@@ -38,12 +41,15 @@ describe('ViewContainer Component – Navigation Flow', () => {
     expect(container.innerHTML).toContain('Recent Activity') // HomeView content
   })
 
-  it('should display CameraView when selected view is camera', () => {
+  it('should display CameraView when selected view is camera', async () => {
     store.dispatch(appSlice.actions.setView({ selected: 'camera', visible: true }))
     const { container } = render(ViewContainer)
-    const video = container.querySelector('video')
-    expect(video).toBeInTheDocument()
-    expect(video).toHaveAttribute('autoplay')
+    await waitFor(() => {
+      console.log(container.innerHTML)
+      const video = container.querySelector('video')
+      expect(video).toBeInTheDocument()
+      expect(video).toHaveAttribute('autoplay')
+    })
   })
 
   it('should display LibraryView when selected view is library', async () => {
