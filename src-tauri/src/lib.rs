@@ -64,6 +64,28 @@
 mod model;
 use model::{YoloModelSession, Detection};
 
+use anyhow::Result;
+use usls::{models::YOLO, Config, DataLoader, Version};
+
+#[tauri::command]
+fn doit() -> Result<(), String> {
+    let mut config = Config::yolo()
+        .with_model_file("resources/models/yolo11n.onnx")
+        .with_version(Version::new(11, 0))
+        .with_class_confs(&[0.2, 0.15]);
+
+    let mut model = YOLO::new(config).unwrap();
+    let img = image::open("resources/images/bailey.jpeg").unwrap();
+    let detections = model.forward(&[img.into()]).unwrap();
+
+    for (i, det) in detections.iter().enumerate() {
+        println!("Detection {}: {:?}", i, det);
+    }
+
+    Ok(())
+}
+
+
 #[tauri::command]
 fn greet(_name: &str) -> String {
     // Load YOLO model session with ONNX and YAML
@@ -185,7 +207,7 @@ pub fn run() {
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![greet, infer_frame])
+        .invoke_handler(tauri::generate_handler![greet, infer_frame, doit])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
