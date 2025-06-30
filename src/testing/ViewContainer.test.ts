@@ -3,7 +3,8 @@ import { describe, it, expect, beforeEach, vi, beforeAll } from 'vitest'
 import { render, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest' // Enables toBeInTheDocument
 
-import ViewContainer from '../layouts/ViewContainer.svelte'
+import { ViewContainer } from '../layouts'
+
 import { store } from '../store/store'
 import { appSlice } from '../store/appSlice'
 
