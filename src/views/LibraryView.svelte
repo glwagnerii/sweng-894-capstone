@@ -13,14 +13,23 @@
 
   const files = [
     {
-      name: 'stuffed-peppers.jpg',
-      ingredients: ['bell peppers', 'rice', 'ground beef', 'tomato sauce', 'cheese'],
+      name: 'ingredients4.jpg',
+      ingredients: ['ham', 'rice', 'soy sauce', 'egg', 'green onion', 'carrot', 'sesame seeds', 'pea'],
     },
     {
-      name: 'tomato-soup.jpg',
-      ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'],
+      name: 'ingredients6.jpg',
+      ingredients: ['corn', 'white beans', 'onions', 'chicken breast', 'jalapenos', 'cilantro', 'cumin', 'garlic'],
     },
-    // Add more objects here
+    {
+      name: 'ingredients7.jpg',
+      ingredients: ['beef', 'onion', 'mushrooms', 'carrots', 'garlic', 'broth'],
+    },    {
+      name: 'ingredients8.jpg',
+      ingredients: ['beef', 'bell pepper', 'mushroom', 'onion', 'bread', 'cheese'],
+    },    {
+      name: 'ingredients9.jpg',
+      ingredients: ['salmon', 'tomato', 'feta cheese', 'potatoes', 'parsley', 'mustard', 'lemon'],
+    },
   ]
 
   function loadFilenames() {

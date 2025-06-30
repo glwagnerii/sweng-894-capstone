@@ -15,8 +15,8 @@
     <Button name='viewCamera'  btnClass={btnClass}>Camera</Button>
     <Button name='viewLibrary' btnClass={btnClass}>Library</Button>
     <Button name='viewResult'  btnClass={btnClass}>Results</Button>
-    <Button name='viewRecipe'  btnClass={btnClass}>Recipe</Button>
-    <Button name='viewHttp'    btnClass={btnClass}>HTTP</Button>
+    <Button name='viewRecipe'  btnClass={btnClass}>Recipes</Button>
+    <Button name='viewHttp'    btnClass={btnClass}>Details</Button>
     <Button name='openFolder'  btnClass={btnClass} onClick={() => openFolder()}>Models</Button>
   </div>
 </div>
