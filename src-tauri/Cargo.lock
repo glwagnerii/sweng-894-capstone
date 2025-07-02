@@ -12,7 +12,6 @@ dependencies = [
  "image",
  "log",
  "ndarray",
- "ort",
  "serde",
  "serde_json",
  "serde_yaml",
@@ -7364,8 +7363,7 @@ dependencies = [
 [[package]]
 name = "usls"
 version = "0.1.0-rc.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "28f644ec100b4963a70d21a196cc5fda15a863472d18110c49daa018304a0755"
+source = "git+https://github.com/jamjamjon/usls#6fd30caebc8dab7e8490b25b2982d57b38a1465d"
 dependencies = [
  "ab_glyph",
  "aksr",

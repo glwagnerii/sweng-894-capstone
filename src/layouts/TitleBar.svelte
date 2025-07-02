@@ -21,7 +21,7 @@
   }
 
   const usls = async () => {
-    const info = await invoke('doit') as Detection[]
+    const info = await invoke('infer') as Detection[]
     const fullMessage = info.map((item: Detection, index: number) =>
       `#${index + 1}
       Class: ${item.class}
@@ -30,11 +30,6 @@
     ).join('\n\n')
 
     await message(fullMessage, { title: 'Classific-Cam OS Information', kind: 'info' })
-  }
-
-  async function greet() {
-    const info = await invoke('greet', { name: 'gerry' }) as string
-    await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
   }
 
   const btnClass = 'btn-ghost border-none shadow-none transition-colors py-2 h-full px-1'
@@ -48,7 +43,6 @@
     <div class='block flex-shrink truncate selected'>{title}</div>
   </div>
   <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
-    <Button name='showMenu'   btnClass={btnClass} iconClass='h-10' onClick={() => greet()}/>
     <Button name='themeLight' btnClass={btnClass}/>
     <Button name='themeDark'  btnClass={btnClass}/>
     <Button name='viewPath'   btnClass={btnClass}/>
