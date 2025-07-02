@@ -1,9 +1,14 @@
-mod model;
-use model::{YoloModelSession, Detection};
-
 use anyhow::Result;
-use usls::{models::YOLO, Config, DataLoader, Version};
+use tauri::Manager;
+use tauri::path::BaseDirectory;
+use usls::{models::YOLO, Config, Version};
 
+#[derive(serde::Serialize)]
+pub struct Detection {
+    pub class: String,
+    pub score: f32,
+    pub bbox: [f32; 4], // [x, y, width, height]
+}
 pub fn det_to_detections(y: &usls::Y) -> Vec<Detection> {
     let mut detections = Vec::new();
     if let Some(hbbs) = y.hbbs() {
@@ -18,125 +23,53 @@ pub fn det_to_detections(y: &usls::Y) -> Vec<Detection> {
     detections
 }
 
+fn log_result<T, E: std::fmt::Debug>(result: Result<T, E>, action: &str) -> Result<T, String> {
+    match result {
+        Ok(val) => {
+            println!("success: {}", action);
+            Ok(val)
+        },
+        Err(e) => {
+            eprintln!("error: {}: {:?}", action, e);
+            Err(format!("error: {}: {:?}", action, e))
+        }
+    }
+}
+
+fn get_resource_path(handle: &tauri::AppHandle, rel_path: &str) -> Result<String, String> {
+    handle
+        .path()
+        .resolve(rel_path, BaseDirectory::Resource)
+        .map_err(|e| e.to_string())?
+        .to_str()
+        .ok_or("Invalid UTF-8 in resource path".to_string())
+        .map(|s| s.to_string())
+}
+
 #[tauri::command]
-fn doit() -> Result<Vec<Detection>, String> {
-    let mut config = Config::yolo()
-        .with_model_file("resources/models/yolo11n.onnx")
+fn infer(handle: tauri::AppHandle) -> Result<Vec<Detection>, String> {
+    let model_path = get_resource_path(&handle, "resources/models/yolo11n.onnx")?;
+    println!("Resolved model path: {}", model_path);
+
+    let image_path = get_resource_path(&handle, "resources/images/bailey.jpeg")?;
+    println!("Resolved image path: {}", image_path);
+
+    let config = Config::yolo()
+        .with_model_file(&model_path)
         .with_version(Version::new(11, 0))
         .with_class_confs(&[0.2, 0.15]);
 
-    let mut model = YOLO::new(config).unwrap();
-    let img = image::open("resources/images/bailey.jpeg").unwrap();
-    let detections = model.forward(&[img.into()]).unwrap();
+    let mut model = log_result(YOLO::new(config), "load model")?;
+    let img = log_result(image::open(&image_path), "load image")?;
+    let detections = log_result(model.forward(&[img.into()]), "model inference")?;
 
     if let Some(det) = detections.first() {
-        let converted: Vec<Detection> = det_to_detections(det);
-        Ok(converted)
+        println!("success: convert detections");
+        Ok(det_to_detections(det))
     } else {
-        Err("No detections found".to_string())
+        eprintln!("error: convert detections: No detections found");
+        Err("error: convert detections: No detections found".to_string())
     }
-}
-
-
-#[tauri::command]
-fn greet(_name: &str) -> String {
-    // Load YOLO model session with ONNX and YAML
-    let yolo = match YoloModelSession::new("resources/models/yolo11n.onnx", Some("resources/models/coco8.yaml"), None, None) {
-        Ok(session) => session,
-        Err(e) => return format!("❌ Failed to load YOLO model session: {}", e),
-    };
-
-    let session = yolo.session();
-    let mut info = String::new();
-
-    let meta = match session.metadata() {
-        Ok(m) => m,
-        Err(e) => return format!("❌ Failed to get session metadata: {}", e),
-    };
-
-    if let Ok(x) = meta.name() { info.push_str(&format!("name: {x}\n")); }
-    if let Ok(x) = meta.description() { info.push_str(&format!("description: {x}\n"));}
-    if let Ok(x) = meta.producer() { info.push_str(&format!("producer: {x}\n")); }
-
-    for (i, input) in session.inputs.iter().enumerate() {
-        info.push_str(&format!("{i} {}: {}\n", input.name, input.input_type));
-    }
-    for (i, output) in session.outputs.iter().enumerate() {
-        info.push_str(&format!("{i} {}: {}\n", output.name, output.output_type));
-    }
-
-    info.push_str("Labels (showing up to 10):\n");
-    for (i, label) in yolo.labels().iter().take(10).enumerate() {
-        info.push_str(&format!("{i}: {label}\n"));
-    }
-
-    info
-}
-
-#[tauri::command]
-async fn infer_frame(base64: String) -> Result<Vec<Detection>, String> {
-    println!("Starting inference...");
-
-    // // Decode base64 string to bytes
-    // let img_bytes = match base64::decode(&base64) {
-    //     Ok(bytes) => {
-    //         println!("img_bytes decoded properly");
-    //         bytes
-    //     },
-    //     Err(e) => return Err(format!("Failed to decode base64 image: {}", e)),
-    // };
-
-    // // Load image from bytes
-    // let img = match image::load_from_memory(&img_bytes) {
-    //     Ok(img) => { 
-    //         println!("img loaded properly from img_bytes");
-    //         img
-    //     },
-    //     Err(e) => return Err(format!("Failed to decode image: {}", e)),
-    // };
-
-    let img_path = "resources/images/bailey.jpeg";
-    let img = match image::open(img_path) {
-        Ok(img) => {
-            println!("Image loaded properly from {img_path}");
-            img
-        },
-        Err(e) => return Err(format!("Failed to load image from {img_path}: {}", e)),
-    };
-
-    // Load or reuse your model session
-    let mut yolo = match YoloModelSession::new(
-        "resources/models/yolo11n.onnx",
-        Some("resources/models/coco8.yaml"),
-        Some(0.5),
-        Some(0.5),
-    ) {
-        Ok(session) => {
-            println!("YOLO model session loaded successfully.");
-            session
-        },
-        Err(e) => {
-            println!("Failed to load YOLO model session: {}", e);
-            return Err(e.to_string());
-        }
-    };
-
-    // Call the inference method
-    let detections = match yolo.infer(&img) {
-        Ok(dets) => {
-            println!("Inference completed successfully. {} detections.", dets.len());
-            for (i, det) in dets.iter().enumerate() {
-                println!("Detection {}: class={}, score={}, bbox={:?}", i, det.class, det.score, det.bbox);
-            }
-            dets
-        },
-        Err(e) => {
-            println!("Inference failed: {}", e);
-            return Err(e.to_string());
-        }
-    };
-
-    Ok(detections)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -159,7 +92,7 @@ pub fn run() {
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![greet, infer_frame, doit])
+        .invoke_handler(tauri::generate_handler![infer])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
