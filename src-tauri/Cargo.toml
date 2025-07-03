@@ -14,14 +14,10 @@ name = "app_lib"
 crate-type = ["cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = { version = "2.2.0", features = [] }
+tauri-build = { version = "2.3.0", features = [] }
 
 [dependencies]
-serde_json = "1.0"
-serde = { version = "1.0", features = ["derive"] }
-log = "0.4"
-# ort = "2.0.0-rc.9"
-tauri = { version = "2.5.0", features = ["devtools"] }
+tauri = { version = "2.6.2", features = ["devtools"] }
 tauri-plugin-log = "2"
 tauri-plugin-os = "2"
 tauri-plugin-store = "2"
@@ -32,13 +28,23 @@ tauri-plugin-notification = "2"
 tauri-plugin-fs = "2"
 tauri-plugin-dialog = "2"
 tauri-plugin-clipboard-manager = "2"
+
+
+fast_image_resize = "0.5"
+serde_json = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+log = "0.4"
 base64 = "0.22"
 image = "0.25"
 arcstr = "1.2.0"
 serde_yaml = "0.9.34"
 ndarray = "0.16.1"
-usls = { git = "https://github.com/jamjamjon/usls" }
 anyhow = "1.0"
+ort = { version = "2.0.0-rc.10", features = [ "cuda", "coreml", "tensorrt", "directml" ] }
+once_cell = "1.21.3"
+rayon = "1.10.0"
+itertools = "0.14.0"
+approx = "0.5"
 
 [target.'cfg(not(any(target_os = "android", target_os = "ios")))'.dependencies]
 tauri-plugin-window-state = "2"
