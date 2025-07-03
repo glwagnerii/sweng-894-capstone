@@ -1,37 +1,24 @@
-use anyhow::Result;
+use once_cell::sync::OnceCell;
+use std::sync::Mutex;
+use std::time::Instant;
 use tauri::Manager;
 use tauri::path::BaseDirectory;
-use usls::{models::YOLO, Config, Version};
 
-#[derive(serde::Serialize)]
-pub struct Detection {
-    pub class: String,
-    pub score: f32,
-    pub bbox: [f32; 4], // [x, y, width, height]
-}
-pub fn det_to_detections(y: &usls::Y) -> Vec<Detection> {
-    let mut detections = Vec::new();
-    if let Some(hbbs) = y.hbbs() {
-        for hbb in hbbs {
-            if let (Some(name), Some(score)) = (hbb.name(), hbb.confidence()) {
-                let (x1, y1, x2, y2) = hbb.xyxy();
-                let bbox = [x1, y1, x2 - x1, y2 - y1];
-                detections.push(Detection { class: name.to_string(), score, bbox });
-            }
-        }
-    }
-    detections
-}
+mod model;
+use model::{YoloModelSession, Detection};
+
+static YOLO_SESSION: OnceCell<Mutex<YoloModelSession>> = OnceCell::new();
 
 fn log_result<T, E: std::fmt::Debug>(result: Result<T, E>, action: &str) -> Result<T, String> {
     match result {
         Ok(val) => {
-            println!("success: {}", action);
+            println!("success: {}\n", action);
             Ok(val)
         },
         Err(e) => {
-            eprintln!("error: {}: {:?}", action, e);
-            Err(format!("error: {}: {:?}", action, e))
+            let msg = format!("error: {}: {:?}", action, e);
+            eprintln!("{}", msg);
+            Err(msg)
         }
     }
 }
@@ -46,30 +33,46 @@ fn get_resource_path(handle: &tauri::AppHandle, rel_path: &str) -> Result<String
         .map(|s| s.to_string())
 }
 
+fn get_or_init_yolo(model_path: &str, yaml_path: &str) -> Result<&'static Mutex<YoloModelSession>, String> {
+    YOLO_SESSION.get_or_try_init(|| {
+        YoloModelSession::new(model_path, Some(yaml_path), Some(0.5), Some(0.5))
+            .map(Mutex::new)
+            .map_err(|e| format!("Failed to initialize YOLO model: {e}"))
+    })
+}
+
 #[tauri::command]
-fn infer(handle: tauri::AppHandle) -> Result<Vec<Detection>, String> {
+async fn infer(handle: tauri::AppHandle) -> Result<Vec<Detection>, String> {
+    // Decode base64 string to bytes
+    // let img_bytes = log_result(base64::decode(&base64), "decode base64 image")?;
+    // let img = log_result(image::load_from_memory(&img_bytes), "load image from memory")?;
+    let total_start = Instant::now();
+    let img_path = get_resource_path(&handle, "resources/images/bailey.jpeg")?;
+    let img_load_start = Instant::now();
+    let img = log_result(image::open(&img_path), &format!("load image from {img_path}"))?;
+    let img_load_time = img_load_start.elapsed();
+
     let model_path = get_resource_path(&handle, "resources/models/yolo11n.onnx")?;
-    println!("Resolved model path: {}", model_path);
+    let yaml_path = get_resource_path(&handle, "resources/models/coco8.yaml")?;
 
-    let image_path = get_resource_path(&handle, "resources/images/bailey.jpeg")?;
-    println!("Resolved image path: {}", image_path);
+    let model_init_start = Instant::now();
+    let yolo_mutex = get_or_init_yolo(&model_path, &yaml_path)?;
+    let mut yolo = yolo_mutex.lock().map_err(|_| "Failed to lock YOLO session".to_string())?;
+    let model_init_time = model_init_start.elapsed();
 
-    let config = Config::yolo()
-        .with_model_file(&model_path)
-        .with_version(Version::new(11, 0))
-        .with_class_confs(&[0.2, 0.15]);
+    let infer_start = Instant::now();
+    let detections = log_result(yolo.infer(&img), "model inference")?;
+    let infer_time = infer_start.elapsed();
 
-    let mut model = log_result(YOLO::new(config), "load model")?;
-    let img = log_result(image::open(&image_path), "load image")?;
-    let detections = log_result(model.forward(&[img.into()]), "model inference")?;
+    let total_time = total_start.elapsed();
 
-    if let Some(det) = detections.first() {
-        println!("success: convert detections");
-        Ok(det_to_detections(det))
-    } else {
-        eprintln!("error: convert detections: No detections found");
-        Err("error: convert detections: No detections found".to_string())
-    }
+    println!("TIMING STATISTICS:");
+    println!("  Image load:   {:.2?}", img_load_time);
+    println!("  Model init:   {:.2?}", model_init_time);
+    println!("  Inference:    {:.2?}", infer_time);
+    println!("  Total:        {:.2?}\n", total_time);
+
+    Ok(detections)
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -79,7 +82,7 @@ pub fn run() {
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_http::init())
-        .plugin(tauri_plugin_log::Builder::default().level(log::LevelFilter::Info).build())
+        // .plugin(tauri_plugin_log::Builder::default().level(log::LevelFilter::Info).build())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_os::init())
