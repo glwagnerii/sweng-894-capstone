@@ -2,7 +2,6 @@ use std::borrow::Cow;
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::Read;
-use std::num::NonZeroU32;
 use std::path::Path;
 use std::time::Instant;
 
@@ -11,20 +10,17 @@ use serde::Deserialize;
 use ndarray::{Array4, Axis, Zip, s};
 
 use ort::{
-    execution_providers::{
-        CoreMLExecutionProvider,
-        CUDAExecutionProvider,
-        TensorRTExecutionProvider,
-        DirectMLExecutionProvider,
-    },
     session::{Session, SessionOutputs},
     value::TensorRef,
+    // execution_providers::{
+    //     CoreMLExecutionProvider,
+    //     CUDAExecutionProvider,
+    //     TensorRTExecutionProvider,
+    //     DirectMLExecutionProvider,
+    // },
 };
 
-use image::{DynamicImage, RgbImage, GenericImage, GenericImageView, imageops::FilterType};
-
-use fast_image_resize as fir;
-use fir::{Image as FirImage, ResizeAlg, Resizer, PixelType};
+use image::{RgbImage, GenericImage, imageops::FilterType};
 
 /// The YOLO model session.
 ///
@@ -67,13 +63,13 @@ impl YoloModelSession {
         let builder = Session::builder()
             .map_err(|e| YoloError::Custom(format!("Failed to create session builder: {}", e)))?;
         let session = builder
-            .with_execution_providers([
-                TensorRTExecutionProvider::default().build(),
-                CUDAExecutionProvider::default().build(),
-                DirectMLExecutionProvider::default().build(),
-                CoreMLExecutionProvider::default().build(),
-            ])
-            .map_err(|e| YoloError::Custom(format!("Failed to set execution providers: {e}")))?
+            // .with_execution_providers([
+            //     TensorRTExecutionProvider::default().build(),
+            //     CUDAExecutionProvider::default().build(),
+            //     DirectMLExecutionProvider::default().build(),
+            //     CoreMLExecutionProvider::default().build(),
+            // ])
+            // .map_err(|e| YoloError::Custom(format!("Failed to set execution providers: {e}")))?
             .commit_from_file(&onnx_path)
             .map_err(|e| YoloError::Custom(format!("Failed to load ONNX model: {e}")))?;
         let labels = if let Some(yaml) = yaml_path {
@@ -97,8 +93,8 @@ impl YoloModelSession {
     // pub fn prob_thresh(&self) -> f32                { self.prob_thresh }
     // pub fn iou_thresh(&self) -> f32                 { self.iou_thresh }
     // pub fn session(&self) -> &ort::session::Session { &self.session }
-    // pub fn onnx_path(&self) -> &str                 { &self.onnx_path }
-    // pub fn yaml_path(&self) -> Option<&str>         { self.yaml_path.as_deref() }
+    pub fn onnx_path(&self) -> &str                 { &self.onnx_path }
+    pub fn yaml_path(&self) -> Option<&str>         { self.yaml_path.as_deref() }
 
     // /// Setters
     // pub fn set_prob_thresh(&mut self, value: f32)                { self.prob_thresh = value }
