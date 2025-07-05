@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
 import { type ViewName } from '../views'
 
 export interface App {
@@ -8,6 +8,7 @@ export interface App {
   selected:   { name: string, url: string, ingredients: string[] }
   ingredient: { name: string }
   recipe:     { id: string }
+  favorites: string[]
 }
 
 export const detectPlatform = () => {
@@ -32,6 +33,7 @@ const app: App = {
   selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'] },
   ingredient: { name:'beef' },
   recipe:     { id: '53071 ' },
+  favorites: [],
 }
 
 export const appSlice = createSlice({
@@ -51,6 +53,20 @@ export const appSlice = createSlice({
     viewPath:    (state) => { state.view.selected = 'path' },
     viewRecipe:  (state) => { state.view.selected = 'recipe' },
     viewResult:  (state) => { state.view.selected = 'result' },
+    viewAIResult:(state) => { state.view.selected = 'airecipe' },
+    viewFavorites: state => { state.view.selected = 'favorites' },
+
+    addFavorite(state, { payload }: PayloadAction<string>) {
+      if (payload && !state.favorites.includes(payload)) {
+        state.favorites.push(payload)
+      }
+      localStorage.setItem('favorites', JSON.stringify(state.favorites))
+    },
+
+    removeFavorite(state, { payload }: PayloadAction<string>) {
+      state.favorites = state.favorites.filter(id => id !== payload)
+      localStorage.setItem('favorites', JSON.stringify(state.favorites))
+    },
 
     // testing navigation use case
     setView: (state, action: { payload: { selected: ViewName, visible: boolean } }) => {
@@ -59,3 +75,5 @@ export const appSlice = createSlice({
     },
   },
 })
+
+export const { addFavorite, removeFavorite } = appSlice.actions

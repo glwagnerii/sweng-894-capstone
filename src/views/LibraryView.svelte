@@ -47,7 +47,7 @@
   onMount(loadFilenames)
 </script>
 
-<ul class="flex flex-wrap gap-4 p-0 list-none">
+<ul class="flex flex-wrap gap-4 justify-center px-6 py-4 list-none">
   {#each images as img (img.name)}
     <li class="flex flex-col items-center max-w-[200px]">
       <button

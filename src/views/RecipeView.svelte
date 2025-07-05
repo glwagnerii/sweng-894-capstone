@@ -12,6 +12,7 @@
 </script>
 
 <div class="p-4">
+  <h1 class="text-center text-2xl font-bold mb-2">Recipe List</h1>
   {#if $mealsQuery?.isLoading}
     <p>Loading meals...</p>
   {:else if $mealsQuery?.error}
