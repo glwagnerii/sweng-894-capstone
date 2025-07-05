@@ -1,13 +1,18 @@
 <script lang="ts">
-  import { useSelector, useDispatch } from '../store'
+  import { useSelector, useDispatch, addFavorite } from '../store'
   import { mealsApi } from '../store/api'
+  
 
   const dispatch = useDispatch()
 
   const recipeId = useSelector((state) => state.app.recipe.id)
   const recipeQuery = useSelector((state) => mealsApi.endpoints.getMealById.select($recipeId)(state))
-  $effect(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
+  $effect(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })  
 
+  function addToFavorites(id: string) {
+    // Shape the object exactly like <type Favorite>
+     dispatch(addFavorite(id))
+  }
 </script>
 
 {#if $recipeQuery?.isLoading}
@@ -15,15 +20,23 @@
 {:else if $recipeQuery?.error}
   <p class="text-red-500">Failed to load recipe.</p>
 {:else if $recipeQuery?.data?.meals}
-  <div class="max-w-xl mx-auto bg-base-100 rounded-xl shadow-lg p-6 space-y-4">
+  <div class="max-w-xl mx-auto bg-base-100 rounded-xl p-6 space-y-4">
     <h3 class="text-2xl font-bold text-center mb-2">{$recipeQuery.data.meals[0].strMeal}</h3>
     <img
       src="{$recipeQuery.data.meals[0].strMealThumb}"
       alt="{$recipeQuery.data.meals[0].strMeal}"
       class="mx-auto w-80 h-auto rounded-lg shadow border-2 border-base-300"
     />
-    <div class="flex flex-col md:flex-row md:justify-between gap-2 text-base-content">
+    <div class="flex flex-col md:flex-row md:justify-between text-base-content">
       <p><strong>Category:</strong> {$recipeQuery.data.meals[0].strCategory}</p>
+      <div class="text-center">
+        <button
+          type="button"
+          class="btn btn-sm btn-outline btn-warning"
+          onclick={() => addToFavorites($recipeQuery.data.meals[0].idMeal)}>
+          ❤ Add to Favorites
+        </button>
+      </div>
       <p><strong>Area:</strong> {$recipeQuery.data.meals[0].strArea}</p>
     </div>
     <p class="whitespace-pre-line">{$recipeQuery.data.meals[0].strInstructions}</p>
@@ -43,16 +56,16 @@
       </ul>
     </div>
     {#if $recipeQuery.data.meals[0].strYoutube}
-      <p class="mt-4 text-center">
-        <a
-          href="{$recipeQuery.data.meals[0].strYoutube}"
-          target="_blank"
-          rel="noopener"
-          class="link link-primary"
-        >
+        <div class="text-center mt-6">
+          <a
+            href={$recipeQuery.data.meals[0].strYoutube}
+            target="_blank"
+            rel="noopener"
+            class="btn btn-sm btn-primary gap-2"
+          >
           Watch on YouTube
-        </a>
-      </p>
+          </a>
+        </div>
     {/if}
   </div>
 {:else}
