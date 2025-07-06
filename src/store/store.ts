@@ -21,8 +21,7 @@ export const store = configureStore({
     [appSlice.name]: appSlice.reducer,
     [api.reducerPath]: api.reducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
   enhancers: (gDE) => gDE().prepend(svelteStoreEnhancer),
 })
 

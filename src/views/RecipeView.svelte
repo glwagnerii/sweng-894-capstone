@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { useSelector, useDispatch } from '../store'
   import { mealsApi } from '../store/api'
 
@@ -6,12 +7,13 @@
 
   const ingredient = useSelector((state) => state.app.ingredient.name)
   const mealsQuery = useSelector((state) => mealsApi.endpoints.getMealsByIngredient.select($ingredient)(state))
-  $effect(() => { dispatch(mealsApi.endpoints.getMealsByIngredient.initiate($ingredient)) })
+  onMount(() => { dispatch(mealsApi.endpoints.getMealsByIngredient.initiate($ingredient)) })
 
   function handleRecipeClick(idMeal: string) { dispatch({ type: 'app/showRecipe', payload: { id: idMeal } }) }
 </script>
 
 <div class="p-4">
+  <h1 class="text-center text-2xl font-bold mb-2">Recipe List</h1>
   {#if $mealsQuery?.isLoading}
     <p>Loading meals...</p>
   {:else if $mealsQuery?.error}
