@@ -34,21 +34,21 @@ describe('StatusBar', () => {
 
   it('renders an view Results button', () => {
     const { container } = render(StatusBar)
-    const btn = container.querySelector('.btn-viewResult')
+    const btn = container.querySelector('.btn-viewResults')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Results')
   })
 
   it('renders an view Recipe button', () => {
     const { container } = render(StatusBar)
-    const btn = container.querySelector('.btn-viewRecipe')
+    const btn = container.querySelector('.btn-viewMatches')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Recipe')
   })
 
   it('renders an view Details button', () => {
     const { container } = render(StatusBar)
-    const btn = container.querySelector('.btn-viewHttp')
+    const btn = container.querySelector('.btn-viewDetails')
     expect(btn).toBeInTheDocument()
     expect(btn).toHaveTextContent('Details')
   })

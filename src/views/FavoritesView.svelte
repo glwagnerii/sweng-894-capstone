@@ -28,7 +28,7 @@
 
   onMount(() => { fetchMeals() })
 
-  function openRecipe(id: string) { dispatch({ type: 'app/showRecipe', payload: { id } }) }
+  function openRecipe(id: string) { dispatch({ type: 'app/viewDetails', payload: { id } }) }
   function remove(id: string) { dispatch(removeFavorite(id)) }
 </script>
 

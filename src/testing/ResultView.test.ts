@@ -16,19 +16,28 @@ describe('ResultView Component', () => {
     vi.clearAllMocks()
   })
 
-  it('should display the image preview and classification tags', () => {
-    // Mock useSelector for imageSrc
+  it('should display the image preview and detection buttons', () => {
+    // Mock useSelector for name, base64, and detections
     vi.mocked(store.useSelector)
       .mockImplementationOnce(() => ({
         subscribe: (fn: (value: string) => void) => {
-          fn('test-image.png')
+          fn('capturedPhoto')
           return () => {}
         },
       }))
-      // Mock useSelector for classifications
       .mockImplementationOnce(() => ({
-        subscribe: (fn: (value: string[]) => void) => {
-          fn(['Onion', 'Garlic', 'Tomato'])
+        subscribe: (fn: (value: string) => void) => {
+          fn('data:image/png;base64,FAKEBASE64DATA')
+          return () => {}
+        },
+      }))
+      .mockImplementationOnce(() => ({
+        subscribe: (fn: (value: { class: string, score: number, bbox: number[] }[]) => void) => {
+          fn([
+            { class: 'Onion', score: 0.9, bbox: [0, 0, 10, 10] },
+            { class: 'Garlic', score: 0.8, bbox: [10, 10, 20, 20] },
+            { class: 'Tomato', score: 0.7, bbox: [20, 20, 30, 30] },
+          ])
           return () => {}
         },
       }))
@@ -36,11 +45,11 @@ describe('ResultView Component', () => {
     const { getByAltText, getByText } = render(ResultView)
 
     // Validate the image preview
-    const image = getByAltText('Classified Item')
+    const image = getByAltText('Detected Item')
     expect(image).toBeInTheDocument()
-    expect(image).toHaveAttribute('src', 'test-image.png')
+    expect(image).toHaveAttribute('src', 'data:image/png;base64,FAKEBASE64DATA')
 
-    // Validate classification tags
+    // Validate detection/classification buttons
     expect(getByText('Onion')).toBeInTheDocument()
     expect(getByText('Garlic')).toBeInTheDocument()
     expect(getByText('Tomato')).toBeInTheDocument()

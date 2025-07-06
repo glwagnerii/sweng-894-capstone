@@ -46,7 +46,6 @@ describe('ViewContainer Component – Navigation Flow', () => {
     store.dispatch(appSlice.actions.setView({ selected: 'camera', visible: true }))
     const { container } = render(ViewContainer)
     await waitFor(() => {
-      console.log(container.innerHTML)
       const video = container.querySelector('video')
       expect(video).toBeInTheDocument()
       expect(video).toHaveAttribute('autoplay')

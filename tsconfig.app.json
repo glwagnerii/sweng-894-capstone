@@ -17,5 +17,5 @@
     "moduleDetection": "force",
     "types": ["@testing-library/jest-dom"]
   },
-  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte"]
+  "include": ["src/**/*.ts", "src/**/*.js", "src/**/*.svelte", ".ignore/CameraView2.svelte"]
 }
