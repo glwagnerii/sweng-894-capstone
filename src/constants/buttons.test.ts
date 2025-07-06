@@ -10,7 +10,7 @@ const mockState = (isDark: boolean, selected: ViewName): RootState => ({
     titleBar: { title: 'Mock Title', visible: true },
     theme: { name: isDark ? 'dark' : 'light', isDark },
     view: { selected, visible: true },
-    results:   { base64:'', detections:[] },
+    results:   { name:'', base64:'', detections:[] },
     ingredient: { name:'beef' },
     recipe:     { id: '53071 ' },
     favorites: [],

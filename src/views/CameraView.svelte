@@ -1,6 +1,10 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
   import { detectPlatform } from '../store/appSlice'
+  import { invoke } from '@tauri-apps/api/core'
+  import { useDispatch } from '../store'
+
+  const dispatch = useDispatch()
 
   let videoElement: HTMLVideoElement | null = null
   let canvasElement: HTMLCanvasElement | null = null
@@ -112,10 +116,17 @@
     isPreviewing = true
   }
 
-  function confirmPhoto() {
+  async function confirmPhoto() {
     if (previewImage) {
-      localStorage.setItem('capturedPhoto', previewImage)
-      console.log('Photo saved.')
+      // Remove the data URL prefix to get base64 only
+      const base64 = previewImage.replace(/^data:image\/\w+;base64,/, '')
+      // Call backend inference
+      const detections = await invoke('infer_base64', { base64 })
+      // Dispatch to viewResults
+      dispatch({
+        type: 'app/viewResults',
+        payload: { name: 'capturedPhoto', base64: previewImage, detections },
+      })
       isPreviewing = false
       previewImage = null
     }
