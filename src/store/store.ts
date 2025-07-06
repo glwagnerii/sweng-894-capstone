@@ -15,38 +15,14 @@ const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialSta
   }
 }
 
-const FAV_KEY = 'favorites'
-
-function loadFavorites(): string[] {
-  try {
-    const raw = localStorage.getItem(FAV_KEY)
-    return raw ? JSON.parse(raw) : []
-  }
-  catch {
-    return []
-  }
-}
-
 // Create the enhanced Redux store
 export const store = configureStore({
   reducer: {
     [appSlice.name]: appSlice.reducer,
     [api.reducerPath]: api.reducer,
   },
-  preloadedState: {
-    app: {
-      ...appSlice.getInitialState(),
-      favorites: loadFavorites(),
-    },
-  },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(api.middleware),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api.middleware),
   enhancers: (gDE) => gDE().prepend(svelteStoreEnhancer),
-})
-
-store.subscribe(() => {
-  const { favorites } = store.getState().app
-  localStorage.setItem(FAV_KEY, JSON.stringify(favorites))
 })
 
 // Export types for state, dispatch, etc.
