@@ -5,14 +5,14 @@
 
   const dispatch = useDispatch()
 
-  //adding a comment to push again
+  // adding a comment to push again
   // list of ids
-  const favoriteIds = useSelector(s => s.app.favorites)
+  const favoriteIds = useSelector((s) => s.app.favorites)
 
   /* --- trigger API fetches for every id --- */
   $effect(() => {
-    $favoriteIds.forEach(id =>
-      dispatch(mealsApi.endpoints.getMealById.initiate(id))
+    $favoriteIds.forEach((id) =>
+      dispatch(mealsApi.endpoints.getMealById.initiate(id)),
     )
   })
 

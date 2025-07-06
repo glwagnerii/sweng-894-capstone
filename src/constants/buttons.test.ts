@@ -13,6 +13,7 @@ const mockState = (isDark: boolean, selected: ViewName): RootState => ({
     selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'] },
     ingredient: { name:'beef' },
     recipe:     { id: '53071 ' },
+    favorites: [],
   },
   api: {
     queries: {},
