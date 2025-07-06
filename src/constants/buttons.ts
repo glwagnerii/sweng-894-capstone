@@ -21,6 +21,7 @@ export const buttons = tButton({
   viewPath:        { title: 'Show app paths',     key: '', icon: 'bi-terminal',             active: (s) => s.app.view.selected === 'path' },
   viewRecipe:      { title: 'Show recipe',        key: '', icon: 'bi-list-columns-reverse', active: (s) => s.app.view.selected === 'recipe' },
   viewResult:      { title: 'Open image',         key: '', icon: 'bi-image',                active: (s) => s.app.view.selected === 'result' },
+  viewFavorites:   { title: 'Favorites',          key: '', icon: 'bi-heart',                active: (s) => s.app.view.selected === 'favorites' },
   plane:           { title: 'Show cool plane',    key: '', icon: 'bi-airplane-engines-fill' },
 })
 export type ButtonName = keyof typeof buttons
