@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { useSelector, useDispatch, addFavorite } from '../store'
   import { mealsApi } from '../store/api'
 
@@ -6,12 +7,9 @@
 
   const recipeId = useSelector((state) => state.app.recipe.id)
   const recipeQuery = useSelector((state) => mealsApi.endpoints.getMealById.select($recipeId)(state))
-  $effect(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
+  onMount(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
 
-  function addToFavorites(id: string) {
-    // Shape the object exactly like <type Favorite>
-    dispatch(addFavorite(id))
-  }
+  function addToFavorites(id: string) { dispatch(addFavorite(id)) }
 </script>
 
 {#if $recipeQuery?.isLoading}

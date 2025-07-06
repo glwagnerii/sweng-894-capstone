@@ -1,4 +1,5 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { load } from '@tauri-apps/plugin-store'
 import { type ViewName } from '../views'
 
 export interface App {
@@ -36,6 +37,49 @@ const app: App = {
   favorites: [],
 }
 
+// Thunks
+export const addFavorite = createAsyncThunk<void, string>(
+  'app/addFavorite',
+  async (favorite, thunkAPI) => {
+    thunkAPI.dispatch(appSlice.actions._addFavorite(favorite))
+    await thunkAPI.dispatch(saveFavorites())
+  },
+)
+
+export const removeFavorite = createAsyncThunk<void, string>(
+  'app/removeFavorite',
+  async (favorite, thunkAPI) => {
+    thunkAPI.dispatch(appSlice.actions._removeFavorite(favorite))
+    await thunkAPI.dispatch(saveFavorites())
+  },
+)
+
+const STORE = 'classificam-store.json'
+const FAV_KEY = 'favorites'
+
+export const saveFavorites = createAsyncThunk(
+  'app/saveFavorites',
+  async (_, thunkAPI) => {
+    const state = thunkAPI.getState() as { app: App }
+    const favorites = state.app.favorites
+    console.log('save: ', favorites)
+    const store = await load(STORE, { autoSave: false })
+    await store.set(FAV_KEY, JSON.stringify(favorites))
+    await store.save()
+  },
+)
+
+export const getFavorites = createAsyncThunk(
+  'app/getFavorites',
+  async () => {
+    const store = await load(STORE, { autoSave: false })
+    const jsonFavorites = await store.get<string>(FAV_KEY)
+    console.log(jsonFavorites)
+    try   { return jsonFavorites ? JSON.parse(jsonFavorites) : [] }
+    catch { return [] }
+  },
+)
+
 export const appSlice = createSlice({
   name: 'app',
   initialState: app,
@@ -56,24 +100,22 @@ export const appSlice = createSlice({
     // viewAIResult:  (state) => { state.view.selected = 'airecipe' },
     viewFavorites: (state) => { state.view.selected = 'favorites' },
 
-    addFavorite(state, { payload }: PayloadAction<string>) {
-      if (payload && !state.favorites.includes(payload)) {
-        state.favorites.push(payload)
-      }
-      localStorage.setItem('favorites', JSON.stringify(state.favorites))
+    _addFavorite:   (state, action) => {
+      const favorite = action.payload
+      if (favorite && !state.favorites.includes(favorite)) { state.favorites.push(favorite) }
     },
-
-    removeFavorite(state, { payload }: PayloadAction<string>) {
-      state.favorites = state.favorites.filter((id) => id !== payload)
-      localStorage.setItem('favorites', JSON.stringify(state.favorites))
+    _removeFavorite: (state, action) => {
+      const favorite = action.payload
+      state.favorites = state.favorites.filter((id) => id !== favorite)
     },
-
     // testing navigation use case
     setView: (state, action: { payload: { selected: ViewName, visible: boolean } }) => {
       state.view.selected = action.payload.selected
       state.view.visible = action.payload.visible
     },
   },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getFavorites.fulfilled, (state, action) => { state.favorites = action.payload })
+  },
 })
-
-export const { addFavorite, removeFavorite } = appSlice.actions

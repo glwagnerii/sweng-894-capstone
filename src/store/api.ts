@@ -6,7 +6,7 @@ export const api = createApi({
   endpoints: () => ({}),
 })
 
-type Meal = {
+export type Meal = {
   idMeal: string
   strMeal: string
   strMealThumb?: string
