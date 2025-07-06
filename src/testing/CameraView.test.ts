@@ -1,6 +1,6 @@
 /// <reference types="vitest/globals" />
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, fireEvent, waitFor } from '@testing-library/svelte'
+import { render, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
 import { CameraView } from '../views'
 
