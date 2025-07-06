@@ -36,8 +36,8 @@ describe('dispatch actions change states', () => {
 
   it('viewHttp sets view.selected to http', () => {
     dispatch({ type: 'app/viewCamera' })
-    dispatch({ type: 'app/viewHttp' })
-    expect(store.getState().app.view.selected).toBe('http')
+    dispatch({ type: 'app/viewDetails' })
+    expect(store.getState().app.view.selected).toBe('details')
   })
 
   it('viewLibrary sets view.selected to library', () => {
@@ -52,13 +52,13 @@ describe('dispatch actions change states', () => {
   })
   it('viewRecipe sets view.selected to recipe', () => {
     dispatch({ type: 'app/viewCamera' })
-    dispatch({ type: 'app/viewRecipe' })
-    expect(store.getState().app.view.selected).toBe('recipe')
+    dispatch({ type: 'app/viewMatches' })
+    expect(store.getState().app.view.selected).toBe('matches')
   })
   it('viewResult sets view.selected to result', () => {
     dispatch({ type: 'app/viewCamera' })
-    dispatch({ type: 'app/viewResult' })
-    expect(store.getState().app.view.selected).toBe('result')
+    dispatch({ type: 'app/viewResults' })
+    expect(store.getState().app.view.selected).toBe('results')
   })
 })
 

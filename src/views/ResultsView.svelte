@@ -7,7 +7,7 @@
 
   function handleClick(item: string) {
     console.log(item)
-    dispatch({ type: 'app/getRecipes', payload: { name: item, ingredients: $classifications } })
+    dispatch({ type: 'app/viewMatches', payload: { name: item, ingredients: $classifications } })
   }
 </script>
 
