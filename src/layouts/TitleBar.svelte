@@ -4,6 +4,7 @@
   import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
   import { message } from '@tauri-apps/plugin-dialog'
   import { invoke } from '@tauri-apps/api/core'
+  import { type Detection } from '../store/appSlice'
 
   const title = ''
   const openGoogle = async () => { await openUrl('https://www.google.com') }
@@ -12,12 +13,6 @@
     const info = `Platform: ${platform()}\nVersion: ${version()}\nType: ${type()}\nArch: ${arch()}\nLocale: ${await locale()}`
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
     console.log(info)
-  }
-
-  type Detection = {
-    class: string
-    score: number
-    bbox: [number, number, number, number] // [x, y, width, height]
   }
 
   const usls = async () => {
