@@ -21,6 +21,6 @@ export const views = tView({
   path:      { component: PathView },
   recipe:    { component: RecipeView },
   result:    { component: ResultView },
-  favorites: { component: FavoritesView }
+  favorites: { component: FavoritesView },
 })
 export type ViewName = keyof typeof views

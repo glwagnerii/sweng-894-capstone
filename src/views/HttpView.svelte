@@ -1,17 +1,16 @@
 <script lang="ts">
   import { useSelector, useDispatch, addFavorite } from '../store'
   import { mealsApi } from '../store/api'
-  
 
   const dispatch = useDispatch()
 
   const recipeId = useSelector((state) => state.app.recipe.id)
   const recipeQuery = useSelector((state) => mealsApi.endpoints.getMealById.select($recipeId)(state))
-  $effect(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })  
+  $effect(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
 
   function addToFavorites(id: string) {
     // Shape the object exactly like <type Favorite>
-     dispatch(addFavorite(id))
+    dispatch(addFavorite(id))
   }
 </script>
 

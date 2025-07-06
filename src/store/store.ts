@@ -1,8 +1,7 @@
 import { configureStore, type StoreEnhancer } from '@reduxjs/toolkit'
 import { derived, type Readable } from 'svelte/store'
-import { appSlice, type Favorite } from './appSlice'
+import { appSlice } from './appSlice'
 import { api } from './api'
-
 
 // Svelte store enhancer so Redux store can behave like a Svelte readable
 const svelteStoreEnhancer: StoreEnhancer = (createStore) => (reducer, initialState) => {
@@ -20,10 +19,11 @@ const FAV_KEY = 'favorites'
 
 function loadFavorites(): string[] {
   try {
-    const raw = localStorage.getItem(FAV_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
+    const raw = localStorage.getItem(FAV_KEY)
+    return raw ? JSON.parse(raw) : []
+  }
+  catch {
+    return []
   }
 }
 
@@ -34,7 +34,10 @@ export const store = configureStore({
     [api.reducerPath]: api.reducer,
   },
   preloadedState: {
-    favorites: loadFavorites(),
+    app: {
+      ...appSlice.getInitialState(),
+      favorites: loadFavorites(),
+    },
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware),

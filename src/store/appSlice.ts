@@ -40,21 +40,21 @@ export const appSlice = createSlice({
   name: 'app',
   initialState: app,
   reducers: {
-    getRecipes:  (state, action) => { state.ingredient.name = action.payload.name; state.view.selected = 'recipe' },
-    selectImage: (state, action) => { state.selected = action.payload; state.view.selected = 'result' },
-    showRecipe:  (state, action) => { state.recipe.id = action.payload.id; state.view.selected = 'http' },
-    showMenu:    (state) => { state.view.selected = 'home' },
-    themeDark:   (state) => { state.theme.isDark = true },
-    themeLight:  (state) => { state.theme.isDark = false },
-    viewCamera:  (state) => { state.view.selected = 'camera' },
-    viewHome:    (state) => { state.view.selected = 'home' },
-    viewHttp:    (state) => { state.view.selected = 'http' },
-    viewLibrary: (state) => { state.view.selected = 'library' },
-    viewPath:    (state) => { state.view.selected = 'path' },
-    viewRecipe:  (state) => { state.view.selected = 'recipe' },
-    viewResult:  (state) => { state.view.selected = 'result' },
-    viewAIResult:(state) => { state.view.selected = 'airecipe' },
-    viewFavorites: state => { state.view.selected = 'favorites' },
+    getRecipes:    (state, action) => { state.ingredient.name = action.payload.name; state.view.selected = 'recipe' },
+    selectImage:   (state, action) => { state.selected = action.payload; state.view.selected = 'result' },
+    showRecipe:    (state, action) => { state.recipe.id = action.payload.id; state.view.selected = 'http' },
+    showMenu:      (state) => { state.view.selected = 'home' },
+    themeDark:     (state) => { state.theme.isDark = true },
+    themeLight:    (state) => { state.theme.isDark = false },
+    viewCamera:    (state) => { state.view.selected = 'camera' },
+    viewHome:      (state) => { state.view.selected = 'home' },
+    viewHttp:      (state) => { state.view.selected = 'http' },
+    viewLibrary:   (state) => { state.view.selected = 'library' },
+    viewPath:      (state) => { state.view.selected = 'path' },
+    viewRecipe:    (state) => { state.view.selected = 'recipe' },
+    viewResult:    (state) => { state.view.selected = 'result' },
+    // viewAIResult:  (state) => { state.view.selected = 'airecipe' },
+    viewFavorites: (state) => { state.view.selected = 'favorites' },
 
     addFavorite(state, { payload }: PayloadAction<string>) {
       if (payload && !state.favorites.includes(payload)) {
@@ -64,7 +64,7 @@ export const appSlice = createSlice({
     },
 
     removeFavorite(state, { payload }: PayloadAction<string>) {
-      state.favorites = state.favorites.filter(id => id !== payload)
+      state.favorites = state.favorites.filter((id) => id !== payload)
       localStorage.setItem('favorites', JSON.stringify(state.favorites))
     },
 
