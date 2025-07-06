@@ -9,7 +9,7 @@
   const mealsQuery = useSelector((state) => mealsApi.endpoints.getMealsByIngredient.select($ingredient)(state))
   onMount(() => { dispatch(mealsApi.endpoints.getMealsByIngredient.initiate($ingredient)) })
 
-  function handleRecipeClick(idMeal: string) { dispatch({ type: 'app/showRecipe', payload: { id: idMeal } }) }
+  function handleRecipeClick(idMeal: string) { dispatch({ type: 'app/viewDetails', payload: { id: idMeal } }) }
 </script>
 
 <div class="p-4">

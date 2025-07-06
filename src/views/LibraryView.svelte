@@ -40,9 +40,7 @@
     }))
   }
 
-  function handleImageClick(img: ImageFile) {
-    dispatch({ type: 'app/selectImage', payload: img })
-  }
+  function handleImageClick(img: ImageFile) { dispatch({ type: 'app/viewResults', payload: img }) }
 
   onMount(loadFilenames)
 </script>
