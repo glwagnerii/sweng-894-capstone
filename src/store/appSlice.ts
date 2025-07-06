@@ -2,11 +2,17 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { load } from '@tauri-apps/plugin-store'
 import { type ViewName } from '../views'
 
+export type Detection = {
+  class: string
+  score: number
+  bbox: [number, number, number, number] // [x, y, width, height]
+}
+
 export interface App {
   titleBar:   { title: string, visible: boolean }
   view:       { selected: ViewName, visible: boolean }
   theme:      { name: string, isDark: boolean }
-  selected:   { name: string, url: string, ingredients: string[] }
+  results:    { name: string, base64: string, detections: Detection[] }
   ingredient: { name: string }
   recipe:     { id: string }
   favorites: string[]
@@ -14,7 +20,6 @@ export interface App {
 
 export const detectPlatform = () => {
   const ua = navigator.userAgent.toLowerCase()
-  console.log(ua)
   if (/iphone|ipad|ipod/.test(ua)) return 'ios'
   if (/android/.test(ua)) return 'android'
   if (/mac/.test(ua)) return 'macos'
@@ -31,7 +36,7 @@ const app: App = {
     // isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
     isDark: true,
   },
-  selected:   { name:'tomato-soup.jpg', url:'photos/tomato-soup.jpg', ingredients: ['tomatoes', 'onion', 'garlic', 'vegetable broth', 'cream'] },
+  results:    { name:'', base64:'', detections: [] },
   ingredient: { name:'beef' },
   recipe:     { id: '53071 ' },
   favorites: [],
@@ -62,7 +67,6 @@ export const saveFavorites = createAsyncThunk(
   async (_, thunkAPI) => {
     const state = thunkAPI.getState() as { app: App }
     const favorites = state.app.favorites
-    console.log('save: ', favorites)
     const store = await load(STORE, { autoSave: false })
     await store.set(FAV_KEY, JSON.stringify(favorites))
     await store.save()
@@ -74,7 +78,6 @@ export const getFavorites = createAsyncThunk(
   async () => {
     const store = await load(STORE, { autoSave: false })
     const jsonFavorites = await store.get<string>(FAV_KEY)
-    console.log(jsonFavorites)
     try   { return jsonFavorites ? JSON.parse(jsonFavorites) : [] }
     catch { return [] }
   },
@@ -84,21 +87,20 @@ export const appSlice = createSlice({
   name: 'app',
   initialState: app,
   reducers: {
-    getRecipes:    (state, action) => { state.ingredient.name = action.payload.name; state.view.selected = 'recipe' },
-    selectImage:   (state, action) => { state.selected = action.payload; state.view.selected = 'result' },
-    showRecipe:    (state, action) => { state.recipe.id = action.payload.id; state.view.selected = 'http' },
+
+    // viewAIResult:  (state) => { state.view.selected = 'airecipe' },
     showMenu:      (state) => { state.view.selected = 'home' },
     themeDark:     (state) => { state.theme.isDark = true },
     themeLight:    (state) => { state.theme.isDark = false },
+
     viewCamera:    (state) => { state.view.selected = 'camera' },
-    viewHome:      (state) => { state.view.selected = 'home' },
-    viewHttp:      (state) => { state.view.selected = 'http' },
-    viewLibrary:   (state) => { state.view.selected = 'library' },
-    viewPath:      (state) => { state.view.selected = 'path' },
-    viewRecipe:    (state) => { state.view.selected = 'recipe' },
-    viewResult:    (state) => { state.view.selected = 'result' },
-    // viewAIResult:  (state) => { state.view.selected = 'airecipe' },
+    viewDetails:   (state, action) => { if (action.payload) { state.recipe.id = action.payload.id }; state.view.selected = 'details' },
     viewFavorites: (state) => { state.view.selected = 'favorites' },
+    viewHome:      (state) => { state.view.selected = 'home' },
+    viewLibrary:   (state) => { state.view.selected = 'library' },
+    viewMatches:   (state, action) => { if (action.payload) { state.ingredient.name = action.payload.name }; state.view.selected = 'matches' },
+    viewPath:      (state) => { state.view.selected = 'path' },
+    viewResults:   (state, action) => { if (action.payload) { state.results = action.payload }; state.view.selected = 'results' },
 
     _addFavorite:   (state, action) => {
       const favorite = action.payload

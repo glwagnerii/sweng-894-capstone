@@ -1,6 +1,6 @@
 [package]
 name = "Classifi-Cam"
-version = "0.1.10"
+version = "0.1.11"
 description = "An AI app to classify your images"
 authors = ["Gerry Wagner", "Tom Smiley", "Victoria Reyna"]
 license = "MIT"
