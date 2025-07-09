@@ -1,11 +1,9 @@
-<script lang='ts' module>
-  export type IconProps = { name: IconName, iconClass?: string }
-</script>
-
 <script lang="ts">
-  import { icons, type IconName, type IconType } from '../constants'
   import clsx from 'clsx'
 
+  import { icons, type IconName, type IconType } from '../constants'
+
+  type IconProps = { name: IconName, iconClass?: string }
   let { name, iconClass }: IconProps = $props()
 
   const icon: IconType = icons[name]

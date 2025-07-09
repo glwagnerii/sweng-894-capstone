@@ -40,6 +40,7 @@
   <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
     <Button name='themeLight' btnClass={btnClass}/>
     <Button name='themeDark'  btnClass={btnClass}/>
+    <Button name='viewSettings'   btnClass={btnClass}/>
     <Button name='viewPath'   btnClass={btnClass}/>
     <Button name='getOS'      btnClass={btnClass} onClick={() => getOS()}/>
     <Button name='viewHome'   btnClass={btnClass}/>

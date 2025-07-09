@@ -1,15 +1,14 @@
-<script lang='ts' module>
-  import type { HTMLButtonAttributes } from 'svelte/elements'
+<script lang="ts">
+  import { type HTMLButtonAttributes } from 'svelte/elements'
+  import clsx from 'clsx'
+
+  import { buttons, type ButtonName, type ButtonType } from '../constants'
+  import { useSelector, useDispatch } from '../store'
+  import { Icon } from '.'
+
   type OnClick = (button: ButtonName) => void
   type Props = { name: ButtonName, disabled?: boolean, onClick?: OnClick, btnClass?: string, iconClass?: string, labelRight?: boolean }
-  export type ButtonProps = HTMLButtonAttributes & Props
-</script>
-
-<script lang="ts">
-  import { useSelector, useDispatch } from '../store'
-  import { buttons, type ButtonName, type ButtonType } from '../constants'
-  import { Icon } from '.'
-  import clsx from 'clsx'
+  type ButtonProps = HTMLButtonAttributes & Props
 
   let { name, disabled, onClick, btnClass, iconClass, labelRight = false, children, ...restProps }: ButtonProps = $props()
   const dispatch = useDispatch()

@@ -25,7 +25,8 @@ export const mealsApi = api.injectEndpoints({
       query: (ingredient) => `filter.php?i=${ingredient}`,
     }),
     getMealById: builder.query<{ meals: Meal[] }, string>({
-      query: (id) => `lookup.php?i=${id}` }),
+      query: (id) => `lookup.php?i=${id}`,
+    }),
     // Add more endpoints here as needed
   }),
   overrideExisting: false,

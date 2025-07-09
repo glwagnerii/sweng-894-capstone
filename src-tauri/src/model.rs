@@ -153,6 +153,21 @@ impl YoloModelSession {
         // To Tensor
         let tensor_start = Instant::now();
 
+        // need to try this
+        // use ndarray::parallel::prelude::*;
+        // input.index_axis_mut(Axis(0), 0)
+        //     .lanes_mut(Axis(0))
+        //     .into_par_iter()
+        //     .enumerate()
+        //     .for_each(|(y, mut row)| {
+        //         for (x, mut pixel) in row.outer_iter_mut().enumerate() {
+        //             let p = padded.get_pixel(x as u32, y as u32).0;
+        //             pixel[0] = p[0] as f32 / 255.0;
+        //             pixel[1] = p[1] as f32 / 255.0;
+        //             pixel[2] = p[2] as f32 / 255.0;
+        //         }
+        //     });
+
         // New To Tensor = 95ms
         let mut input = Array4::<f32>::zeros((1, 3, input_h as usize, input_w as usize));
         Zip::indexed(input.index_axis_mut(Axis(0), 0).lanes_mut(Axis(0))).for_each(|(y, x), mut pixel| {
@@ -316,6 +331,26 @@ fn load_labels_from_yaml(yaml_path: impl AsRef<Path>) -> Result<Vec<Cow<'static,
     let mut names: Vec<(u32, String)> = parsed.names.into_iter().collect();
     names.sort_by_key(|(idx, _)| *idx);
     Ok(names.into_iter().map(|(_, name)| Cow::Owned(name)).collect())
+}
+
+use ort::metadata::ModelMetadata;
+
+fn load_labels_from_metadata(session: &Session) -> Result<Vec<Cow<'static, str>>, YoloError> {
+    let metadata = session.metadata()
+        .map_err(|e| YoloError::Custom(format!("Failed to get model metadata: {e}")))?;
+
+    // Get custom metadata property "names"
+    let names_str = metadata.custom("names")
+        .map_err(|e| YoloError::Custom(format!("Failed to get 'names' metadata: {e}")))?
+        .ok_or_else(|| YoloError::Custom("No 'names' metadata found in ONNX model".to_string()))?;
+
+    // Parse as comma-separated list
+    let names: Vec<Cow<'static, str>> = names_str
+        .split(',')
+        .map(|s| Cow::Owned(s.trim().to_string()))
+        .collect();
+
+    Ok(names)
 }
 
 #[derive(Debug)]
