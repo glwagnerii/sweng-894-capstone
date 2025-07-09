@@ -17,11 +17,12 @@ export const buttons = tButton({
   themeLight:      { title: 'Set theme to light', key: '', icon: 'bi-sun',  visible: (s) => s.app.theme.isDark },
   viewCamera:      { title: 'Open camera',        key: '', icon: 'bi-camera',               active: (s) => s.app.view.selected === 'camera' },
   viewDetails:     { title: 'Call REST api',      key: '', icon: 'bi-globe',                active: (s) => s.app.view.selected === 'details' },
-  viewFavorites:   { title: 'Favorites',          key: '', icon: 'bi-heart',                active: (s) => s.app.view.selected === 'favorites' },
+  viewFavorites:   { title: 'Favorites',          key: '', icon: 'bi-bi-bookmark-heart',    active: (s) => s.app.view.selected === 'favorites' },
   viewHome:        { title: 'Goto home screen',   key: '', icon: 'bi-house',                active: (s) => s.app.view.selected === 'home' },
   viewLibrary:     { title: 'Show photo library', key: '', icon: 'bi-collection',           active: (s) => s.app.view.selected === 'library' },
   viewMatches:     { title: 'Show recipe',        key: '', icon: 'bi-list-columns-reverse', active: (s) => s.app.view.selected === 'matches' },
   viewPath:        { title: 'Show app paths',     key: '', icon: 'bi-terminal',             active: (s) => s.app.view.selected === 'path' },
-  viewResults:     { title: 'Open image',         key: '', icon: 'bi-image',                active: (s) => s.app.view.selected === 'results' },
+  viewResults:     { title: 'Show results',       key: '', icon: 'bi-image',                active: (s) => s.app.view.selected === 'results' },
+  viewSettings:    { title: 'Edit settings',      key: '', icon: 'bi-gear',                 active: (s) => s.app.view.selected === 'settings' },
 })
 export type ButtonName = keyof typeof buttons

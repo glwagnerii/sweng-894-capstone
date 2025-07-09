@@ -101,6 +101,7 @@ export const appSlice = createSlice({
     viewMatches:   (state, action) => { if (action.payload) { state.ingredient.name = action.payload.name }; state.view.selected = 'matches' },
     viewPath:      (state) => { state.view.selected = 'path' },
     viewResults:   (state, action) => { if (action.payload) { state.results = action.payload }; state.view.selected = 'results' },
+    viewSettings:  (state) => { state.view.selected = 'settings' },
 
     _addFavorite:   (state, action) => {
       const favorite = action.payload
