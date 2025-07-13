@@ -14,8 +14,6 @@
 - Provide a user-friendly interface for browsing classification history and configuring app settings.
 - Ensure offline-first operation, privacy, and extensibility via a plugin-based model system.
 
----
-
 ## 2. Algorithmic Solution Specification
 
 ### 2.1 Overview
@@ -54,18 +52,38 @@ In addition to selecting Rust, ONNX Runtime, and the YOLOv11n model, it will be 
 
 By systematically profiling and refining each component, we can ensure the algorithmic pipeline delivers the required speed and responsiveness for a good user experience with the application.
 
-### 2.4 Code Reference
+### 2.5 Process Flow Diagram
+The process flow below illustrates how Classifi-Cam handles user interactions, image inference, and result display. It shows the sequence from image selection and AI-powered detection to presenting bounding boxes and recipe details in the app. Each step highlights the integration between the frontend, backend, and state management.
+
+1. **Camera View**  or **Library View** --> button click --> convert image to base64 --> invoke the inference function
+2. **Invoke (infer_base64)** --> rust backend function receives base64 from frontend and returns Detections[ ] array
+3. **Results View** --> displays original image with svg overlay showing bounding boxes, and list of class buttons
+4. **Matches View** --> after a class (ingredient) is clicked, call external API and show grid of returned recipes as cards
+5. **Details View** --> after a recipe is clicked, call external API and show the full recipe w/ instructions and ingredients
+
+The rust infer_base64 command is called by the frontend using Tauri's ivoke function (@tauri-apps/api/core), and passing the converted image's base64 string.  The inference returns a Detection array which includes the class, confidence and bounding box (top, left, width, height) of each detected object.
+
+Application main view management is implemented by a ViewContainer that uses app state ("view.selected") to automatically display the correct, selected view.  App state is implemented with Redux and Svelte stores.  API calls are also implemented in Redux via RTKQuery.  The return type of the API's is a Meal or Meal array which includes the id, name, thumbnail, instructions, and ingredients.
+
+<div style="display: flex; justify-content: center;"><div style="font-size: 0.9em; max-width:80%; line-height:1.4">
+
+![Process Flow Diagram](../../images/infer-flow.svg)
+
+</div></div>
 
 The core logic is implemented in [`model.rs`](../../../../src-tauri/src/model.rs), specifically in the `YoloModelSession` struct and its methods:
 - `preprocess`: Handles image resizing, padding, and tensor conversion.
 - `infer`: Orchestrates preprocessing, model inference, and postprocessing.
 - `postprocess`: Applies thresholds, NMS, and label mapping to model outputs.
 
-### 2.5 Architecture Diagram
+### 2.5 Sample Process Flow Images
+![Process Flow Images](../../images/flow-images.png)
+
+
+### 2.6 Architecture Diagram
+Below is the Classifi-Cam achitecture diagram.
 
 ![Architecture Diagram](../../images/arch.svg)
-
----
 
 ## 3. Rationale for the Solution
 
@@ -107,7 +125,6 @@ Below is a comparison of leading detection with classification model families co
 - **1-Stage:** Directly predicts bounding boxes and classes in a single pass (faster, often used for real-time).
 - **2-Stage:** First proposes regions, then classifies/refines them (higher accuracy, slower).
 
-
 **Summary:**  
 YOLOv11n was chosen for Classifi-Cam due to its excellent balance of speed, accuracy, compact model size, ease of deployment (especially ONNX export), and strong user support.
 
@@ -140,7 +157,24 @@ To further optimize the pipeline, several methods for converting images into inp
 
 </div></div>
 
-### 4. How it Fits the Product Context
+### 3.6 Measuring Performance of `infer_base64`
+
+To ensure the `infer_base64` function meets the application's speed and responsiveness targets, a systematic approach to performance measurement will be implemented:
+
+- **Timing Each Stage:** The Rust backend (`model.rs`) already profiles the main stages—preprocessing, inference, and postprocessing—using `Instant::now()` and prints timing statistics for each. These timings will be logged and optionally exposed to the frontend for analysis.
+- **End-to-End Latency:** The total time from receiving the base64 image to returning the detection results will be measured. This includes decoding, preprocessing, model inference, and postprocessing.
+- **Profiling Tools:** Rust's built-in timing (e.g., `std::time::Instant`) will be supplemented with external profilers (such as `cargo-flamegraph` or `perf` on Linux/macOS) to identify bottlenecks and optimize hot paths.
+- **Frontend Integration:** The frontend can record the time from invoking the Tauri command to receiving results, providing a user-perceived latency metric.
+- **Metrics Tracked:**
+  - Preprocessing time (resize, pad, tensor conversion)
+  - Model inference time (ONNX Runtime)
+  - Postprocessing time (NMS, label mapping)
+  - Total pipeline time
+  - Throughput (images/sec, for batch or repeated calls)
+- **Reporting:** Performance metrics can be collected during development and testing, and summarized in logs or reports. Unit tests can include timing checks so that performance does not degrade over time.
+
+
+### 4. Fit with Product Context
 After evaluation and selecting the most suitable frameworks and libraries for model deployment, image preprocessing, and tensor creation, we also need to consider how the technical choices support the Classifi-Cam requirements. The following section explains how the algorithmic pipeline aligns with the product context.
 
 - **Core Functionality:** Enables the primary use case of detecting and classifying objects in user images
@@ -149,7 +183,7 @@ After evaluation and selecting the most suitable frameworks and libraries for mo
 - **Privacy:** All processing is performed locally, supporting offline-first and privacy-respecting operation
 - **Quality Attributes:** Addresses Classifi-Cam requirements for modifiability, testability, and security
 
-### 4.1 Why it is Important
+### 4.1 Importantance of the Flow and Algorithm
 
 - **Added Value:** The algorithmic pipeline drives the primary use cases of the application, transforming raw images into useful information for users.
 - **Differentiation:** By supporting pluggable models and efficient local inference, Classifi-Cam differentiates itself from generic image viewers or cloud-dependent AI apps.
