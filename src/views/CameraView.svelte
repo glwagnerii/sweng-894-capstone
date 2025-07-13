@@ -66,6 +66,40 @@
     }
   }
 
+  async function confirmPhoto() {
+    if (!previewImage) return
+
+    // Strip data-URI prefix → base-64 only
+    const base64 = previewImage.replace(/^data:image\/\w+;base64,/, '')
+
+    /*ask backend for “recentN.png” */
+    let filename = ''
+    try {
+      filename = await invoke('next_available_photo_name') as string
+      await invoke('save_photo_base64', { base64, filename })
+    } catch (err) {
+      console.error('Failed saving photo', err)
+      errorMessage = 'Could not save photo'
+      return
+    }
+
+    /*persist the file  */
+    await invoke('save_photo_base64', { base64, filename })
+
+    /*run model inference (returns bounding-boxes, etc.) */
+    const detections = await invoke('infer_base64', { base64 })
+
+    /*update global state & route to Results view */
+    dispatch({
+      type   : 'app/viewResults',
+      payload: { name: filename, base64: previewImage, detections }
+    })
+
+    /* reset preview state */
+    previewImage  = null
+    isPreviewing  = false
+  }
+
   async function initCamera() {
     const platform = detectPlatform()
     const isMobile = platform === 'android' || platform === 'ios'
@@ -116,26 +150,14 @@
     isPreviewing = true
   }
 
-  async function confirmPhoto() {
-    if (previewImage) {
-      // Remove the data URL prefix to get base64 only
-      const base64 = previewImage.replace(/^data:image\/\w+;base64,/, '')
-      // Call backend inference
-      const detections = await invoke('infer_base64', { base64 })
-      // Dispatch to viewResults
-      dispatch({
-        type: 'app/viewResults',
-        payload: { name: 'capturedPhoto', base64: previewImage, detections },
-      })
-      isPreviewing = false
-      previewImage = null
-    }
-  }
+  
 
   function retakePhoto() {
     isPreviewing = false
     previewImage = null
   }
+
+
 
   // function togglePausePlay() {
   //   if (!videoElement) return
@@ -172,11 +194,27 @@
     <canvas bind:this={canvasElement} class="hidden"></canvas>
 
     {#if !isMobile && videoDevices.length > 1}
-      <div class="mt-4">
-        <label for="cameraSelect" class="block text-sm mb-1">Select Camera</label>
-        <select id="cameraSelect" bind:value={selectedDeviceId} on:change={handleCameraChange} class="w-full border p-2 rounded">
+      <!-- Give the section a little horizontal breathing-room on desktop -->
+      <div class="mt-6 max-w-sm mx-auto">
+        <!-- DaisyUI label style -->
+        <label
+          for="cameraSelect"
+          class="label p-0 mb-1 text-base-content text-sm font-medium"
+        >
+          Select Camera
+        </label>
+
+        <!-- DaisyUI “select” component -->
+        <select
+          id="cameraSelect"
+          bind:value={selectedDeviceId}
+          on:change={handleCameraChange}
+          class="select select-bordered w-full"
+        >
           {#each videoDevices as device (device.deviceId)}
-            <option value={device.deviceId}>{device.label || 'Camera'}</option>
+            <option value={device.deviceId}>
+              {device.label || 'Camera'}
+            </option>
           {/each}
         </select>
       </div>

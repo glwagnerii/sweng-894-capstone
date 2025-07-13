@@ -1,15 +1,26 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { useSelector, useDispatch, addFavorite } from '../store'
+  import { useSelector, useDispatch, addFavorite, removeFavorite } from '../store'
   import { mealsApi } from '../store/api'
 
   const dispatch = useDispatch()
 
   const recipeId = useSelector((state) => state.app.recipe.id)
+  const favoriteIds = useSelector((state) => state.app.favorites)
   const recipeQuery = useSelector((state) => mealsApi.endpoints.getMealById.select($recipeId)(state))
   onMount(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
 
-  function addToFavorites(id: string) { dispatch(addFavorite(id)) }
+  function isFavorite(id: string) {
+    return $favoriteIds.includes(id);
+  }
+
+  function toggleFavorite(id: string) {
+    if (isFavorite(id)) {
+      dispatch(removeFavorite(id));
+    } else {
+      dispatch(addFavorite(id));
+    }
+  }
 </script>
 
 {#if $recipeQuery?.isLoading}
@@ -30,8 +41,12 @@
         <button
           type="button"
           class="btn btn-sm btn-outline btn-warning"
-          onclick={() => addToFavorites($recipeQuery.data.meals[0].idMeal)}>
-          ❤ Add to Favorites
+          on:click={() => toggleFavorite($recipeQuery.data.meals[0].idMeal)}>
+          {#if isFavorite($recipeQuery.data.meals[0].idMeal)}
+            💔 Remove from Favorites
+          {:else}
+            ❤ Add to Favorites
+          {/if}
         </button>
       </div>
       <p><strong>Area:</strong> {$recipeQuery.data.meals[0].strArea}</p>
