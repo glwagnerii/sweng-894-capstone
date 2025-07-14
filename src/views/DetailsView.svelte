@@ -11,14 +11,15 @@
   onMount(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
 
   function isFavorite(id: string) {
-    return $favoriteIds.includes(id);
+    return $favoriteIds.includes(id)
   }
 
   function toggleFavorite(id: string) {
     if (isFavorite(id)) {
-      dispatch(removeFavorite(id));
-    } else {
-      dispatch(addFavorite(id));
+      dispatch(removeFavorite(id))
+    }
+    else {
+      dispatch(addFavorite(id))
     }
   }
 </script>

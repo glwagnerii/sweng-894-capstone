@@ -72,27 +72,28 @@
     // Strip data-URI prefix → base-64 only
     const base64 = previewImage.replace(/^data:image\/\w+;base64,/, '')
 
-    /*ask backend for “recentN.png” */
+    /* ask backend for “recentN.png” */
     let filename = ''
     try {
       filename = await invoke('next_available_photo_name') as string
       await invoke('save_photo_base64', { base64, filename })
-    } catch (err) {
+    }
+    catch (err) {
       console.error('Failed saving photo', err)
       errorMessage = 'Could not save photo'
       return
     }
 
-    /*persist the file  */
+    /* persist the file  */
     await invoke('save_photo_base64', { base64, filename })
 
-    /*run model inference (returns bounding-boxes, etc.) */
+    /* run model inference (returns bounding-boxes, etc.) */
     const detections = await invoke('infer_base64', { base64 })
 
-    /*update global state & route to Results view */
+    /* update global state & route to Results view */
     dispatch({
       type   : 'app/viewResults',
-      payload: { name: filename, base64: previewImage, detections }
+      payload: { name: filename, base64: previewImage, detections },
     })
 
     /* reset preview state */
@@ -150,14 +151,10 @@
     isPreviewing = true
   }
 
-  
-
   function retakePhoto() {
     isPreviewing = false
     previewImage = null
   }
-
-
 
   // function togglePausePlay() {
   //   if (!videoElement) return
