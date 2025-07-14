@@ -37,8 +37,8 @@ const app: App = {
     isDark: true,
   },
   results:    { name:'', base64:'', detections: [] },
-  ingredient: { name:'beef' },
-  recipe:     { id: '53071 ' },
+  ingredient: { name:'' },
+  recipe:     { id: '' },
   favorites: [],
 }
 

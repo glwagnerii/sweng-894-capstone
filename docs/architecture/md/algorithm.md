@@ -1,5 +1,9 @@
 # Classifi-Cam: Algorithmic Component Proposal
 
+**SWENG 894 Capstone - Group 5:** Victoria Reyna, Thomas Smiley, Gerald Wagner
+
+---
+
 ## 1. Product Overview
 
 **Classifi-Cam** is a cross-platform, AI-powered image classification application. Its core purpose is to enable users to capture, analyze, and explore visual content using domain-specific AI models, while maintaining full control over their data and device resources. The application is designed for iOS, Android, macOS, Windows, and Linux, leveraging Rust for backend logic, Svelte for the frontend, and the Tauri framework for deployment.
@@ -72,11 +76,13 @@ Application main view management is implemented by a ViewContainer that uses app
 </div></div>
 
 The core logic is implemented in [`model.rs`](../../../../src-tauri/src/model.rs), specifically in the `YoloModelSession` struct and its methods:
-- `preprocess`: Handles image resizing, padding, and tensor conversion.
 - `infer`: Orchestrates preprocessing, model inference, and postprocessing.
+- `preprocess`: Handles image resizing, padding, and tensor conversion.
 - `postprocess`: Applies thresholds, NMS, and label mapping to model outputs.
 
-### 2.5 Sample Process Flow Images
+### 2.5 Sample Process Flow Desription with Images
+The user can begin by selecting an image in the Library View, which is then analyzed and the Results View is opened to display detected objects with bounding boxes. By clicking on a detected class (ingredient), the Matches View presents a grid of relevant recipes retrieved from an external API. Selecting a recipe leads to the Details View, where the full recipe—including instructions and ingredients and even a YouTube video—is shown to the user to begin cooking.
+
 ![Process Flow Images](../../images/flow-images.png)
 
 
