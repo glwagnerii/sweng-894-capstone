@@ -1,6 +1,7 @@
 <script lang="ts">
   import { useSelector, useDispatch } from '../store'
   import type { Detection } from '../store/appSlice'
+  import Bbox from '../components/Bbox.svelte'
 
   const dispatch = useDispatch()
 
@@ -35,46 +36,9 @@
       style="display: block;"
     />
     {#if imgLoaded && $detections.length > 0}
-      <svg
-        class="absolute top-0 left-0"
-        style="pointer-events: none;"
-        width={imgEl?.width}
-        height={imgEl?.height}
-      >
+      <svg class="absolute top-0 left-0 w-full h-full" viewBox={`0 0 ${imgEl?.width} ${imgEl?.height}`}>
         {#each $detections as det (det)}
-          <g>
-            <rect
-              x={det.bbox[0] * (imgEl.width / imgEl.naturalWidth)}
-              y={det.bbox[1] * (imgEl.height / imgEl.naturalHeight)}
-              width={det.bbox[2] * (imgEl.width / imgEl.naturalWidth)}
-              height={det.bbox[3] * (imgEl.height / imgEl.naturalHeight)}
-              fill="none"
-              stroke="red"
-              stroke-width="2"
-            />
-            <!-- Label background -->
-            <rect
-              x={det.bbox[0] * (imgEl.width / imgEl.naturalWidth)}
-              y={det.bbox[1] * (imgEl.height / imgEl.naturalHeight)}
-              width={det.class.length * 8 + 16}
-              height="16"
-              fill="red"
-              fill-opacity="0.6"
-              rx="4"
-              ry="4"
-            />
-            <text
-              x={det.bbox[0] * (imgEl.width / imgEl.naturalWidth) + 8}
-              y={det.bbox[1] * (imgEl.height / imgEl.naturalHeight) + 12}
-              fill="white"
-              font-size="14"
-              font-weight="bold"
-              stroke="black"
-              stroke-width="0.5"
-            >
-              {det.class}
-            </text>
-          </g>
+          <Bbox det={det} imgEl={imgEl} />
         {/each}
       </svg>
     {/if}

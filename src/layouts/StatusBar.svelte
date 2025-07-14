@@ -1,11 +1,5 @@
 <script lang='ts'>
   import { Button } from '../components'
-  import { open, message } from '@tauri-apps/plugin-dialog'
-
-  const openFolder = async () => {
-    const file = await open({ multiple: false, directory: false })
-    await message(`You selected: ${file}`, { title: 'Classifi-Cam', kind:'info' })
-  }
 
   const btnClass = 'btn-secondary btn-ghost border-none shadow-none transition-colors h-full px-4'
 </script>
@@ -18,7 +12,6 @@
     <Button name='viewMatches'   btnClass={btnClass}>Recipes</Button>
     <Button name='viewDetails'   btnClass={btnClass}>Details</Button>
     <Button name='viewFavorites' btnClass={btnClass}>Favorites</Button>
-    <Button name='openFolder'    btnClass={btnClass} onClick={() => openFolder()}>Models</Button>
   </div>
 </div>
 
