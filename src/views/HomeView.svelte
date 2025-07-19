@@ -4,10 +4,15 @@
 
   const dispatch = useDispatch()
   const searchTerm = writable('')
+  const ingredientTerm = writable('')
 
   function searchByName() {
     if (!$searchTerm.trim()) return
     dispatch({ type: 'app/searchByName', payload: { name: $searchTerm } })
+  }
+
+  function searchByIngredient() {
+    dispatch({ type: 'app/searchByIngredient', payload: { name: $ingredientTerm } })
   }
 </script>
 
@@ -28,6 +33,23 @@
         on:keydown={(e) => e.key === 'Enter' && searchByName()}
       />
       <button class="btn btn-info" on:click={searchByName}>Search</button>
+    </div>
+  </div>
+
+  <!-- Ingredient Search Bar -->
+  <div class="w-full max-w-md">
+    <label class="label">
+      <span class="label-text text-lg font-semibold">Search Recipes by Ingredient</span>
+    </label>
+    <div class="flex gap-2">
+      <input
+        type="text"
+        placeholder="e.g., beef"
+        class="input input-bordered w-full"
+        bind:value={$ingredientTerm}
+        on:keydown={(e) => e.key === 'Enter' && searchByIngredient()}
+      />
+      <button class="btn btn-info" on:click={searchByIngredient}>Search</button>
     </div>
   </div>
 

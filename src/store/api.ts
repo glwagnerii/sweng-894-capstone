@@ -32,5 +32,6 @@ export const mealsApi = api.injectEndpoints({
     }),
     // Add more endpoints here as needed
   }),
+  
   overrideExisting: false,
 })

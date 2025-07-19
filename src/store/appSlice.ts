@@ -110,6 +110,14 @@ export const appSlice = createSlice({
         state.view.selected = 'results'
       }
     },
+    searchByIngredient: (state, action) => {
+      const name = action.payload?.name
+      if (typeof name === 'string') {
+        state.ingredient.name = name
+        state.results.name = '' // clear previous searchByName if needed
+        state.view.selected = 'results'
+      }
+    },
 
     _addFavorite:   (state, action) => {
       const favorite = action.payload
