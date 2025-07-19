@@ -2,6 +2,7 @@
   import { onMount } from 'svelte'
   import { useSelector, useDispatch, addFavorite, removeFavorite } from '../store'
   import { mealsApi } from '../store/api'
+  import { writable } from 'svelte/store'
 
   const dispatch = useDispatch()
 
@@ -17,10 +18,24 @@
   function toggleFavorite(id: string) {
     if (isFavorite(id)) {
       dispatch(removeFavorite(id))
-    }
-    else {
+    } else {
       dispatch(addFavorite(id))
     }
+  }
+
+  const checkedInstructions = writable<number[]>([])
+  const checkedIngredients = writable<number[]>([])
+
+  function toggleInstruction(index: number) {
+    checkedInstructions.update((list) =>
+      list.includes(index) ? list.filter((i) => i !== index) : [...list, index]
+    )
+  }
+
+  function toggleIngredient(index: number) {
+    checkedIngredients.update((list) =>
+      list.includes(index) ? list.filter((i) => i !== index) : [...list, index]
+    )
   }
 </script>
 
@@ -31,11 +46,13 @@
 {:else if $recipeQuery?.data?.meals}
   <div class="max-w-xl mx-auto bg-base-100 rounded-xl p-6 space-y-4">
     <h3 class="text-2xl font-bold text-center mb-2">{$recipeQuery.data.meals[0].strMeal}</h3>
+
     <img
       src="{$recipeQuery.data.meals[0].strMealThumb}"
       alt="{$recipeQuery.data.meals[0].strMeal}"
       class="mx-auto w-80 h-auto rounded-lg shadow border-2 border-base-300"
     />
+
     <div class="flex flex-col md:flex-row md:justify-between text-base-content">
       <p><strong>Category:</strong> {$recipeQuery.data.meals[0].strCategory}</p>
       <div class="text-center">
@@ -52,35 +69,66 @@
       </div>
       <p><strong>Area:</strong> {$recipeQuery.data.meals[0].strArea}</p>
     </div>
-    <p class="whitespace-pre-line">{$recipeQuery.data.meals[0].strInstructions}</p>
+
+    <!-- Instructions with Checkboxes -->
+    <div>
+      <h4 class="font-semibold mt-4 mb-2">Instructions:</h4>
+      <ul class="space-y-2 list-none">
+        {#each $recipeQuery.data.meals[0].strInstructions.split('.').filter(step => step.trim() !== '') as step, i}
+          <li class="flex items-start space-x-2">
+            <input
+              type="checkbox"
+              class="checkbox checkbox-accent"
+            />
+            <span class:line-through={$checkedInstructions.includes(i)}>{step.trim()}.</span>
+          </li>
+        {/each}
+      </ul>
+    </div>
+
+    <!-- Ingredients with Checkboxes -->
     <div>
       <h4 class="font-semibold mt-4 mb-2">Ingredients:</h4>
-      <ul class="list-disc list-inside space-y-1">
+      <ul class="space-y-1 list-none">
         {#each Array(20).fill(0).map((_, i) => i + 1) as i (i)}
-          {#if $recipeQuery.data.meals[0]['strIngredient' + i] && $recipeQuery.data.meals[0]['strIngredient' + i]?.trim() !== ''}
-            <li>
-              {$recipeQuery.data.meals[0]['strIngredient' + i]}
-              {#if $recipeQuery.data.meals[0]['strMeasure' + i] && $recipeQuery.data.meals[0]['strMeasure' + i]?.trim() !== ''}
-                - {$recipeQuery.data.meals[0]['strMeasure' + i]}
-              {/if}
+          {#if $recipeQuery.data.meals[0]['strIngredient' + i]?.trim()}
+            <li class="flex items-start space-x-2">
+              <input
+                type="checkbox"
+                class="checkbox checkbox-success"
+              />
+              <span class:line-through={$checkedIngredients.includes(i)}>
+                {$recipeQuery.data.meals[0]['strIngredient' + i]}
+                {#if $recipeQuery.data.meals[0]['strMeasure' + i]?.trim()}
+                  - {$recipeQuery.data.meals[0]['strMeasure' + i]}
+                {/if}
+              </span>
             </li>
           {/if}
         {/each}
       </ul>
     </div>
+
+    <!-- YouTube Link -->
     {#if $recipeQuery.data.meals[0].strYoutube}
-        <div class="text-center mt-6">
-          <a
-            href={$recipeQuery.data.meals[0].strYoutube}
-            target="_blank"
-            rel="noopener"
-            class="btn btn-sm btn-primary gap-2"
-          >
-          Watch on YouTube
-          </a>
-        </div>
+      <div class="text-center mt-6">
+        <a
+          href={$recipeQuery.data.meals[0].strYoutube}
+          target="_blank"
+          rel="noopener"
+          class="btn btn-sm btn-primary gap-2">
+          ▶ Watch on YouTube
+        </a>
+      </div>
     {/if}
   </div>
 {:else}
   <p>No recipe found.</p>
 {/if}
+
+<style>
+  .line-through {
+    text-decoration: line-through;
+    opacity: 0.6;
+  }
+</style>
