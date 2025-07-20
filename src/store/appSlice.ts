@@ -8,6 +8,16 @@ export type Detection = {
   bbox: [number, number, number, number] // [x, y, width, height]
 }
 
+export type Model = {
+  name: string
+  desc: string
+  file: string
+  size: string
+  conf: number
+  iou: number
+  shape: string
+}
+
 export interface App {
   titleBar:   { title: string, visible: boolean }
   view:       { selected: ViewName, visible: boolean }
@@ -15,7 +25,9 @@ export interface App {
   results:    { name: string, base64: string, detections: Detection[] }
   ingredient: { name: string }
   recipe:     { id: string }
-  favorites: string[]
+  favorites:  string[]
+  model:      { selected: string }
+  models:     Model[]
 }
 
 export const detectPlatform = () => {
@@ -39,7 +51,12 @@ const app: App = {
   results:    { name:'', base64:'', detections: [] },
   ingredient: { name:'' },
   recipe:     { id: '' },
-  favorites: [],
+  favorites:  [],
+  model:      { selected:'yolo11n.onnx' },
+  models:     [
+    { name: 'Yolo Nano',   file: 'yolo11n.onnx', desc: 'Nano YOLOv11 model', shape: '640x640', size: '7.5MB', conf: 50, iou: 50 },
+    { name: 'Yolo Medium', file: 'yolo11m.onnx', desc: 'Medium YOLOv11 model', shape: '640x640', size: '7.5MB', conf: 50, iou: 50 },
+  ],
 }
 
 // Thunks
@@ -111,6 +128,19 @@ export const appSlice = createSlice({
       const favorite = action.payload
       state.favorites = state.favorites.filter((id) => id !== favorite)
     },
+    // Add a model to the models array
+    modelAdd: (state, action) => {
+      const model = action.payload
+      if (!state.models.some((m) => m.file === model.file)) { state.models.push(model) }
+    },
+    modelDelete: (state) => { state.models = state.models.filter((m) => m.file !== state.model.selected) },
+    modelSelect: (state, action) => { state.model.selected = action.payload },
+    modelUpdate: (state, action) => {
+      const updates = action.payload
+      const idx = state.models.findIndex((m) => m.file === state.model.selected)
+      if (idx !== -1) { state.models[idx] = { ...state.models[idx], ...updates } }
+    },
+
     // testing navigation use case
     setView: (state, action: { payload: { selected: ViewName, visible: boolean } }) => {
       state.view.selected = action.payload.selected

@@ -1,2 +1,5 @@
+export { default as Bbox }  from './Bbox.svelte'
 export { default as Button }  from './Button.svelte'
+export { default as EditableField }  from './EditableField.svelte'
 export { default as Icon }    from './Icon.svelte'
+export { default as ThresholdSlider }  from './ThresholdSlider.svelte'
