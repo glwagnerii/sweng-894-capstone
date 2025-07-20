@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, type AsyncThunk, type PayloadActionCreator } from '@reduxjs/toolkit'
 import { load } from '@tauri-apps/plugin-store'
 import { type ViewName } from '../views'
 
@@ -9,6 +9,10 @@ export type Detection = {
 }
 
 export type Model = {
+  selected: string
+}
+
+export type Models = {
   name: string
   desc: string
   file: string
@@ -26,8 +30,8 @@ export interface App {
   ingredient: { name: string }
   recipe:     { id: string }
   favorites:  string[]
-  model:      { selected: string }
-  models:     Model[]
+  model:      Model
+  models:     Models[]
 }
 
 export const detectPlatform = () => {
@@ -52,53 +56,9 @@ const app: App = {
   ingredient: { name:'' },
   recipe:     { id: '' },
   favorites:  [],
-  model:      { selected:'yolo11n.onnx' },
-  models:     [
-    { name: 'Yolo Nano',   file: 'yolo11n.onnx', desc: 'Nano YOLOv11 model', shape: '640x640', size: '7.5MB', conf: 50, iou: 50 },
-    { name: 'Yolo Medium', file: 'yolo11m.onnx', desc: 'Medium YOLOv11 model', shape: '640x640', size: '7.5MB', conf: 50, iou: 50 },
-  ],
+  model:      { selected:'' },
+  models:     [],
 }
-
-// Thunks
-export const addFavorite = createAsyncThunk<void, string>(
-  'app/addFavorite',
-  async (favorite, thunkAPI) => {
-    thunkAPI.dispatch(appSlice.actions._addFavorite(favorite))
-    await thunkAPI.dispatch(saveFavorites())
-  },
-)
-
-export const removeFavorite = createAsyncThunk<void, string>(
-  'app/removeFavorite',
-  async (favorite, thunkAPI) => {
-    thunkAPI.dispatch(appSlice.actions._removeFavorite(favorite))
-    await thunkAPI.dispatch(saveFavorites())
-  },
-)
-
-const STORE = 'classificam-store.json'
-const FAV_KEY = 'favorites'
-
-export const saveFavorites = createAsyncThunk(
-  'app/saveFavorites',
-  async (_, thunkAPI) => {
-    const state = thunkAPI.getState() as { app: App }
-    const favorites = state.app.favorites
-    const store = await load(STORE, { autoSave: false })
-    await store.set(FAV_KEY, JSON.stringify(favorites))
-    await store.save()
-  },
-)
-
-export const getFavorites = createAsyncThunk(
-  'app/getFavorites',
-  async () => {
-    const store = await load(STORE, { autoSave: false })
-    const jsonFavorites = await store.get<string>(FAV_KEY)
-    try   { return jsonFavorites ? JSON.parse(jsonFavorites) : [] }
-    catch { return [] }
-  },
-)
 
 export const appSlice = createSlice({
   name: 'app',
@@ -120,25 +80,26 @@ export const appSlice = createSlice({
     viewResults:   (state, action) => { if (action.payload) { state.results = action.payload }; state.view.selected = 'results' },
     viewSettings:  (state) => { state.view.selected = 'settings' },
 
+    // favorite reducers
     _addFavorite:   (state, action) => {
       const favorite = action.payload
       if (favorite && !state.favorites.includes(favorite)) { state.favorites.push(favorite) }
     },
-    _removeFavorite: (state, action) => {
+    _deleteFavorite: (state, action) => {
       const favorite = action.payload
       state.favorites = state.favorites.filter((id) => id !== favorite)
     },
-    // Add a model to the models array
-    modelAdd: (state, action) => {
+
+    // model reducers
+    _addModel: (state, action) => {
       const model = action.payload
       if (!state.models.some((m) => m.file === model.file)) { state.models.push(model) }
     },
-    modelDelete: (state) => { state.models = state.models.filter((m) => m.file !== state.model.selected) },
-    modelSelect: (state, action) => { state.model.selected = action.payload },
-    modelUpdate: (state, action) => {
-      const updates = action.payload
+    _deleteModel: (state) => { state.models = state.models.filter((m) => m.file !== state.model.selected) },
+    _selectModel: (state, action) => { state.model.selected = action.payload },
+    _updateModel: (state, action) => {
       const idx = state.models.findIndex((m) => m.file === state.model.selected)
-      if (idx !== -1) { state.models[idx] = { ...state.models[idx], ...updates } }
+      if (idx !== -1) { state.models[idx] = { ...state.models[idx], ...action.payload } }
     },
 
     // testing navigation use case
@@ -150,5 +111,76 @@ export const appSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(getFavorites.fulfilled, (state, action) => { state.favorites = action.payload })
+      .addCase(getModels.fulfilled, (state, action) => { state.models = action.payload })
+      .addCase(getModel.fulfilled, (state, action) => { state.model = action.payload })
   },
 })
+
+// Generic thunk factory: dispatches a reducer action, then persists the change using a save thunk
+
+function createActionAndSaveThunk<Arg>(
+  type: string,
+  reducerAction: PayloadActionCreator<Arg>,
+  saveThunk: AsyncThunk<void, void, object>,
+) {
+  return createAsyncThunk<void, Arg>(
+    type,
+    async (arg, thunkAPI) => {
+      thunkAPI.dispatch(reducerAction(arg))
+      await thunkAPI.dispatch(saveThunk())
+    },
+  )
+}
+
+// Generic thunk factories for saving and loading state slices to persistent storage.
+// Use createSaveThunk to persist a specific key from the app state,
+//     and createGetThunk to load and parse that key from storage at startup or on demand.
+// Add extraReducers above for fulfilled actions (get***.fulfilled) to update state after read from store
+
+const STORE = 'classificam-store.json'
+const FAV_KEY = 'favorites'
+const MODELS_KEY = 'models'
+const MODEL_KEY = 'model'
+
+function createSaveThunk<T>(key: string, selector: (state: App) => T) {
+  return createAsyncThunk(
+    `app/save_${key}`,
+    async (_, thunkAPI) => {
+      const state = thunkAPI.getState() as { app: App }
+      const value = selector(state.app)
+      const store = await load(STORE, { autoSave: false })
+      await store.set(key, value)
+      await store.save()
+    },
+  )
+}
+
+function createGetThunk<T>(key: string, defaultValue: T) {
+  return createAsyncThunk<T, void>(
+    `app/get_${key}`,
+    async () => {
+      const store = await load(STORE, { autoSave: false })
+      const value = await store.get<T>(key)
+      return value ?? defaultValue
+    },
+  )
+}
+
+export const saveFavorites = createSaveThunk(FAV_KEY, (app) => app.favorites)
+export const getFavorites = createGetThunk<string[]>(FAV_KEY, [])
+export const saveModels = createSaveThunk(MODELS_KEY, (app) => app.models)
+export const getModels = createGetThunk<Models[]>(MODELS_KEY, [])
+export const saveModel = createSaveThunk(MODEL_KEY, (app) => app.model)
+export const getModel = createGetThunk<Model>(MODEL_KEY, { selected: '' })
+
+// Thunks that wrap reducer actions for favorites and models, then persist changes to storage.
+// Use these instead of dispatching the reducer actions directly to ensure state is saved.
+
+export const addFavorite    = createActionAndSaveThunk('app/addFavorite',    appSlice.actions._addFavorite,    saveFavorites)
+export const deleteFavorite = createActionAndSaveThunk('app/deleteFavorite', appSlice.actions._deleteFavorite, saveFavorites)
+
+export const addModel    = createActionAndSaveThunk('app/addModel',    appSlice.actions._addModel,    saveModels)
+export const deleteModel = createActionAndSaveThunk('app/deleteModel', appSlice.actions._deleteModel, saveModels)
+export const updateModel = createActionAndSaveThunk('app/updateModel', appSlice.actions._updateModel, saveModels)
+
+export const selectModel = createActionAndSaveThunk('app/selectModel', appSlice.actions._selectModel, saveModel)

@@ -3,10 +3,15 @@
   import { EditableField, ThresholdSlider } from '../components'
 
   import { useSelector, useDispatch } from '../store'
+  import { addModel, deleteModel, updateModel, selectModel, type Models } from '../store/appSlice'
+
   const dispatch = useDispatch()
 
   const models = useSelector((state) => state.app.models)
   const selected = useSelector((state) => state.app.model.selected)
+
+  console.log($selected)
+
   const selectedModel = $derived($models.find((m) => m.file === $selected) || null)
 
   // local editable variables
@@ -16,11 +21,9 @@
   let name = $derived(selectedModel ? selectedModel.name : '')
   let desc = $derived(selectedModel ? selectedModel.desc : '')
 
-  // dispatch changes
-  const updateModel = (payload: object) => { dispatch({ type: 'app/modelUpdate', payload: payload }) }
-  const selectModel = () => { if (selectedModelFile !== $selected) { dispatch({ type: 'app/modelSelect', payload: selectedModelFile }) } }
+  const handleSelectModel = () => { if (selectedModelFile !== $selected) { dispatch(selectModel(selectedModelFile)) } }
 
-  async function addModel() {
+  async function handleAddModel() {
     try {
       const file = await open({ multiple: false, directory: false })
       if (!file) return
@@ -34,7 +37,7 @@
         await message('A model with this file already exists.')
         return
       }
-      const model = {
+      const model: Models = {
         name: fileName.replace(/\.[^.]+$/, ''),
         file: fileName,
         desc: 'Model Description',
@@ -43,16 +46,14 @@
         conf: 70,
         iou: 50,
       }
-      dispatch({ type: 'app/modelAdd', payload: model })
+      dispatch(addModel(model))
       selectedModelFile = model.file
-      selectModel()
+      handleSelectModel()
     }
     catch (e) {
       await message(`Failed to add model. ${e instanceof Error ? e.message : String(e)}`)
     }
   }
-
-  const deleteModel = () => { dispatch({ type: 'app/modelDelete' }) }
 
 </script>
 
@@ -64,12 +65,12 @@
     <div class="flex items-center justify-between mb-4">
       <label class="block font-semibold" for="model-select">ONNX Model</label>
       <div class="flex gap-2">
-        <button class="btn btn-xs btn-primary" onclick={addModel}    aria-label="Add model">Add</button>
-        <button class="btn btn-xs btn-error"   onclick={deleteModel} aria-label="Delete model" disabled={$models.length <= 1}>Delete</button>
+        <button class="btn btn-xs btn-primary" onclick={handleAddModel} aria-label="Add model">Add</button>
+        <button class="btn btn-xs btn-error"   onclick={() => dispatch(deleteModel())} aria-label="Delete model" disabled={$models.length <= 1}>Delete</button>
       </div>
     </div>
 
-    <select id="model-select" class="select select-bordered w-full" bind:value={selectedModelFile} onchange={selectModel}>
+    <select id="model-select" class="select select-bordered w-full" bind:value={selectedModelFile} onchange={handleSelectModel}>
       <option value={null}>-- No model selected --</option>
       {#each $models as model (model.file)}
         <option value={model.file}>{model.name} ({model.file})</option>
@@ -79,15 +80,15 @@
     {#if selectedModel}
       <div class="mt-4 card bg-base-200 shadow-sm">
         <div class="card-body">
-          <EditableField id="name" label="Name"        bind:value={name} onSave={() => updateModel({ name:name })} />
-          <EditableField id="desc" label="Description" bind:value={desc} onSave={() => updateModel({ desc:desc })} />
+          <EditableField id="name" label="Name"        bind:value={name} onSave={() => dispatch(updateModel({ name:name }))} />
+          <EditableField id="desc" label="Description" bind:value={desc} onSave={() => dispatch(updateModel({ desc:desc }))} />
           <div>
             <div class="text-sm text-base-content/60">File:  {selectedModel.file}</div>
             <div class="text-sm text-base-content/60">Shape: {selectedModel.shape}</div>
             <div class="text-sm text-base-content/60">Size:  {selectedModel.size}</div>
           </div>
-          <ThresholdSlider id="conf" label="Confidence Threshold" bind:value={conf} onchange={() => updateModel({ conf:conf })}/>
-          <ThresholdSlider id="iou"  label="IOU Threshold"        bind:value={iou}  onchange={() => updateModel({ iou:iou })}/>
+          <ThresholdSlider id="conf" label="Confidence Threshold" bind:value={conf} onchange={() => dispatch(updateModel({ conf:conf }))}/>
+          <ThresholdSlider id="iou"  label="IOU Threshold"        bind:value={iou}  onchange={() => dispatch(updateModel({ iou:iou }))}/>
         </div>
       </div>
     {/if}

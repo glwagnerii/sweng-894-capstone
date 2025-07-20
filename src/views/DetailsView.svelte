@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { useSelector, useDispatch, addFavorite, removeFavorite } from '../store'
+  import { useSelector, useDispatch } from '../store'
+  import { addFavorite, deleteFavorite } from '../store/appSlice'
   import { mealsApi } from '../store/api'
 
   const dispatch = useDispatch()
@@ -16,7 +17,7 @@
 
   function toggleFavorite(id: string) {
     if (isFavorite(id)) {
-      dispatch(removeFavorite(id))
+      dispatch(deleteFavorite(id))
     }
     else {
       dispatch(addFavorite(id))
