@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { useSelector, useDispatch } from '../store'
   import { mealsApi, type Meal } from '../store/api'
-  import { removeFavorite } from '../store'
+  import { deleteFavorite } from '../store/appSlice'
 
   const dispatch = useDispatch()
   const favoriteIds = useSelector((s) => s.app.favorites)
@@ -34,17 +34,8 @@
     }
   }
 
-  function openRecipe(id: string) {
-    dispatch({ type: 'app/viewDetails', payload: { id } })
-  }
-
-  function remove(id: string) {
-    dispatch(removeFavorite(id))
-  }
-
-  onMount(() => {
-    fetchMeals()
-  })
+  function openRecipe(id: string) { dispatch({ type: 'app/viewDetails', payload: { id } }) }
+  function remove(id: string) { dispatch(deleteFavorite(id)) }
 </script>
 
 <div class="flex flex-col items-center justify-center gap-4 mb-6">

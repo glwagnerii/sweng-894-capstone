@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
-  import { useSelector, useDispatch, getFavorites } from './store'
+  import { useSelector, useDispatch } from './store'
+  import { getFavorites, getModels, getModel } from './store/appSlice'
   import { StatusBar, TitleBar, ViewContainer } from './layouts'
 
   import clsx from 'clsx'
@@ -13,7 +14,11 @@
   const handleResize = () => { dispatch({ type: 'app/windowResize' }) }
   const handleKeydown = (e: KeyboardEvent) => { console.log(e.key) }
 
-  onMount(() => { dispatch(getFavorites()) })
+  onMount(() => {
+    dispatch(getFavorites())
+    dispatch(getModels())
+    dispatch(getModel())
+  })
 
 </script>
 
