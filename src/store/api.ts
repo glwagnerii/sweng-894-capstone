@@ -27,7 +27,11 @@ export const mealsApi = api.injectEndpoints({
     getMealById: builder.query<{ meals: Meal[] }, string>({
       query: (id) => `lookup.php?i=${id}`,
     }),
+    getMealsByName: builder.query<{ meals: Meal[] | null }, string>({
+      query: (name) => `search.php?s=${name}`,
+    }),
     // Add more endpoints here as needed
   }),
+
   overrideExisting: false,
 })

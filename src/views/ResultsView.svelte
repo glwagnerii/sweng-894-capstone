@@ -15,10 +15,7 @@
 
   function handleImgLoad() { if (imgEl) { imgLoaded = true } }
 
-  function handleClick(det: Detection) {
-    console.log(det)
-    dispatch({ type: 'app/viewMatches', payload: { name: det.class } })
-  }
+  function handleClick(det: Detection) { dispatch({ type: 'app/viewMatches', payload: { name: det.class } }) }
 </script>
 
 <div class="p-4 flex flex-col items-center space-y-6 font-sans">
