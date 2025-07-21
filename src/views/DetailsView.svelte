@@ -3,7 +3,6 @@
   import { useSelector, useDispatch } from '../store'
   import { addFavorite, deleteFavorite } from '../store/appSlice'
   import { mealsApi } from '../store/api'
-  import { writable } from 'svelte/store'
 
   const dispatch = useDispatch()
 
@@ -17,27 +16,23 @@
   }
 
   function toggleFavorite(id: string) {
-    if (isFavorite(id)) {
-      dispatch(deleteFavorite(id))
-    }
-    else {
-      dispatch(addFavorite(id))
-    }
+    if (isFavorite(id)) { dispatch(deleteFavorite(id)) }
+    else { dispatch(addFavorite(id)) }
   }
 
-  const checkedInstructions = writable<number[]>([])
-  const checkedIngredients = writable<number[]>([])
+  let checkedInstructions = $state<number[]>([])
+  let checkedIngredients = $state<number[]>([])
 
   function toggleInstruction(index: number) {
-    checkedInstructions.update((list) =>
-      list.includes(index) ? list.filter((i) => i !== index) : [...list, index]
-    )
+    checkedInstructions = checkedInstructions.includes(index)
+      ? checkedInstructions.filter((i) => i !== index)
+      : [...checkedInstructions, index]
   }
 
   function toggleIngredient(index: number) {
-    checkedIngredients.update((list) =>
-      list.includes(index) ? list.filter((i) => i !== index) : [...list, index]
-    )
+    checkedIngredients = checkedIngredients.includes(index)
+      ? checkedIngredients.filter((i) => i !== index)
+      : [...checkedIngredients, index]
   }
 </script>
 
@@ -61,7 +56,7 @@
         <button
           type="button"
           class="btn btn-sm btn-outline btn-warning"
-          on:click={() => toggleFavorite($recipeQuery.data.meals[0].idMeal)}>
+          onclick={() => toggleFavorite($recipeQuery.data.meals[0].idMeal)}>
           {#if isFavorite($recipeQuery.data.meals[0].idMeal)}
             💔 Remove from Favorites
           {:else}
@@ -76,13 +71,15 @@
     <div>
       <h4 class="font-semibold mt-4 mb-2">Instructions:</h4>
       <ul class="space-y-2 list-none">
-        {#each $recipeQuery.data.meals[0].strInstructions.split('.').filter(step => step.trim() !== '') as step, i}
+        {#each ($recipeQuery.data.meals[0]?.strInstructions?.split('.').filter((step) => step.trim() !== '') ?? []) as step, i (i)}
           <li class="flex items-start space-x-2">
             <input
               type="checkbox"
               class="checkbox checkbox-accent"
+              checked={checkedInstructions.includes(i)}
+              onchange={() => toggleInstruction(i)}
             />
-            <span class:line-through={$checkedInstructions.includes(i)}>{step.trim()}.</span>
+            <span class:line-through={checkedInstructions.includes(i)}>{step.trim()}.</span>
           </li>
         {/each}
       </ul>
@@ -98,8 +95,10 @@
               <input
                 type="checkbox"
                 class="checkbox checkbox-success"
+                checked={checkedIngredients.includes(i)}
+                onchange={() => toggleIngredient(i)}
               />
-              <span class:line-through={$checkedIngredients.includes(i)}>
+              <span class:line-through={checkedIngredients.includes(i)}>
                 {$recipeQuery.data.meals[0]['strIngredient' + i]}
                 {#if $recipeQuery.data.meals[0]['strMeasure' + i]?.trim()}
                   - {$recipeQuery.data.meals[0]['strMeasure' + i]}

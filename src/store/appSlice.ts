@@ -80,6 +80,22 @@ export const appSlice = createSlice({
     viewResults:   (state, action) => { if (action.payload) { state.results = action.payload }; state.view.selected = 'results' },
     viewSettings:  (state) => { state.view.selected = 'settings' },
 
+    searchByName: (state, action) => {
+      const name = action.payload?.name
+      if (typeof name === 'string') {
+        state.results.name = name
+        state.view.selected = 'results'
+      }
+    },
+    searchByIngredient: (state, action) => {
+      const name = action.payload?.name
+      if (typeof name === 'string') {
+        state.ingredient.name = name
+        state.results.name = ''
+        state.view.selected = 'results'
+      }
+    },
+
     _addFavorite:   (state, action) => {
       const favorite = action.payload
       if (favorite && !state.favorites.includes(favorite)) { state.favorites.push(favorite) }

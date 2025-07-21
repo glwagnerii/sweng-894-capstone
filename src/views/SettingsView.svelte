@@ -10,8 +10,6 @@
   const models = useSelector((state) => state.app.models)
   const selected = useSelector((state) => state.app.model.selected)
 
-  console.log($selected)
-
   const selectedModel = $derived($models.find((m) => m.file === $selected) || null)
 
   // local editable variables
