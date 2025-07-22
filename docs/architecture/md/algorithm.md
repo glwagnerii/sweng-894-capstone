@@ -60,12 +60,12 @@ By systematically profiling and refining each component, we can ensure the algor
 The process flow below illustrates how Classifi-Cam handles user interactions, image inference, and result display. It shows the sequence from image selection and AI-powered detection to presenting bounding boxes and recipe details in the app. Each step highlights the integration between the frontend, backend, and state management.
 
 1. **Camera View**  or **Library View** --> button click --> convert image to base64 --> invoke the inference function
-2. **Invoke (infer_base64)** --> rust backend function receives base64 from frontend and returns Detections[ ] array
+2. **Invoke (infer rust backend function receives base64 from frontend and returns Detections[ ] array
 3. **Results View** --> displays original image with svg overlay showing bounding boxes, and list of class buttons
 4. **Matches View** --> after a class (ingredient) is clicked, call external API and show grid of returned recipes as cards
 5. **Details View** --> after a recipe is clicked, call external API and show the full recipe w/ instructions and ingredients
 
-The rust infer_base64 command is called by the frontend using Tauri's ivoke function (@tauri-apps/api/core), and passing the converted image's base64 string.  The inference returns a Detection array which includes the class, confidence and bounding box (top, left, width, height) of each detected object.
+The rust infer command is called by the frontend using Tauri's ivoke function (@tauri-apps/api/core), and passing the converted image's base64 string.  The inference returns a Detection array which includes the class, confidence and bounding box (top, left, width, height) of each detected object.
 
 Application main view management is implemented by a ViewContainer that uses app state ("view.selected") to automatically display the correct, selected view.  App state is implemented with Redux and Svelte stores.  API calls are also implemented in Redux via RTKQuery.  The return type of the API's is a Meal or Meal array which includes the id, name, thumbnail, instructions, and ingredients.
 
@@ -163,9 +163,9 @@ To further optimize the pipeline, several methods for converting images into inp
 
 </div></div>
 
-### 3.6 Measuring Performance of `infer_base64`
+### 3.6 Measuring Performance of `infer`
 
-To ensure the `infer_base64` function meets the application's speed and responsiveness targets, a systematic approach to performance measurement will be implemented:
+To ensure the `infer` function meets the application's speed and responsiveness targets, a systematic approach to performance measurement will be implemented:
 
 - **Timing Each Stage:** The Rust backend (`model.rs`) already profiles the main stages—preprocessing, inference, and postprocessing—using `Instant::now()` and prints timing statistics for each. These timings will be logged and optionally exposed to the frontend for analysis.
 - **End-to-End Latency:** The total time from receiving the base64 image to returning the detection results will be measured. This includes decoding, preprocessing, model inference, and postprocessing.

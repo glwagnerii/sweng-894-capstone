@@ -88,7 +88,7 @@
     await invoke('save_photo_base64', { base64, filename })
 
     /* run model inference (returns bounding-boxes, etc.) */
-    const detections = await invoke('infer_base64', { base64 })
+    const detections = await invoke('infer', { base64 })
 
     /* update global state & route to Results view */
     dispatch({

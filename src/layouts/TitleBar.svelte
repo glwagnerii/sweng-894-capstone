@@ -3,8 +3,6 @@
   import { openUrl } from '@tauri-apps/plugin-opener'
   import { arch, locale, platform, type, version } from '@tauri-apps/plugin-os'
   import { open, message } from '@tauri-apps/plugin-dialog'
-  import { invoke } from '@tauri-apps/api/core'
-  import { type Detection } from '../store/appSlice'
 
   import { useDispatch } from '../store'
   const dispatch = useDispatch()
@@ -23,18 +21,6 @@
     const info = `Platform: ${platform()}\nVersion: ${version()}\nType: ${type()}\nArch: ${arch()}\nLocale: ${await locale()}`
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
     console.log(info)
-  }
-
-  const usls = async () => {
-    const info = await invoke('infer') as Detection[]
-    const fullMessage = info.map((item: Detection, index: number) =>
-      `#${index + 1}
-      Class: ${item.class}
-      Score: ${item.score.toFixed(2)}
-      BBox: [${item.bbox.join(', ')}]`,
-    ).join('\n\n')
-
-    await message(fullMessage, { title: 'Classific-Cam OS Information', kind: 'info' })
   }
 
   const openFolder = async () => {
@@ -63,7 +49,6 @@
     <ul class="dropdown menu w-52 rounded-box bg-base-100 shadow-sm" popover id="popover-menu" bind:this={popoverMenu}>
       <li><Button name='viewPath'   btnClass={btnClass} labelRight onClick={() => handleSelect(viewPath)}>View Paths</Button></li>
       <li><Button name='getOS'      btnClass={btnClass} labelRight onClick={() => handleSelect(getOS)}>OS Values</Button></li>
-      <li><Button name='plane'      btnClass={btnClass} labelRight onClick={() => handleSelect(usls)}>Model Shape</Button></li>
       <li><Button name='openFolder' btnClass={btnClass} labelRight onClick={() => handleSelect(openFolder)}>Open Model</Button></li>
     </ul>
   </div>

@@ -107,7 +107,7 @@
       reader.readAsDataURL(blob)
     })
     const base64stipped = base64.replace(/^data:image\/\w+;base64,/, '')
-    const detections = (file.ingredients.length > 0) ? file.ingredients : await invoke('infer_base64', { base64: base64stipped }) as Detection[]
+    const detections = (file.ingredients.length > 0) ? file.ingredients : await invoke('infer', { base64: base64stipped }) as Detection[]
     dispatch({ type: 'app/viewResults', payload: { name: file.name, base64, detections } })
   }
 </script>
