@@ -114,7 +114,7 @@
 
 <ul class="flex flex-wrap gap-4 justify-center px-6 py-4 list-none">
   {#each files as file (file.name)}
-    <li class="flex flex-col items-center max-w-[200px]">
+    <li class="flex flex-col items-center max-w-[400px]">
       <button
         type="button"
         class="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
@@ -124,7 +124,7 @@
         <img
           src={`/photos/${file.name}`}
           alt={file.name}
-          class="object-cover h-48 w-auto rounded shadow"
+          class="w-[300px] h-[300px] object-cover rounded shadow"
         />
       </button>
       <div class="mt-2 break-all text-center text-sm">{file.name}</div>

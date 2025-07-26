@@ -68,11 +68,11 @@
     <div class="grid justify-between gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
       {#each $favoriteIds as id (id)}
         {#if meals[id] && (!selectedCategory || meals[id].strCategory === selectedCategory)}
-          <div class="card justify-center bg-base-100 shadow-md hover:shadow-lg transition border border-accent">
+          <div class="card justify-center bg-base-200 shadow-md hover:shadow-lg transition border border-accent">
             <button type="button" class="w-full h-40 overflow-hidden" onclick={() => openRecipe(id)}>
               <img src={meals[id].strMealThumb} alt={meals[id].strMeal} class="w-full h-full object-cover" />
             </button>
-            <div class="card-body p-4 bg-black/20 rounded-b">
+            <div class="card-body p-4 rounded-b">
               <h2 class="card-title text-base">{meals[id].strMeal}</h2>
               <div class="card-actions justify-between mt-2">
                 <button class="btn btn-sm btn-secondary" onclick={() => openRecipe(id)}>View</button>

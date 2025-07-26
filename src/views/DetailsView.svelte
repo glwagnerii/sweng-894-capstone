@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { useSelector, useDispatch } from '../store'
-  import { addFavorite, deleteFavorite } from '../store/appSlice'
+  import { addFavorite, deleteFavorite, toggleInstructionCheck, toggleIngredientCheck } from '../store/appSlice'
   import { mealsApi } from '../store/api'
 
   const dispatch = useDispatch()
@@ -9,6 +9,7 @@
   const recipeId = useSelector((state) => state.app.recipe.id)
   const favoriteIds = useSelector((state) => state.app.favorites)
   const recipeQuery = useSelector((state) => mealsApi.endpoints.getMealById.select($recipeId)(state))
+  const checklist = useSelector((state) => state.app.checklist)
   onMount(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
 
   function isFavorite(id: string) {
@@ -20,20 +21,16 @@
     else { dispatch(addFavorite(id)) }
   }
 
-  let checkedInstructions = $state<number[]>([])
-  let checkedIngredients = $state<number[]>([])
-
   function toggleInstruction(index: number) {
-    checkedInstructions = checkedInstructions.includes(index)
-      ? checkedInstructions.filter((i) => i !== index)
-      : [...checkedInstructions, index]
+    dispatch(toggleInstructionCheck({ recipeId: $recipeId, index }))
   }
 
   function toggleIngredient(index: number) {
-    checkedIngredients = checkedIngredients.includes(index)
-      ? checkedIngredients.filter((i) => i !== index)
-      : [...checkedIngredients, index]
+    dispatch(toggleIngredientCheck({ recipeId: $recipeId, index }))
   }
+
+  $: checkedInstructions = $checklist[$recipeId]?.instructions ?? []
+  $: checkedIngredients = $checklist[$recipeId]?.ingredients ?? []
 </script>
 
 {#if $recipeQuery?.isLoading}

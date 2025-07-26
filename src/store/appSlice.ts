@@ -32,6 +32,7 @@ export interface App {
   favorites:  string[]
   model:      Model
   models:     Models[]
+  checklist: { [recipeId: string]: { instructions: number[], ingredients: number[] } }
 }
 
 export const detectPlatform = () => {
@@ -58,6 +59,7 @@ const app: App = {
   favorites:  [],
   model:      { selected:'' },
   models:     [],
+  checklist: {},
 }
 
 export const appSlice = createSlice({
@@ -105,6 +107,34 @@ export const appSlice = createSlice({
       state.favorites = state.favorites.filter((id) => id !== favorite)
     },
 
+    //checkbox saved states
+    _toggleInstructionCheck: (state, action) => {
+      const { recipeId, index } = action.payload
+      const checks = state.checklist[recipeId]?.instructions ?? []
+      const updated = checks.includes(index)
+        ? checks.filter((i) => i !== index)
+        : [...checks, index]
+      state.checklist[recipeId] = {
+        ...state.checklist[recipeId],
+        instructions: updated
+      }
+    },
+    _toggleIngredientCheck: (state, action) => {
+      const { recipeId, index } = action.payload
+      const checks = state.checklist[recipeId]?.ingredients ?? []
+      const updated = checks.includes(index)
+        ? checks.filter((i) => i !== index)
+        : [...checks, index]
+      state.checklist[recipeId] = {
+        ...state.checklist[recipeId],
+        ingredients: updated
+      }
+    },
+    clearChecklist: (state, action) => {
+      const recipeId = action.payload
+      state.checklist[recipeId] = { instructions: [], ingredients: [] }
+    },
+
     // model reducers
     _addModel: (state, action) => {
       const model = action.payload
@@ -128,6 +158,7 @@ export const appSlice = createSlice({
       .addCase(getFavorites.fulfilled, (state, action) => { state.favorites = action.payload })
       .addCase(getModels.fulfilled, (state, action) => { state.models = action.payload })
       .addCase(getModel.fulfilled, (state, action) => { state.model = action.payload })
+      .addCase(getChecklist.fulfilled, (state, action) => { state.checklist = action.payload })
   },
 })
 
@@ -156,6 +187,7 @@ const STORE = 'classificam-store.json'
 const FAV_KEY = 'favorites'
 const MODELS_KEY = 'models'
 const MODEL_KEY = 'model'
+const CHECKLIST_KEY = 'checklist'
 
 function createSaveThunk<T>(key: string, selector: (state: App) => T) {
   return createAsyncThunk(
@@ -187,12 +219,16 @@ export const saveModels = createSaveThunk(MODELS_KEY, (app) => app.models)
 export const getModels = createGetThunk<Models[]>(MODELS_KEY, [])
 export const saveModel = createSaveThunk(MODEL_KEY, (app) => app.model)
 export const getModel = createGetThunk<Model>(MODEL_KEY, { selected: '' })
+export const saveChecklist = createSaveThunk(CHECKLIST_KEY, (app) => app.checklist)
+export const getChecklist = createGetThunk<App['checklist']>(CHECKLIST_KEY, {})
 
 // Thunks that wrap reducer actions for favorites and models, then persist changes to storage.
 // Use these instead of dispatching the reducer actions directly to ensure state is saved.
 
 export const addFavorite    = createActionAndSaveThunk('app/addFavorite',    appSlice.actions._addFavorite,    saveFavorites)
 export const deleteFavorite = createActionAndSaveThunk('app/deleteFavorite', appSlice.actions._deleteFavorite, saveFavorites)
+export const toggleInstructionCheck = createActionAndSaveThunk('app/toggleInstructionCheck', appSlice.actions._toggleInstructionCheck, saveChecklist )
+export const toggleIngredientCheck = createActionAndSaveThunk('app/toggleIngredientCheck', appSlice.actions._toggleIngredientCheck, saveChecklist )
 
 export const addModel    = createActionAndSaveThunk('app/addModel',    appSlice.actions._addModel,    saveModels)
 export const deleteModel = createActionAndSaveThunk('app/deleteModel', appSlice.actions._deleteModel, saveModels)
