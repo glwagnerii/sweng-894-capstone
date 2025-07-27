@@ -107,7 +107,7 @@ export const appSlice = createSlice({
       state.favorites = state.favorites.filter((id) => id !== favorite)
     },
 
-    //checkbox saved states
+    // checkbox saved states
     _toggleInstructionCheck: (state, action) => {
       const { recipeId, index } = action.payload
       const checks = state.checklist[recipeId]?.instructions ?? []
@@ -116,7 +116,7 @@ export const appSlice = createSlice({
         : [...checks, index]
       state.checklist[recipeId] = {
         ...state.checklist[recipeId],
-        instructions: updated
+        instructions: updated,
       }
     },
     _toggleIngredientCheck: (state, action) => {
@@ -127,7 +127,7 @@ export const appSlice = createSlice({
         : [...checks, index]
       state.checklist[recipeId] = {
         ...state.checklist[recipeId],
-        ingredients: updated
+        ingredients: updated,
       }
     },
     clearChecklist: (state, action) => {
@@ -227,8 +227,8 @@ export const getChecklist = createGetThunk<App['checklist']>(CHECKLIST_KEY, {})
 
 export const addFavorite    = createActionAndSaveThunk('app/addFavorite',    appSlice.actions._addFavorite,    saveFavorites)
 export const deleteFavorite = createActionAndSaveThunk('app/deleteFavorite', appSlice.actions._deleteFavorite, saveFavorites)
-export const toggleInstructionCheck = createActionAndSaveThunk('app/toggleInstructionCheck', appSlice.actions._toggleInstructionCheck, saveChecklist )
-export const toggleIngredientCheck = createActionAndSaveThunk('app/toggleIngredientCheck', appSlice.actions._toggleIngredientCheck, saveChecklist )
+export const toggleInstructionCheck = createActionAndSaveThunk('app/toggleInstructionCheck', appSlice.actions._toggleInstructionCheck, saveChecklist)
+export const toggleIngredientCheck = createActionAndSaveThunk('app/toggleIngredientCheck', appSlice.actions._toggleIngredientCheck, saveChecklist)
 
 export const addModel    = createActionAndSaveThunk('app/addModel',    appSlice.actions._addModel,    saveModels)
 export const deleteModel = createActionAndSaveThunk('app/deleteModel', appSlice.actions._deleteModel, saveModels)
