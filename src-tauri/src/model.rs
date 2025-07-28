@@ -1,23 +1,17 @@
 use std::borrow::Cow;
-use std::collections::BTreeMap;
-use std::fs::File;
-use std::io::Read;
 use std::path::Path;
 use std::time::Instant;
-
-use serde::Deserialize;
-
 use ndarray::{Array4, Axis, Zip, s};
 
 use ort::{
     session::{Session, SessionOutputs},
     value::TensorRef,
-    // execution_providers::{
-    //     CoreMLExecutionProvider,
-    //     CUDAExecutionProvider,
-    //     TensorRTExecutionProvider,
-    //     DirectMLExecutionProvider,
-    // },
+    execution_providers::{
+        CoreMLExecutionProvider,
+        CUDAExecutionProvider,
+        TensorRTExecutionProvider,
+        DirectMLExecutionProvider,
+    },
 };
 
 use image::{RgbImage, GenericImage, imageops::FilterType};
@@ -30,16 +24,27 @@ pub struct YoloModelSession {
     session: ort::session::Session,
     labels: Vec<Cow<'static, str>>,
     prob_thresh: f32,
-    iou_thresh: f32,
-    onnx_path: String,
-    yaml_path: Option<String>,
+    iou_thresh: f32
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Default)]
 pub struct Detection {
     pub class: String,
     pub score: f32,
     pub bbox: [f32; 4], // [x, y, width, height]
+}
+
+#[derive(serde::Serialize, Default)]
+pub struct YoloTimingStats {
+    pub load: u16,
+    pub init: u16,
+    pub resize: u16,
+    pub pad: u16,
+    pub tensor: u16,
+    pub infer: u16,
+    pub bbox: u16,
+    pub nms: u16,
+    pub total: u16,
 }
 
 impl YoloModelSession {
@@ -51,40 +56,28 @@ impl YoloModelSession {
     /// - `iou_thresh`:  optional (0.7) -> Controls how much overlap is allowed between boxes before suppression.
     pub fn new(
         onnx_path: impl AsRef<Path>,
-        yaml_path: Option<impl AsRef<Path>>,
         prob_thresh: Option<f32>,
         iou_thresh: Option<f32>,
     ) -> Result<Self, YoloError> {
-        let onnx_path_str = onnx_path.as_ref().to_string_lossy().to_string();
-        let yaml_path_str = yaml_path
-            .as_ref()
-            .map(|p| p.as_ref().to_string_lossy().to_string());
-
         let builder = Session::builder()
             .map_err(|e| YoloError::Custom(format!("Failed to create session builder: {}", e)))?;
         let session = builder
-            // .with_execution_providers([
-            //     TensorRTExecutionProvider::default().build(),
-            //     CUDAExecutionProvider::default().build(),
-            //     DirectMLExecutionProvider::default().build(),
-            //     CoreMLExecutionProvider::default().build(),
-            // ])
-            // .map_err(|e| YoloError::Custom(format!("Failed to set execution providers: {e}")))?
+            .with_execution_providers([
+                TensorRTExecutionProvider::default().build(),
+                CUDAExecutionProvider::default().build(),
+                DirectMLExecutionProvider::default().build(),
+                CoreMLExecutionProvider::default().build(),
+            ])
+            .map_err(|e| YoloError::Custom(format!("Failed to set execution providers: {e}")))?
             .commit_from_file(&onnx_path)
             .map_err(|e| YoloError::Custom(format!("Failed to load ONNX model: {e}")))?;
-        let labels = if let Some(yaml) = yaml_path {
-            load_labels_from_yaml(yaml)?
-        } else {
-            Vec::new()
-        };
+        let labels = load_labels_from_metadata(&session)?;
 
         Ok(Self {
             session,
             labels,
             prob_thresh: prob_thresh.unwrap_or(0.5),
-            iou_thresh: iou_thresh.unwrap_or(0.7),
-            onnx_path: onnx_path_str,
-            yaml_path: yaml_path_str,
+            iou_thresh: iou_thresh.unwrap_or(0.7)
         })
     }
 
@@ -93,8 +86,6 @@ impl YoloModelSession {
     // pub fn prob_thresh(&self) -> f32                { self.prob_thresh }
     // pub fn iou_thresh(&self) -> f32                 { self.iou_thresh }
     // pub fn session(&self) -> &ort::session::Session { &self.session }
-    pub fn onnx_path(&self) -> &str                 { &self.onnx_path }
-    pub fn yaml_path(&self) -> Option<&str>         { self.yaml_path.as_deref() }
 
     // /// Setters
     // pub fn set_prob_thresh(&mut self, value: f32)                { self.prob_thresh = value }
@@ -102,8 +93,7 @@ impl YoloModelSession {
     // pub fn set_labels(&mut self, labels: Vec<Cow<'static, str>>) { self.labels = labels }
 
     /// Preprocess image: resize with aspect ratio, pad, and convert to input tensor
-    fn preprocess(&self, image: &image::DynamicImage) -> Result<(ndarray::Array4<f32>, f32, u32, u32), YoloError> {
-        let start = Instant::now();
+    fn preprocess(&self, image: &image::DynamicImage, timing: &mut YoloTimingStats) -> Result<(ndarray::Array4<f32>, f32, u32, u32), YoloError> {
         let resize_start = Instant::now();
 
         let (input_w, input_h) = (640, 640);
@@ -139,8 +129,7 @@ impl YoloModelSession {
 
         // Old resizer = 266ms
         let resized = image.resize_exact(new_w, new_h, FilterType::Triangle).to_rgb8();
-
-        let resize_time = resize_start.elapsed();
+        timing.resize = resize_start.elapsed().as_millis() as u16;
 
         // Padding
         let pad_start = Instant::now();
@@ -148,7 +137,7 @@ impl YoloModelSession {
         // padded.copy_from(&resized.to_rgb8(), pad_left, pad_top)
         padded.copy_from(&resized, pad_left, pad_top)
             .map_err(|e| YoloError::Custom(format!("Failed to pad image: {e}")))?;
-        let pad_time = pad_start.elapsed();
+        timing.pad = pad_start.elapsed().as_millis() as u16;
 
         // To Tensor
         let tensor_start = Instant::now();
@@ -185,15 +174,7 @@ impl YoloModelSession {
         //     input[[0, 1, y as usize, x as usize]] = g as f32 / 255.0;
         //     input[[0, 2, y as usize, x as usize]] = b as f32 / 255.0;
         // }
-
-        let tensor_time = tensor_start.elapsed();
-
-        let total_time = start.elapsed();
-        println!("YOLO preprocess timing:");
-        println!("  Resize:   {:.2?}", resize_time);
-        println!("  Padding:  {:.2?}", pad_time);
-        println!("  ToTensor: {:.2?}", tensor_time);
-        println!("  Total:    {:.2?}\n", total_time);
+        timing.tensor = tensor_start.elapsed().as_millis() as u16;
 
         // let input = input.lock().unwrap();
         // Ok((input.clone(), scale, pad_left, pad_top))
@@ -202,13 +183,10 @@ impl YoloModelSession {
     }
 
     // pub fn infer(&self) -> Result<Vec<Detection>, YoloError> {
-    pub fn infer(&mut self, image: &image::DynamicImage) -> Result<Vec<Detection>, YoloError> {
-        let total_start = Instant::now();
+    pub fn infer(&mut self, image: &image::DynamicImage, timing: &mut YoloTimingStats) -> Result<Vec<Detection>, YoloError> {
 
         // Preprocess image
-        let preprocess_start = Instant::now();
-        let (input, scale, pad_left, pad_top) = self.preprocess(image)?;
-        let preprocess_time = preprocess_start.elapsed();
+        let (input, scale, pad_left, pad_top) = self.preprocess(image, timing)?;
 
         let orig_w = image.width() as f32;
         let orig_h = image.height() as f32;
@@ -220,7 +198,6 @@ impl YoloModelSession {
             .map_err(|e| YoloError::Custom(format!("Failed to create input tensor: {e}")))?;
         let outputs: SessionOutputs = self.session.run(vec![(input_name.as_str(), input_tensor)])
             .map_err(|e| YoloError::Custom(format!("ONNX inference failed: {e}")))?;
-        let infer_time = infer_start.elapsed();
 
         // Assume YOLOv11 output: [1, N, 4+num_classes] (N = number of predictions)
         let output = outputs[0]
@@ -232,25 +209,17 @@ impl YoloModelSession {
         let output = output.into_dimensionality::<ndarray::Ix2>()
             .map_err(|e| YoloError::Custom(format!("Failed to convert output to 2D array: {e}")))?;
         drop(outputs);
+        timing.infer = infer_start.elapsed().as_millis() as u16;
 
         // Postprocess
-        let postprocess_start = Instant::now();
-        let detections = self.postprocess(&output, scale, pad_left, pad_top, orig_w, orig_h);
-        let postprocess_time = postprocess_start.elapsed();
-
-        let total_time = total_start.elapsed();
-
-        println!("YOLO TIMING STATISTICS:");
-        println!("  Preprocess:   {:.2?}", preprocess_time);
-        println!("  Inference:    {:.2?}", infer_time);
-        println!("  Postprocess:  {:.2?}", postprocess_time);
-        println!("  Total:        {:.2?}\n", total_time);
+        let detections = self.postprocess(&output, scale, pad_left, pad_top, orig_w, orig_h, timing);
 
         Ok(detections)
     }
 
     /// Postprocess YOLO output: filter, rescale, and NMS
-    pub fn postprocess(&self, output: &ndarray::Array2<f32>, scale: f32, pad_left: u32, pad_top: u32, orig_w: f32, orig_h: f32) -> Vec<Detection> {
+    pub fn postprocess(&self, output: &ndarray::Array2<f32>, scale: f32, pad_left: u32, pad_top: u32, orig_w: f32, orig_h: f32, timing: &mut YoloTimingStats) -> Vec<Detection> {
+        let bbox_start = Instant::now();
         let mut boxes = Vec::new();
         for row in output.outer_iter() {
             let bbox = &row.slice(s![0..4]);
@@ -284,6 +253,9 @@ impl YoloModelSession {
                 score,
             ));
         }
+        timing.bbox = bbox_start.elapsed().as_millis() as u16;
+
+        let nms_start = Instant::now();
         // Sort by score descending
         boxes.sort_by(|a, b| b.2.partial_cmp(&a.2).unwrap());
         // Non-Maximum Suppression (NMS)
@@ -305,6 +277,7 @@ impl YoloModelSession {
                 }
             }
         }
+        timing.nms = nms_start.elapsed().as_millis() as u16;
         result
     }
 }
@@ -313,44 +286,39 @@ impl AsRef<ort::session::Session> for YoloModelSession {
     fn as_ref(&self) -> &ort::session::Session { &self.session }
 }
 
-// --- YAML label loading helper ---
-
-#[derive(Debug, Deserialize)]
-struct YamlLabels {
-    names: BTreeMap<u32, String>,
-}
-
-fn load_labels_from_yaml(yaml_path: impl AsRef<Path>) -> Result<Vec<Cow<'static, str>>, YoloError> {
-    let mut file = File::open(yaml_path.as_ref())
-        .map_err(|e| YoloError::Custom(format!("Failed to open YAML file: {e}")))?;
-    let mut contents = String::new();
-    file.read_to_string(&mut contents)
-        .map_err(|e| YoloError::Custom(format!("Failed to read YAML file: {e}")))?;
-    let parsed: YamlLabels = serde_yaml::from_str(&contents)
-        .map_err(|e| YoloError::Custom(format!("Failed to parse YAML: {e}")))?;
-    let mut names: Vec<(u32, String)> = parsed.names.into_iter().collect();
-    names.sort_by_key(|(idx, _)| *idx);
-    Ok(names.into_iter().map(|(_, name)| Cow::Owned(name)).collect())
-}
-
-use ort::metadata::ModelMetadata;
-
 fn load_labels_from_metadata(session: &Session) -> Result<Vec<Cow<'static, str>>, YoloError> {
     let metadata = session.metadata()
         .map_err(|e| YoloError::Custom(format!("Failed to get model metadata: {e}")))?;
 
-    // Get custom metadata property "names"
     let names_str = metadata.custom("names")
         .map_err(|e| YoloError::Custom(format!("Failed to get 'names' metadata: {e}")))?
         .ok_or_else(|| YoloError::Custom("No 'names' metadata found in ONNX model".to_string()))?;
 
-    // Parse as comma-separated list
-    let names: Vec<Cow<'static, str>> = names_str
-        .split(',')
-        .map(|s| Cow::Owned(s.trim().to_string()))
+    // Remove curly braces if present
+    let names_str = names_str.trim();
+    let names_str = names_str.strip_prefix('{').unwrap_or(names_str);
+    let names_str = names_str.strip_suffix('}').unwrap_or(names_str);
+
+    // Parse as dict: 0: 'person', 1: 'bicycle', ...
+    let mut labels: Vec<Option<Cow<'static, str>>> = Vec::new();
+    for s in names_str.split(',') {
+        let parts: Vec<&str> = s.split(':').collect();
+        if parts.len() == 2 {
+            if let Ok(idx) = parts[0].trim().parse::<usize>() {
+                let label = parts[1].trim().trim_matches('\'').trim_matches('"').to_string();
+                if labels.len() <= idx {
+                    labels.resize(idx + 1, None);
+                }
+                labels[idx] = Some(Cow::Owned(label));
+            }
+        }
+    }
+    // Flatten Option<Cow> to Cow, fallback to class_{i} if missing
+    let labels: Vec<Cow<'static, str>> = labels.into_iter().enumerate()
+        .map(|(i, l)| l.unwrap_or_else(|| Cow::Owned(format!("class_{i}"))))
         .collect();
 
-    Ok(names)
+    Ok(labels)
 }
 
 #[derive(Debug)]

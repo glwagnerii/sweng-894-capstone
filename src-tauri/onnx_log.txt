@@ -1,0 +1,18 @@
+   Compiling tauri-plugin-http v2.5.0
+   Compiling tauri-plugin-fs v2.4.0
+   Compiling ort-sys v2.0.0-rc.10
+   Compiling os_info v3.12.0
+   Compiling unsafe-libyaml v0.2.11
+   Compiling data-url v0.3.1
+   Compiling smallvec v2.0.0-alpha.10
+   Compiling sys-locale v0.3.2
+   Compiling tauri-plugin-log v2.6.0
+   Compiling tauri-plugin-sql v2.3.0
+   Compiling tauri-plugin-notification v2.3.0
+   Compiling image v0.25.6
+   Compiling ort v2.0.0-rc.10
+   Compiling tauri-plugin-os v2.3.0
+error: could not find native static library `onnx`, perhaps an -L flag is missing?
+
+error: could not compile `ort-sys` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

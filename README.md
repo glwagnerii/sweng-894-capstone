@@ -43,4 +43,9 @@ fn save_captured_image(image_data: String) -> Result<(), String> {
 ```
 
 
+ORT_LIB_LOCATION=/Users/Gerry.Wagner/develop/psueng/onnxruntime/build/iOS/Release ORT_LIB_PROFILE=Release-iphonesimulator cargo build --package Classifi-Cam --manifest-path /Users/Gerry.Wagner/develop/psueng/sweng-894-capstone/src-tauri/Cargo.toml --target aarch64-apple-ios-sim --lib --no-default-features > onnx_log.txt 2>&1
+
+
+https://download.onnxruntime.ai/pod-archive-onnxruntime-c-1.22.0.zip
+
 

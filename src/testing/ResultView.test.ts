@@ -4,6 +4,7 @@ import { render } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
 import { ResultView } from '../views'
 import * as store from '../store'
+import type { Timing } from '../store/appSlice'
 
 // Mock the store module
 vi.mock('../store', () => ({
@@ -38,6 +39,12 @@ describe('ResultView Component', () => {
             { class: 'Garlic', score: 0.8, bbox: [10, 10, 20, 20] },
             { class: 'Tomato', score: 0.7, bbox: [20, 20, 30, 30] },
           ])
+          return () => {}
+        },
+      }))
+      .mockImplementationOnce(() => ({
+        subscribe: (fn: (value: Timing) => void) => {
+          fn({ load: 0, init: 0, resize: 0, pad: 0, tensor: 0, infer: 0, bbox: 0, nms: 0, total: 0 })
           return () => {}
         },
       }))

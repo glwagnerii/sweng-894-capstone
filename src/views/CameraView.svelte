@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { detectPlatform } from '../store/appSlice'
+  import { detectPlatform, type InferResult } from '../store/appSlice'
   import { invoke } from '@tauri-apps/api/core'
   import { useDispatch } from '../store'
 
@@ -88,13 +88,16 @@
     await invoke('save_photo_base64', { base64, filename })
 
     /* run model inference (returns bounding-boxes, etc.) */
-    const detections = await invoke('infer_base64', { base64 })
+    const detections = await invoke('infer', { base64 })
 
     /* update global state & route to Results view */
     dispatch({
       type   : 'app/viewResults',
       payload: { name: filename, base64: previewImage, detections },
     })
+
+    const inferResult: InferResult = await invoke('infer', { base64 }) as InferResult
+    dispatch({ type: 'app/viewResults', payload: { name: filename, base64, detections: inferResult.detections, timing:inferResult.timing } })
 
     /* reset preview state */
     previewImage  = null

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { buttons } from './'
 import { type RootState } from '../store'
 import { type ViewName } from '../views'
+import { defaultTiming } from '../store/appSlice'
 
 // Mock RootState for visible/active tests
 
@@ -10,7 +11,7 @@ const mockState = (isDark: boolean, selected: ViewName): RootState => ({
     titleBar: { title: 'Mock Title', visible: true },
     theme: { name: isDark ? 'dark' : 'light', isDark },
     view: { selected, visible: true },
-    results:   { name:'', base64:'', detections:[] },
+    results:   { name:'', base64:'', detections:[], timing:defaultTiming },
     ingredient: { name:'beef' },
     recipe:     { id: '53071 ' },
     favorites: [],

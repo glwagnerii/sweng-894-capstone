@@ -2,10 +2,29 @@ import { createAsyncThunk, createSlice, type AsyncThunk, type PayloadActionCreat
 import { load } from '@tauri-apps/plugin-store'
 import { type ViewName } from '../views'
 
+export type Timing = {
+  load: number
+  init: number
+  resize: number
+  pad: number
+  tensor: number
+  infer: number
+  bbox: number
+  nms: number
+  total: number
+}
+
+export const defaultTiming: Timing = { load: 0, init: 0, resize: 0, pad: 0, tensor: 0, infer: 0, bbox: 0, nms: 0, total: 0 }
+
 export type Detection = {
   class: string
   score: number
   bbox: [number, number, number, number] // [x, y, width, height]
+}
+
+export type InferResult = {
+  detections: Detection[]
+  timing: Timing
 }
 
 export type Model = {
@@ -26,7 +45,7 @@ export interface App {
   titleBar:   { title: string, visible: boolean }
   view:       { selected: ViewName, visible: boolean }
   theme:      { name: string, isDark: boolean }
-  results:    { name: string, base64: string, detections: Detection[] }
+  results:    { name: string, base64: string, detections: Detection[], timing: Timing }
   ingredient: { name: string }
   recipe:     { id: string }
   favorites:  string[]
@@ -53,7 +72,7 @@ const app: App = {
     // isDark: window.matchMedia('(prefers-color-scheme: dark)').matches,
     isDark: true,
   },
-  results:    { name:'', base64:'', detections: [] },
+  results:    { name:'', base64:'', detections: [], timing:defaultTiming },
   ingredient: { name:'' },
   recipe:     { id: '' },
   favorites:  [],
