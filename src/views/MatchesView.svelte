@@ -14,10 +14,14 @@
 
 <div class="p-4">
   <h1 class="text-center text-2xl font-bold mb-2">Recipe List</h1>
-  {#if $mealsQuery?.isLoading}
-    <p>Loading meals...</p>
-  {:else if $mealsQuery?.error}
-    <p class="text-red-500">Failed to load meals.</p>
+  {#if !$ingredient}
+  <p class="text-center text-base-content/70 italic mt-6">
+    Please choose an ingredient or recipe to view matches.
+  </p>
+{:else if $mealsQuery?.isLoading}
+  <p>Loading meals...</p>
+{:else if $mealsQuery?.error}
+  <p class="text-red-500">Failed to load meals.</p>
   {:else if $mealsQuery?.data?.meals?.length}
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-testid="recipe-view">
       {#each $mealsQuery.data.meals as recipe (recipe.idMeal)}
@@ -34,6 +38,6 @@
       {/each}
     </div>
   {:else}
-    <p>No meals found.</p>
+  <p class="text-red-500">No meals found for “{$ingredient}”.</p>
   {/if}
 </div>
