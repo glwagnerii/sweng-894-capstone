@@ -15,6 +15,7 @@ const mockState = (isDark: boolean, selected: ViewName): RootState => ({
     recipe:     { id: '53071 ' },
     favorites: [],
     model: { selected: '' },
+    checklist: {},
     models: [],
   },
   api: {

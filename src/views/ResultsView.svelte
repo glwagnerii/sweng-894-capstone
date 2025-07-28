@@ -22,35 +22,45 @@
 
 <div class="p-4 flex flex-col items-center space-y-6 font-sans">
   <h1 class="text-2xl font-bold mb-2">Detection Results</h1>
-  <div class="text-lg mb-2">{ $imageName }</div>
 
-  <!-- Image Preview with Bounding Boxes -->
-  <div class="relative w-3/4 mx-auto">
-    <img
-      src={$imageSrc}
-      alt="Detected Item"
-      class="object-cover w-full h-auto rounded-xl shadow-md"
-      bind:this={imgEl}
-      on:load={handleImgLoad}
-      style="display: block;"
-    />
-    {#if imgLoaded && $detections.length > 0}
-      <svg class="absolute top-0 left-0 w-full h-full" viewBox={`0 0 ${imgEl?.width} ${imgEl?.height}`}>
-        {#each $detections as det (det)}
-          <Bbox det={det} imgEl={imgEl} />
-        {/each}
-      </svg>
-    {/if}
-  </div>
+  {#if !$imageSrc}
+    <p class="text-center text-base-content/70 italic mt-6 max-w-md">
+      No image loaded. Please take a photo using the Camera or upload one from your Library to begin detection.
+    </p>
+  {:else}
+    <div class="text-lg mb-2">{$imageName}</div>
 
-  <!-- Classification Results (list of detected classes) -->
-  <div class="flex flex-wrap justify-center gap-2">
-    {#each $detections as det (det)}
-      <button class="font-semibold py-2 px-4 rounded-full text-sm bg-secondary text-white" on:click={() => handleClick(det)}>
-        {det.class}
-      </button>
-    {/each}
-  </div>
+    <!-- Image Preview with Bounding Boxes -->
+    <div class="relative w-3/4 mx-auto">
+      <img
+        src={$imageSrc}
+        alt="Detected Item"
+        class="object-cover w-full h-auto rounded-xl shadow-md"
+        bind:this={imgEl}
+        on:load={handleImgLoad}
+        style="display: block;"
+      />
+      {#if imgLoaded && $detections.length > 0}
+        <svg class="absolute top-0 left-0 w-full h-full" viewBox={`0 0 ${imgEl?.width} ${imgEl?.height}`}>
+          {#each $detections as det (det)}
+            <Bbox det={det} imgEl={imgEl} />
+          {/each}
+        </svg>
+      {/if}
+    </div>
+
+    <!-- Classification Results (list of detected classes) -->
+    <div class="flex flex-wrap justify-center gap-2">
+      {#each $detections as det (det)}
+        <button
+          class="font-semibold py-2 px-4 rounded-full text-sm bg-secondary text-white"
+          on:click={() => handleClick(det)}
+        >
+          {det.class}
+        </button>
+      {/each}
+    </div>
+  {/if}
 
   <!-- Timing data -->
   <div class="w-3/4 mx-auto mt-4">
