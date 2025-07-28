@@ -5,14 +5,24 @@ use tauri::Manager;
 use tauri::path::BaseDirectory;
 
 mod model;
-use model::{YoloModelSession, Detection};
+use model::{YoloModelSession, Detection, YoloTimingStats};
+
+use base64::Engine;
 
 static YOLO_SESSION: OnceCell<Mutex<YoloModelSession>> = OnceCell::new();
+
+use serde::Serialize;
+
+#[derive(Serialize)]
+pub struct InferResult {
+    detections: Vec<Detection>,
+    timing: YoloTimingStats,
+}
 
 fn log_result<T, E: std::fmt::Debug>(result: Result<T, E>, action: &str) -> Result<T, String> {
     match result {
         Ok(val) => {
-            println!("success: {}\n", action);
+            println!("success: {}", action);
             Ok(val)
         },
         Err(e) => {
@@ -42,34 +52,38 @@ fn get_or_init_yolo(model_path: &str) -> Result<&'static Mutex<YoloModelSession>
 }
 
 #[tauri::command]
-async fn infer(handle: tauri::AppHandle, base64: String) -> Result<Vec<Detection>, String> {
-    use base64::Engine;
+async fn infer(handle: tauri::AppHandle, base64: String) -> Result<InferResult, String> {
     let total_start = Instant::now();
+    let mut timing = YoloTimingStats::default();
+
     let img_bytes = log_result(base64::engine::general_purpose::STANDARD.decode(&base64), "decode base64 image")?;
     let img_load_start = Instant::now();
     let img = log_result(image::load_from_memory(&img_bytes), "load image from memory")?;
-    let img_load_time = img_load_start.elapsed();
+    timing.load = img_load_start.elapsed().as_millis() as u16;
 
     let model_path = get_resource_path(&handle, "resources/models/yolo11n.onnx")?;
 
     let model_init_start = Instant::now();
     let yolo_mutex = get_or_init_yolo(&model_path)?;
     let mut yolo = yolo_mutex.lock().map_err(|_| "Failed to lock YOLO session".to_string())?;
-    let model_init_time = model_init_start.elapsed();
+    timing.init = model_init_start.elapsed().as_millis() as u16;
 
-    let infer_start = Instant::now();
-    let detections = log_result(yolo.infer(&img), "model inference")?;
-    let infer_time = infer_start.elapsed();
+    let detections = log_result(yolo.infer(&img, &mut timing), "model inference")?;
 
-    let total_time = total_start.elapsed();
+    timing.total = total_start.elapsed().as_millis() as u16;
 
-    println!("TIMING STATISTICS:");
-    println!("  Image load:   {:.2?}", img_load_time);
-    println!("  Model init:   {:.2?}", model_init_time);
-    println!("  Inference:    {:.2?}", infer_time);
-    println!("  Total:        {:.2?}\n", total_time);
+    println!("YOLO TIMING STATISTICS:");
+    println!("  Image Load:  {} ms", timing.load);
+    println!("  Model Init:  {} ms", timing.init);
+    println!("  Resize:      {} ms", timing.resize);
+    println!("  Padding:     {} ms", timing.pad);
+    println!("  ToTensor:    {} ms", timing.tensor);
+    println!("  Inference:   {} ms", timing.infer);
+    println!("  BBox:        {} ms", timing.bbox);
+    println!("  NMS:         {} ms", timing.nms);
+    println!("  Total:       {} ms\n", timing.total);
 
-    Ok(detections)
+    Ok(InferResult { detections, timing })
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

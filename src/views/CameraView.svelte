@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte'
-  import { detectPlatform } from '../store/appSlice'
+  import { detectPlatform, type InferResult } from '../store/appSlice'
   import { invoke } from '@tauri-apps/api/core'
   import { useDispatch } from '../store'
 
@@ -95,6 +95,9 @@
       type   : 'app/viewResults',
       payload: { name: filename, base64: previewImage, detections },
     })
+
+    const inferResult: InferResult = await invoke('infer', { base64 }) as InferResult
+    dispatch({ type: 'app/viewResults', payload: { name: filename, base64, detections: inferResult.detections, timing:inferResult.timing } })
 
     /* reset preview state */
     previewImage  = null

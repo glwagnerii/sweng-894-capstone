@@ -1,5 +1,26 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query'
 
+// import { type BaseQueryFn } from '@reduxjs/toolkit/query'
+// import { load } from '@tauri-apps/plugin-store'
+
+// const STORE = 'mealdb-cache.dat'
+// const persistentBaseQuery: BaseQueryFn = async (args, api, extraOptions) => {
+//   // Create a unique cache key
+//   const cacheKey = JSON.stringify(args)
+//   const store = await load(STORE, { autoSave: false })
+
+//   const cached = await store.get(cacheKey)
+//   if (cached) { return { data: cached } }
+
+//   // Otherwise, fetch from API
+//   const rawResult = await fetchBaseQuery({ baseUrl: 'https://www.themealdb.com/api/json/v1/1/' })(args, api, extraOptions)
+//   if (rawResult.data) {
+//     await store.set(cacheKey, rawResult.data)
+//     await store.save()
+//   }
+//   return rawResult
+// }
+
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({ baseUrl: 'https://www.themealdb.com/api/json/v1/1/' }),

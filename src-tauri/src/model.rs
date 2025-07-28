@@ -27,11 +27,24 @@ pub struct YoloModelSession {
     iou_thresh: f32
 }
 
-#[derive(serde::Serialize)]
+#[derive(serde::Serialize, Default)]
 pub struct Detection {
     pub class: String,
     pub score: f32,
     pub bbox: [f32; 4], // [x, y, width, height]
+}
+
+#[derive(serde::Serialize, Default)]
+pub struct YoloTimingStats {
+    pub load: u16,
+    pub init: u16,
+    pub resize: u16,
+    pub pad: u16,
+    pub tensor: u16,
+    pub infer: u16,
+    pub bbox: u16,
+    pub nms: u16,
+    pub total: u16,
 }
 
 impl YoloModelSession {
@@ -80,8 +93,7 @@ impl YoloModelSession {
     // pub fn set_labels(&mut self, labels: Vec<Cow<'static, str>>) { self.labels = labels }
 
     /// Preprocess image: resize with aspect ratio, pad, and convert to input tensor
-    fn preprocess(&self, image: &image::DynamicImage) -> Result<(ndarray::Array4<f32>, f32, u32, u32), YoloError> {
-        let start = Instant::now();
+    fn preprocess(&self, image: &image::DynamicImage, timing: &mut YoloTimingStats) -> Result<(ndarray::Array4<f32>, f32, u32, u32), YoloError> {
         let resize_start = Instant::now();
 
         let (input_w, input_h) = (640, 640);
@@ -117,8 +129,7 @@ impl YoloModelSession {
 
         // Old resizer = 266ms
         let resized = image.resize_exact(new_w, new_h, FilterType::Triangle).to_rgb8();
-
-        let resize_time = resize_start.elapsed();
+        timing.resize = resize_start.elapsed().as_millis() as u16;
 
         // Padding
         let pad_start = Instant::now();
@@ -126,7 +137,7 @@ impl YoloModelSession {
         // padded.copy_from(&resized.to_rgb8(), pad_left, pad_top)
         padded.copy_from(&resized, pad_left, pad_top)
             .map_err(|e| YoloError::Custom(format!("Failed to pad image: {e}")))?;
-        let pad_time = pad_start.elapsed();
+        timing.pad = pad_start.elapsed().as_millis() as u16;
 
         // To Tensor
         let tensor_start = Instant::now();
@@ -163,15 +174,7 @@ impl YoloModelSession {
         //     input[[0, 1, y as usize, x as usize]] = g as f32 / 255.0;
         //     input[[0, 2, y as usize, x as usize]] = b as f32 / 255.0;
         // }
-
-        let tensor_time = tensor_start.elapsed();
-
-        let total_time = start.elapsed();
-        println!("YOLO preprocess timing:");
-        println!("  Resize:   {:.2?}", resize_time);
-        println!("  Padding:  {:.2?}", pad_time);
-        println!("  ToTensor: {:.2?}", tensor_time);
-        println!("  Total:    {:.2?}\n", total_time);
+        timing.tensor = tensor_start.elapsed().as_millis() as u16;
 
         // let input = input.lock().unwrap();
         // Ok((input.clone(), scale, pad_left, pad_top))
@@ -180,13 +183,10 @@ impl YoloModelSession {
     }
 
     // pub fn infer(&self) -> Result<Vec<Detection>, YoloError> {
-    pub fn infer(&mut self, image: &image::DynamicImage) -> Result<Vec<Detection>, YoloError> {
-        let total_start = Instant::now();
+    pub fn infer(&mut self, image: &image::DynamicImage, timing: &mut YoloTimingStats) -> Result<Vec<Detection>, YoloError> {
 
         // Preprocess image
-        let preprocess_start = Instant::now();
-        let (input, scale, pad_left, pad_top) = self.preprocess(image)?;
-        let preprocess_time = preprocess_start.elapsed();
+        let (input, scale, pad_left, pad_top) = self.preprocess(image, timing)?;
 
         let orig_w = image.width() as f32;
         let orig_h = image.height() as f32;
@@ -198,7 +198,6 @@ impl YoloModelSession {
             .map_err(|e| YoloError::Custom(format!("Failed to create input tensor: {e}")))?;
         let outputs: SessionOutputs = self.session.run(vec![(input_name.as_str(), input_tensor)])
             .map_err(|e| YoloError::Custom(format!("ONNX inference failed: {e}")))?;
-        let infer_time = infer_start.elapsed();
 
         // Assume YOLOv11 output: [1, N, 4+num_classes] (N = number of predictions)
         let output = outputs[0]
@@ -210,25 +209,17 @@ impl YoloModelSession {
         let output = output.into_dimensionality::<ndarray::Ix2>()
             .map_err(|e| YoloError::Custom(format!("Failed to convert output to 2D array: {e}")))?;
         drop(outputs);
+        timing.infer = infer_start.elapsed().as_millis() as u16;
 
         // Postprocess
-        let postprocess_start = Instant::now();
-        let detections = self.postprocess(&output, scale, pad_left, pad_top, orig_w, orig_h);
-        let postprocess_time = postprocess_start.elapsed();
-
-        let total_time = total_start.elapsed();
-
-        println!("YOLO TIMING STATISTICS:");
-        println!("  Preprocess:   {:.2?}", preprocess_time);
-        println!("  Inference:    {:.2?}", infer_time);
-        println!("  Postprocess:  {:.2?}", postprocess_time);
-        println!("  Total:        {:.2?}\n", total_time);
+        let detections = self.postprocess(&output, scale, pad_left, pad_top, orig_w, orig_h, timing);
 
         Ok(detections)
     }
 
     /// Postprocess YOLO output: filter, rescale, and NMS
-    pub fn postprocess(&self, output: &ndarray::Array2<f32>, scale: f32, pad_left: u32, pad_top: u32, orig_w: f32, orig_h: f32) -> Vec<Detection> {
+    pub fn postprocess(&self, output: &ndarray::Array2<f32>, scale: f32, pad_left: u32, pad_top: u32, orig_w: f32, orig_h: f32, timing: &mut YoloTimingStats) -> Vec<Detection> {
+        let bbox_start = Instant::now();
         let mut boxes = Vec::new();
         for row in output.outer_iter() {
             let bbox = &row.slice(s![0..4]);
@@ -262,6 +253,9 @@ impl YoloModelSession {
                 score,
             ));
         }
+        timing.bbox = bbox_start.elapsed().as_millis() as u16;
+
+        let nms_start = Instant::now();
         // Sort by score descending
         boxes.sort_by(|a, b| b.2.partial_cmp(&a.2).unwrap());
         // Non-Maximum Suppression (NMS)
@@ -283,6 +277,7 @@ impl YoloModelSession {
                 }
             }
         }
+        timing.nms = nms_start.elapsed().as_millis() as u16;
         result
     }
 }
