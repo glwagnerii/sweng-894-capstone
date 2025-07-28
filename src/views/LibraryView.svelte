@@ -144,7 +144,7 @@
           <img
             src={`/photos/${file.name}`}
             alt={file.name}
-            class="w-[300px] h-[300px] object-cover rounded shadow"
+            class="w-[250px] h-[250px] object-cover rounded shadow"
           />
         </button>
         <div class="mt-2 break-all text-center text-sm">{file.name}</div>
