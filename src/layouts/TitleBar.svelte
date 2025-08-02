@@ -20,7 +20,6 @@
   const getOS = async () => {
     const info = `Platform: ${platform()}\nVersion: ${version()}\nType: ${type()}\nArch: ${arch()}\nLocale: ${await locale()}`
     await message(info, { title: 'Classific-Cam OS Information', kind:'info' })
-    console.log(info)
   }
 
   const openFolder = async () => {

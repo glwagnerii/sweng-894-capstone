@@ -175,7 +175,7 @@
   onDestroy(stopStream)
 </script>
 
-<div>
+<div id="view-camera" >
   {#if errorMessage}
     <p class="error text-red-600 text-sm">{errorMessage}</p>
   {:else if isPreviewing && previewImage}

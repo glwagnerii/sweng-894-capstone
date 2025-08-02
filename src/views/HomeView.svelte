@@ -37,7 +37,7 @@
 
 </script>
 
-<div class="flex flex-col items-center justify-start p-4 space-y-6 font-sans">
+<div id="view-home" class="flex flex-col items-center justify-start p-4 space-y-6 font-sans">
   <img src="photos/ClassifiCamLogo.png" alt="ClassifiCam Logo" class="w-64 h-60 object-cover rounded-xl shadow-md" />
 
   <SearchBox

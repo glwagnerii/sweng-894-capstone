@@ -12,7 +12,7 @@
   function handleRecipeClick(idMeal: string) { dispatch({ type: 'app/viewDetails', payload: { id: idMeal } }) }
 </script>
 
-<div class="p-4">
+<div id="view-matches" class="p-4">
   <h1 class="text-center text-2xl font-bold mb-2">Recipe List</h1>
   {#if !$ingredient}
   <p class="text-center text-base-content/70 italic mt-6">

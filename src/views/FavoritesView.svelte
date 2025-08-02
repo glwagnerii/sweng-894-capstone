@@ -41,7 +41,7 @@
   const remove = (id: string) => { dispatch(deleteFavorite(id)) }
 </script>
 
-<div class="p-4 flex flex-col justify-center max-w-5xl mx-auto space-y-6">
+<div id="view-favorites" class="p-4 flex flex-col justify-center max-w-5xl mx-auto space-y-6">
   <h1 class="text-2xl font-bold text-center">My Favorites</h1>
 
   <details class="dropdown" bind:open={openDropdown}>

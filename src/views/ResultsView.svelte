@@ -10,7 +10,6 @@
   const imageSrc = useSelector((state) => state.app.results.base64)
   const detections = useSelector((state) => state.app.results.detections)
   const timing = useSelector((state) => state.app.results.timing)
-  console.log($timing)
 
   let imgEl: HTMLImageElement | null = null
   let imgLoaded = false
@@ -20,7 +19,7 @@
   function handleClick(det: Detection) { dispatch({ type: 'app/viewMatches', payload: { name: det.class } }) }
 </script>
 
-<div class="p-4 flex flex-col items-center space-y-6 font-sans">
+<div id="view-results" class="p-4 flex flex-col items-center space-y-6 font-sans">
   <h1 class="text-2xl font-bold mb-2">Detection Results</h1>
 
   {#if !$imageSrc}

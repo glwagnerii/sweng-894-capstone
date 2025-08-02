@@ -55,7 +55,7 @@
 
 </script>
 
-<div class="w-full max-w-lg mx-auto px-4">
+<div id="view-setings" class="w-full max-w-lg mx-auto px-4">
   <h2 class="text-2xl font-bold my-6">Detection Settings</h2>
 
   <!-- Model Selection -->

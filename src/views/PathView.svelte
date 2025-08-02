@@ -41,7 +41,7 @@
   })
 </script>
 
-<div class="mx-auto mt-8 p-6 bg-white shadow-md border border-gray-200">
+<div id="view-path" class="mx-auto mt-8 p-6 bg-white shadow-md border border-gray-200">
   <h3 class="text-xl font-semibold mb-4 text-gray-800">Tauri BaseDirectory values:</h3>
   <ul class="divide-y divide-gray-200">
     {#each Object.entries(paths) as [name, entry] (name)}
