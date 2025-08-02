@@ -1,0 +1,3 @@
+[env]
+ORT_IOS_XCFWK_LOCATION="/Users/Gerry.Wagner/develop/psueng/sweng-894-capstone/src-tauri/gen/apple/Externals/onnxruntime.xcframework"
+ORT_EXT_IOS_XCFWK_LOCATION="/Users/Gerry.Wagner/develop/psueng/sweng-894-capstone/src-tauri/gen/apple/Externals/onnxruntime.xcframework"

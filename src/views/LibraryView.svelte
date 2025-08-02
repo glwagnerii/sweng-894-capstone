@@ -130,7 +130,7 @@
   }
 </script>
 
-<div class="p-4">
+<div id="view-library" class="p-4">
   <h1 class="text-center text-2xl font-bold mb-2">Photo Library</h1>
   <ul class="flex flex-wrap gap-4 justify-center px-6 py-4 list-none">
     {#each files as file (file.name)}

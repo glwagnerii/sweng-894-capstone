@@ -33,7 +33,7 @@
   $: checkedIngredients = $checklist[$recipeId]?.ingredients ?? []
 </script>
 
-<div class="p-4">
+<div id="view-details" class="p-4">
   <h1 class="text-center text-2xl font-bold mb-2">Recipe Details</h1>
   {#if !$recipeId}
     <p class="text-center text-base-content/70 italic mt-6">

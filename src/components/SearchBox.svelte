@@ -1,6 +1,6 @@
 <script lang="ts">
 
-  type SearchBoxProps = { id: string, label: string, options: string[], value: string, placeholder: string, onSearch: (newValue: string) => void }
+  type SearchBoxProps = { id: string, label: string, options: string[], value: string, placeholder: string, onSearch: () => void }
   let { id, label, options, value = $bindable(), placeholder, onSearch }: SearchBoxProps = $props()
 
   let ref: HTMLInputElement | null = $state(null)
@@ -14,7 +14,6 @@
   let showList = $state(false)
 
   function selectOption(option: string) {
-    console.log(option)
     value = option
     showList = false
   }
@@ -53,6 +52,6 @@
         </ul>
       {/if}
     </div>
-    <button class="btn btn-info" onclick={() => onSearch('hi')}>Search</button>
+    <button class="btn btn-info" onclick={() => onSearch()}>Search</button>
   </div>
 </div>

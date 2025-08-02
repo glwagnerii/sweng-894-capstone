@@ -1,4 +1,3 @@
-/// <reference types="vitest/globals" />
 import { vi } from 'vitest'
 
 import { describe, it, expect } from 'vitest'
