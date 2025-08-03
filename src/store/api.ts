@@ -40,6 +40,13 @@ export type Meal = {
   [key: string]: string | null | undefined
 }
 
+export type RecentMeal = {
+  idMeal: string;
+  strMeal: string;
+  strMealThumb?: string;
+  viewedAt: string; // ISO Date string
+}
+
 export const mealsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getMealsByIngredient: builder.query<{ meals: Meal[] }, string>({

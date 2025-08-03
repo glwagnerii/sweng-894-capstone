@@ -9,6 +9,7 @@
 
   const models = useSelector((state) => state.app.models)
   const selected = useSelector((state) => state.app.model.selected)
+  const recentExpireDays = useSelector((state) => state.app.recentExpireDays)
 
   const selectedModel = $derived($models.find((m) => m.file === $selected) || null)
 
@@ -18,6 +19,7 @@
   let iou  = $derived(selectedModel ? selectedModel.iou  : 0)
   let name = $derived(selectedModel ? selectedModel.name : '')
   let desc = $derived(selectedModel ? selectedModel.desc : '')
+  let recentExpireDaysStr = $derived(String($recentExpireDays))
 
   const handleSelectModel = () => { if (selectedModelFile !== $selected) { dispatch(selectModel(selectedModelFile)) } }
 
@@ -91,4 +93,15 @@
       </div>
     {/if}
   </div>
+</div>
+
+<div class="mb-4">
+  <label class="block font-semibold mb-2">Recent Activity Expiration (Days)</label>
+    <EditableField
+    id="recent-expire-days"
+    label="Expiration Days"
+    type="number"
+    bind:value={recentExpireDaysStr}
+    onSave={() => dispatch({ type: 'app/setRecentExpireDays', payload: parseInt(recentExpireDaysStr) })}
+  />
 </div>

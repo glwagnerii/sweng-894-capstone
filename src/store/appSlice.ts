@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, type AsyncThunk, type PayloadActionCreator } from '@reduxjs/toolkit'
 import { load } from '@tauri-apps/plugin-store'
 import { type ViewName } from '../views'
+import { type RecentMeal } from '../store/api'
 
 export type Timing = {
   load: number
@@ -51,6 +52,8 @@ export interface App {
   favorites:  string[]
   model:      Model
   models:     Models[]
+  recentsList: RecentMeal[]
+  recentExpireDays: number
   checklist: { [recipeId: string]: { instructions: number[], ingredients: number[] } }
 }
 
@@ -78,6 +81,8 @@ const app: App = {
   favorites:  [],
   model:      { selected:'' },
   models:     [],
+  recentsList: [],
+  recentExpireDays: 7,
   checklist: {},
 }
 
@@ -101,6 +106,7 @@ export const appSlice = createSlice({
     viewResults:   (state, action) => { if (action.payload) { state.results = action.payload }; state.view.selected = 'results' },
     viewSettings:  (state) => { state.view.selected = 'settings' },
 
+    //search reducers
     searchByName: (state, action) => {
       const name = action.payload?.name
       if (typeof name === 'string') {
@@ -117,6 +123,7 @@ export const appSlice = createSlice({
       }
     },
 
+    //favorites reducers
     _addFavorite:   (state, action) => {
       const favorite = action.payload
       if (favorite && !state.favorites.includes(favorite)) { state.favorites.push(favorite) }
@@ -154,6 +161,22 @@ export const appSlice = createSlice({
       state.checklist[recipeId] = { instructions: [], ingredients: [] }
     },
 
+    //recent history reducers
+    _addRecent: (state, action) => {
+      const recent = action.payload;
+      state.recentsList = [
+        recent,
+        ...state.recentsList.filter((r) => r.idMeal !== recent.idMeal)
+      ];
+    },
+    _deleteRecent: (state, action) => {
+      const idMeal = action.payload // idMeal: string
+      state.recentsList = state.recentsList.filter((r) => r.idMeal !== idMeal)
+    },
+    setRecentExpireDays: (state, action) => {
+      state.recentExpireDays = action.payload;
+    },
+
     // model reducers
     _addModel: (state, action) => {
       const model = action.payload
@@ -178,6 +201,7 @@ export const appSlice = createSlice({
       .addCase(getModels.fulfilled, (state, action) => { state.models = action.payload })
       .addCase(getModel.fulfilled, (state, action) => { state.model = action.payload })
       .addCase(getChecklist.fulfilled, (state, action) => { state.checklist = action.payload })
+      .addCase(getRecents.fulfilled, (state, action) => { state.recentsList = action.payload })
   },
 })
 
@@ -207,6 +231,7 @@ const FAV_KEY = 'favorites'
 const MODELS_KEY = 'models'
 const MODEL_KEY = 'model'
 const CHECKLIST_KEY = 'checklist'
+const RECENTS_KEY = 'recents'
 
 function createSaveThunk<T>(key: string, selector: (state: App) => T) {
   return createAsyncThunk(
@@ -232,25 +257,35 @@ function createGetThunk<T>(key: string, defaultValue: T) {
   )
 }
 
+//favorites thunk
 export const saveFavorites = createSaveThunk(FAV_KEY, (app) => app.favorites)
 export const getFavorites = createGetThunk<string[]>(FAV_KEY, [])
+//ai model thunks
 export const saveModels = createSaveThunk(MODELS_KEY, (app) => app.models)
 export const getModels = createGetThunk<Models[]>(MODELS_KEY, [])
 export const saveModel = createSaveThunk(MODEL_KEY, (app) => app.model)
 export const getModel = createGetThunk<Model>(MODEL_KEY, { selected: '' })
+//checkboxes
 export const saveChecklist = createSaveThunk(CHECKLIST_KEY, (app) => app.checklist)
 export const getChecklist = createGetThunk<App['checklist']>(CHECKLIST_KEY, {})
+// Save & Load Thunks for Recents
+export const saveRecents = createSaveThunk(RECENTS_KEY, (app) => app.recentsList)
+export const getRecents = createGetThunk<RecentMeal[]>(RECENTS_KEY, [])
 
 // Thunks that wrap reducer actions for favorites and models, then persist changes to storage.
 // Use these instead of dispatching the reducer actions directly to ensure state is saved.
-
+//favorites
 export const addFavorite    = createActionAndSaveThunk('app/addFavorite',    appSlice.actions._addFavorite,    saveFavorites)
 export const deleteFavorite = createActionAndSaveThunk('app/deleteFavorite', appSlice.actions._deleteFavorite, saveFavorites)
+//checkboxes
 export const toggleInstructionCheck = createActionAndSaveThunk('app/toggleInstructionCheck', appSlice.actions._toggleInstructionCheck, saveChecklist)
 export const toggleIngredientCheck = createActionAndSaveThunk('app/toggleIngredientCheck', appSlice.actions._toggleIngredientCheck, saveChecklist)
-
+//recents
+export const addRecentRecipe = createActionAndSaveThunk('app/addRecentRecipe', appSlice.actions._addRecent, saveRecents)
+export const deleteRecentRecipe = createActionAndSaveThunk('app/deleteRecentRecipe', appSlice.actions._deleteRecent, saveRecents)
+//ai models
 export const addModel    = createActionAndSaveThunk('app/addModel',    appSlice.actions._addModel,    saveModels)
 export const deleteModel = createActionAndSaveThunk('app/deleteModel', appSlice.actions._deleteModel, saveModels)
 export const updateModel = createActionAndSaveThunk('app/updateModel', appSlice.actions._updateModel, saveModels)
-
 export const selectModel = createActionAndSaveThunk('app/selectModel', appSlice.actions._selectModel, saveModel)
+
