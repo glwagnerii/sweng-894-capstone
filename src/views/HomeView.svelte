@@ -105,7 +105,7 @@
       <h2 class="text-md font-semibold">Recent Activity</h2>
       <button
         class="text-sm underline transition"
-        onclick={() => console.log('See more clicked')}
+        onclick={() => dispatch({ type: 'app/viewRecents' })}
       >
         See more
       </button>
@@ -116,7 +116,7 @@
     {:else if error}
       <p class="text-red-500">{error}</p>
     {:else if $recentsList.length}
-      <ul class="list bg-base-100 rounded-box shadow-md overflow-y-auto max-h-80">
+      <ul class="list bg-base-300 rounded-box shadow-md overflow-y-auto max-h-80">
         {#each $recentsList.slice(0, 5) as recent (recent.idMeal)}
           <li class="list-row flex items-center justify-between">
 
