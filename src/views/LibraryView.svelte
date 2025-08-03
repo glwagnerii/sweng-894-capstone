@@ -136,6 +136,7 @@
     {#each files as file (file.name)}
       <li class="flex flex-col items-center max-w-[400px]">
         <button
+          data-testid={`btn-${file.name}`}
           type="button"
           class="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
           on:click={() => handleImageClick(file)}

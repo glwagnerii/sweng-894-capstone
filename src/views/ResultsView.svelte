@@ -65,18 +65,18 @@
       <div class="collapse collapse-arrow bg-base-200 rounded-box">
         <input type="checkbox" class="peer" />
         <div class="collapse-title text-base font-semibold cursor-pointer leading-tight">
-          Inference Timing ({$timing.total} ms)
+          {`Inference Timing (${$timing.total} ms)`}
         </div>
         <div class="collapse-content mt-0">
           <div class="grid grid-cols-2 gap-2 text-sm">
-            <div>Image Load:</div> <div class="text-right">{$timing.load} ms</div>
-            <div>Model Init:</div> <div class="text-right">{$timing.init} ms</div>
-            <div>Resize:</div> <div class="text-right">{$timing.resize} ms</div>
-            <div>Padding:</div> <div class="text-right">{$timing.pad} ms</div>
-            <div>ToTensor:</div> <div class="text-right">{$timing.tensor} ms</div>
-            <div>Inference:</div> <div class="text-right">{$timing.infer} ms</div>
-            <div>BBox:</div> <div class="text-right">{$timing.bbox} ms</div>
-            <div>NMS:</div> <div class="text-right">{$timing.nms} ms</div>
+            <div>Image Load:</div> <div class="text-right">{`${$timing.load} ms`}</div>
+            <div>Model Init:</div> <div class="text-right">{`${$timing.init} ms`}</div>
+            <div>Resize:</div>     <div class="text-right">{`${$timing.resize} ms`}</div>
+            <div>Padding:</div>    <div class="text-right">{`${$timing.pad} ms`}</div>
+            <div>ToTensor:</div>   <div class="text-right">{`${$timing.tensor} ms`}</div>
+            <div>Inference:</div>  <div class="text-right">{`${$timing.infer} ms`}</div>
+            <div>BBox:</div>       <div class="text-right">{`${$timing.bbox} ms`}</div>
+            <div>NMS:</div>        <div class="text-right">{`${$timing.nms} ms`}</div>
           </div>
         </div>
       </div>
