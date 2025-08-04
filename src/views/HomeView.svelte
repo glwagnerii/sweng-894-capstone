@@ -12,7 +12,7 @@
   const recipe = useSelector((state) => state.app.recipe.id)
   const recentsList = useSelector((state) => state.app.recentsList)
 
-  let ingredient = $derived($name);
+  let ingredient = $derived($name)
   let mealName = $derived(allMealsData.meals.find((item: { idMeal?: string }) => item.idMeal === $recipe)?.strMeal ?? '')
 
   let recentMeals: Record<string, RecentMeal> = $state({})
@@ -20,9 +20,9 @@
   let error: string | null = $state(null)
 
   async function fetchRecents() {
-    loading = true;
-    error = null;
-    recentMeals = {};
+    loading = true
+    error = null
+    recentMeals = {}
     try {
       console.log('Fetching Recents List:', $recentsList)
       for (const recent of $recentsList) {
@@ -33,9 +33,10 @@
             idMeal: meal.idMeal,
             strMeal: meal.strMeal,
             strMealThumb: meal.strMealThumb,
-            viewedAt: recent.viewedAt
-          };
-        } else {
+            viewedAt: recent.viewedAt,
+          }
+        }
+        else {
           console.warn(`Mismatch or missing meal for ID: ${recent.idMeal}`)
         }
       }
@@ -48,8 +49,8 @@
   onMount(() => { fetchRecents() })
 
   function searchByName() {
-    const found = allMealsData.meals.find((item: { strMeal?: string }) => item.strMeal === mealName);
-    dispatch({ type: 'app/viewDetails', payload: { id: found?.idMeal } });
+    const found = allMealsData.meals.find((item: { strMeal?: string }) => item.strMeal === mealName)
+    dispatch({ type: 'app/viewDetails', payload: { id: found?.idMeal } })
   }
 
   function searchByIngredient() {
@@ -120,7 +121,12 @@
         {#each $recentsList.slice(0, 5) as recent (recent.idMeal)}
           <li class="list-row flex items-center justify-between">
 
-            <div class="flex items-center space-x-2 cursor-pointer" onclick={() => openRecipe(recent.idMeal)}>
+            <button
+              type="button"
+              class="flex items-center space-x-2 cursor-pointer bg-transparent border-0 p-0 focus:outline-none"
+              onclick={() => openRecipe(recent.idMeal)}
+              aria-label={`View details for ${recentMeals[recent.idMeal]?.strMeal ?? 'meal'}`}
+            >
               <!-- Thumbnail -->
               <div>
                 <img src={recentMeals[recent.idMeal]?.strMealThumb} alt={recentMeals[recent.idMeal]?.strMeal} class="w-10 h-10 object-cover rounded" />
@@ -130,7 +136,7 @@
                 <div class="text-sm font-medium">{recentMeals[recent.idMeal]?.strMeal}</div>
                 <div class="text-xs text-base-content/70">Viewed on {formatViewedAt(recent.viewedAt)}</div>
               </div>
-            </div>
+            </button>
             <!-- Delete Button -->
             <button class="btn btn-sm btn-error btn-circle btn-ghost" title="Remove" onclick={() => remove(recent.idMeal)}>✕</button>
           </li>

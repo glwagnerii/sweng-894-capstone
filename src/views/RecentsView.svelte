@@ -5,7 +5,7 @@
     import { deleteRecentRecipe } from '../store/appSlice'
 
     const dispatch = useDispatch()
-    const recipe = useSelector((state) => state.app.recipe.id)
+    // const recipe = useSelector((state) => state.app.recipe.id)
     const recentsList = useSelector((state) => state.app.recentsList)
     const openRecipe = (id: string) => { dispatch({ type: 'app/viewDetails', payload: { id } }) }
     const remove = (id: string) => { dispatch(deleteRecentRecipe(id)).then(() => fetchRecents()) }
@@ -15,44 +15,45 @@
     let error: string | null = $state(null)
 
     async function fetchRecents() {
-        loading = true;
-        error = null;
-        recentMeals = {};
-        try {
+      loading = true
+      error = null
+      recentMeals = {}
+      try {
         console.log('Fetching Recents List:', $recentsList)
         for (const recent of $recentsList) {
-            const result = await dispatch(mealsApi.endpoints.getMealById.initiate(recent.idMeal)).unwrap()
-            const meal = result.meals?.[0]
-            if (meal && meal.idMeal === recent.idMeal) {
+          const result = await dispatch(mealsApi.endpoints.getMealById.initiate(recent.idMeal)).unwrap()
+          const meal = result.meals?.[0]
+          if (meal && meal.idMeal === recent.idMeal) {
             recentMeals[recent.idMeal] = {
-                idMeal: meal.idMeal,
-                strMeal: meal.strMeal,
-                strMealThumb: meal.strMealThumb,
-                viewedAt: recent.viewedAt
-            };
-            } else {
-            console.warn(`Mismatch or missing meal for ID: ${recent.idMeal}`)
+              idMeal: meal.idMeal,
+              strMeal: meal.strMeal,
+              strMealThumb: meal.strMealThumb,
+              viewedAt: recent.viewedAt,
             }
+          }
+          else {
+            console.warn(`Mismatch or missing meal for ID: ${recent.idMeal}`)
+          }
         }
         console.log('Recent Meals Loaded:', Object.values(recentMeals))
-        }
-        catch { error = 'Failed to load recent meals' }
-        finally { loading = false }
+      }
+      catch { error = 'Failed to load recent meals' }
+      finally { loading = false }
     }
 
     onMount(() => { fetchRecents() })
 
     // Derived value for sorted recents (descending by date)
     const sortedRecents = $derived(
-        $recentsList.slice().sort((a, b) => new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime())
+      $recentsList.slice().sort((a, b) => new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()),
     )
 
     function formatViewedAt(dateStr: string): string {
-        const date = new Date(dateStr)
-        const day = String(date.getDate()).padStart(2, '0')
-        const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase()
-        const year = String(date.getFullYear()).slice(-2)
-        return `${day}${month}${year}`
+      const date = new Date(dateStr)
+      const day = String(date.getDate()).padStart(2, '0')
+      const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase()
+      const year = String(date.getFullYear()).slice(-2)
+      return `${day}${month}${year}`
     }
 
 </script>
@@ -85,4 +86,3 @@
         </div>
     {/if}
 </div>
-

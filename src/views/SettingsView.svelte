@@ -106,11 +106,10 @@
 </div>
 
 <div class="mb-4">
-  <label class="block font-semibold mb-2">Recent Activity Expiration (Days)</label>
-    <EditableField
+  <label class="block font-semibold mb-2" for="recent-expire-days">Recent Activity Expiration (Days)</label>
+  <EditableField
     id="recent-expire-days"
     label="Expiration Days"
-    type="number"
     bind:value={recentExpireDaysStr}
     onSave={() => dispatch({ type: 'app/setRecentExpireDays', payload: parseInt(recentExpireDaysStr) })}
   />

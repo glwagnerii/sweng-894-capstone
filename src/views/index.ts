@@ -24,7 +24,7 @@ export const views = tView({
   matches:   { component: MatchesView },
   path:      { component: PathView },
   results:   { component: ResultView },
-  recents:   { component: RecentsView},
+  recents:   { component: RecentsView },
   settings:  { component: SettingsView },
 })
 export type ViewName = keyof typeof views

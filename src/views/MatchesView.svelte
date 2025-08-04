@@ -16,7 +16,7 @@
       idMeal: idMeal,
       strMeal: name,
       strMealThumb: thumbnail,
-      viewedAt: new Date().toISOString()
+      viewedAt: new Date().toISOString(),
     }))
     dispatch({ type: 'app/viewDetails', payload: { id: idMeal } })
   }
@@ -38,7 +38,7 @@
           <button
             type="button"
             class="flex bg-base-200 items-center rounded-xl p-3 shadow-md w-full text-left hover:bg-base-300 transition"
-            onclick={() => handleRecipeClick(recipe.idMeal, recipe.strMeal, recipe.strMealThumb)}
+            onclick={() => handleRecipeClick(recipe.idMeal ?? '', recipe.strMeal ?? '', recipe.strMealThumb ?? '')}
           >
             <img src={recipe.strMealThumb} alt={recipe.strMeal} class="w-16 h-16 rounded-lg object-cover mr-4" />
             <div>

@@ -25,7 +25,7 @@
 
   async function copyToClipboard() {
     const meal = $recipeQuery?.data?.meals?.[0]
-    if (!meal) return;
+    if (!meal) return
 
     const ingredients = Array(20).fill(0).map((_, i) => {
       const ingredient = meal['strIngredient' + (i + 1)]
@@ -43,13 +43,14 @@
       Instructions: ${instructions}
       ${meal.strYoutube ? `Watch on YouTube: ${meal.strYoutube}` : ''}
       `.trim()
-        try {
-           await navigator.clipboard.writeText(text)
-          alert('Recipe copied to clipboard!')
-        } catch (err) {
-          console.error('Failed to copy', err)
-          alert('Failed to copy recipe.')
-        }
+    try {
+      await navigator.clipboard.writeText(text)
+      alert('Recipe copied to clipboard!')
+    }
+    catch (err) {
+      console.error('Failed to copy', err)
+      alert('Failed to copy recipe.')
+    }
   }
 
   $: checkedInstructions = $checklist[$recipeId]?.instructions ?? []

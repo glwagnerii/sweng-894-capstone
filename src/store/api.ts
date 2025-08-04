@@ -41,10 +41,10 @@ export type Meal = {
 }
 
 export type RecentMeal = {
-  idMeal: string;
-  strMeal: string;
-  strMealThumb?: string;
-  viewedAt: string; // ISO Date string
+  idMeal: string
+  strMeal: string
+  strMealThumb?: string
+  viewedAt: string // ISO Date string
 }
 
 export const mealsApi = api.injectEndpoints({
