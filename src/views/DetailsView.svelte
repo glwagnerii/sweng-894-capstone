@@ -10,24 +10,18 @@
   const favoriteIds = useSelector((state) => state.app.favorites)
   const recipeQuery = useSelector((state) => mealsApi.endpoints.getMealById.select($recipeId)(state))
   const checklist = useSelector((state) => state.app.checklist)
+
   onMount(() => { dispatch(mealsApi.endpoints.getMealById.initiate($recipeId)) })
 
-  function isFavorite(id: string) {
-    return $favoriteIds.includes(id)
-  }
+  const isFavorite = (id: string) => $favoriteIds.includes(id)
 
-  function toggleFavorite(id: string) {
+  const toggleFavorite = (id: string) => {
     if (isFavorite(id)) { dispatch(deleteFavorite(id)) }
     else { dispatch(addFavorite(id)) }
   }
 
-  function toggleInstruction(index: number) {
-    dispatch(toggleInstructionCheck({ recipeId: $recipeId, index }))
-  }
-
-  function toggleIngredient(index: number) {
-    dispatch(toggleIngredientCheck({ recipeId: $recipeId, index }))
-  }
+  const toggleInstruction = (index: number) => { dispatch(toggleInstructionCheck({ recipeId: $recipeId, index })) }
+  const toggleIngredient  = (index: number) => { dispatch(toggleIngredientCheck({ recipeId: $recipeId, index })) }
 
   async function copyToClipboard() {
     const meal = $recipeQuery?.data?.meals?.[0]
@@ -136,7 +130,7 @@
                 <span class:line-through={checkedIngredients.includes(i)}>
                   {$recipeQuery.data.meals[0]['strIngredient' + i]}
                   {#if $recipeQuery.data.meals[0]['strMeasure' + i]?.trim()}
-                    - {$recipeQuery.data.meals[0]['strMeasure' + i]}
+                    {`- ${$recipeQuery.data.meals[0]['strMeasure' + i]}`}
                   {/if}
                 </span>
               </li>
