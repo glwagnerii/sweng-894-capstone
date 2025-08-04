@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import { useSelector, useDispatch } from './store'
-  import { getFavorites, getModels, getModel } from './store/appSlice'
+  import { getFavorites, getRecents, getModels, getModel } from './store/appSlice'
   import { StatusBar, TitleBar, ViewContainer } from './layouts'
 
   import clsx from 'clsx'
@@ -16,6 +16,8 @@
 
   onMount(() => {
     dispatch(getFavorites())
+    dispatch(getRecents())
+    dispatch(getRecents())
     dispatch(getModels())
     dispatch(getModel())
   })

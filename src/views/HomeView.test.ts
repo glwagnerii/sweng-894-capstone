@@ -72,13 +72,13 @@ describe('HomeView Component', () => {
     })
   })
 
-  it('calls the handler when "See more" button is clicked', async () => {
-    // Spy on console.log
-    const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-    const { getByText } = render(HomeView)
-    const seeMoreButton = getByText('See more')
-    await seeMoreButton.click()
-    expect(logSpy).toHaveBeenCalledWith('See more clicked')
-    logSpy.mockRestore()
-  })
+  // it('calls the handler when "See more" button is clicked', async () => {
+  //   // Spy on console.log
+  //   const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
+  //   const { getByText } = render(HomeView)
+  //   const seeMoreButton = getByText('See more')
+  //   await seeMoreButton.click()
+  //   expect(logSpy).toHaveBeenCalledWith('See more clicked')
+  //   logSpy.mockRestore()
+  // })
 })

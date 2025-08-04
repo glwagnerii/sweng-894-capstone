@@ -23,6 +23,36 @@
   const toggleInstruction = (index: number) => { dispatch(toggleInstructionCheck({ recipeId: $recipeId, index })) }
   const toggleIngredient  = (index: number) => { dispatch(toggleIngredientCheck({ recipeId: $recipeId, index })) }
 
+  async function copyToClipboard() {
+    const meal = $recipeQuery?.data?.meals?.[0]
+    if (!meal) return
+
+    const ingredients = Array(20).fill(0).map((_, i) => {
+      const ingredient = meal['strIngredient' + (i + 1)]
+      const measure = meal['strMeasure' + (i + 1)]
+      return ingredient && ingredient.trim() ? `${ingredient}${measure ? ` - ${measure}` : ''}` : null
+    }).filter(Boolean).join('\n')
+
+    const instructions = meal.strInstructions?.trim() ?? ''
+
+    const text = `
+      ${meal.strMeal}
+      Category: ${meal.strCategory}
+      Area: ${meal.strArea}
+      Ingredients: ${ingredients}
+      Instructions: ${instructions}
+      ${meal.strYoutube ? `Watch on YouTube: ${meal.strYoutube}` : ''}
+      `.trim()
+    try {
+      await navigator.clipboard.writeText(text)
+      alert('Recipe copied to clipboard!')
+    }
+    catch (err) {
+      console.error('Failed to copy', err)
+      alert('Failed to copy recipe.')
+    }
+  }
+
   $: checkedInstructions = $checklist[$recipeId]?.instructions ?? []
   $: checkedIngredients = $checklist[$recipeId]?.ingredients ?? []
 </script>
@@ -59,6 +89,9 @@
             {:else}
               ❤ Add to Favorites
             {/if}
+          </button>
+          <button type="button" class="btn btn-sm btn-outline btn-warning" onclick={() => copyToClipboard()}>
+            Copy Recipe
           </button>
         </div>
         <p><strong>Area:</strong> {$recipeQuery.data.meals[0].strArea}</p>
