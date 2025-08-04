@@ -14,13 +14,13 @@
   const score = `(${(det.score * 100).toFixed(0)}%)`
   let labelWidth = $state(0)
 
-  onMount(() => labelWidth = textEl.getComputedTextLength() + 14)
+  onMount(() => labelWidth = (typeof textEl?.getComputedTextLength === 'function') ? textEl.getComputedTextLength() + 14 : 100)
 </script>
 
 <g>
   <rect x={x} y={y} width={w} height={h} class="fill-none stroke-red-500 stroke-2"/>
   <rect x={x} y={y} width={labelWidth} height="16" class="fill-red-500 opacity-60 rounded" rx="4" ry="4"/>
   <text bind:this={textEl} x={x + 8} y={y + 12} class="fill-white text-[15px] font-medium drop-shadow">
-    {det.class} {score}
+    {`${det.class} ${score}`}
   </text>
 </g>
