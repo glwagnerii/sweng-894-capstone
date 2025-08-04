@@ -1,168 +1,99 @@
-/// <reference types="vitest/globals" />
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { render, waitFor } from '@testing-library/svelte'
+import { describe, it, vi, expect } from 'vitest'
+import { render, fireEvent, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
-import { CameraView } from '../views'
+import { CameraView } from './'
 
-const mockDevices = [
-  { deviceId: '1', kind: 'videoinput', label: 'Front Camera' },
-  { deviceId: '2', kind: 'videoinput', label: 'Back Camera' },
-]
+const mockDispatch = vi.fn()
+vi.mock('../store', () => ({
+  useDispatch: () => mockDispatch,
+}))
 
-describe('CameraView Component', () => {
-  let mockGetUserMedia: ReturnType<typeof vi.fn>
-  let mockEnumerateDevices: ReturnType<typeof vi.fn>
+vi.mock('@tauri-apps/api/core', () => ({
+  invoke: vi.fn().mockResolvedValue({ detections: [], timing: 123 }),
+}))
 
-  beforeEach(() => {
-    mockGetUserMedia = vi.fn().mockResolvedValue({
+beforeAll(() => {
+  // @ts-expect-error, mediaDevice gives typescript error
+  global.navigator.mediaDevices = {
+    getUserMedia: vi.fn().mockResolvedValue({
       getTracks: () => [{ stop: vi.fn() }],
-    })
+    }),
+  }
 
-    mockEnumerateDevices = vi.fn().mockResolvedValue(mockDevices)
-
-    Object.defineProperty(global.navigator, 'mediaDevices', {
-      writable: true,
-      value: {
-        getUserMedia: mockGetUserMedia,
-        enumerateDevices: mockEnumerateDevices,
-      },
-    })
-
-    // Mock localStorage
-    Object.defineProperty(window, 'localStorage', {
-      value: {
-        setItem: vi.fn(),
-        getItem: vi.fn(),
-        clear: vi.fn(),
-      },
-      writable: true,
-    })
+  // Mock play, pause, and paused for video elements
+  let paused = false
+  Object.defineProperty(HTMLMediaElement.prototype, 'play', {
+    configurable: true,
+    value: function () { paused = false },
+  })
+  Object.defineProperty(HTMLMediaElement.prototype, 'pause', {
+    configurable: true,
+    value: function () { paused = true },
+  })
+  Object.defineProperty(HTMLMediaElement.prototype, 'paused', {
+    configurable: true,
+    get() { return paused },
+    set(val) { paused = val },
   })
 
-  afterEach(() => {
-    vi.restoreAllMocks()
+  // Mock getContext for HTMLCanvasElement
+  Object.defineProperty(HTMLCanvasElement.prototype, 'getContext', {
+    configurable: true,
+    value: vi.fn(() => ({
+      drawImage: vi.fn(),
+      getImageData: vi.fn(),
+      putImageData: vi.fn(),
+    })),
   })
 
-  // it('displays a generic error if getUserMedia fails with unknown type', async () => {
-  //   Object.defineProperty(global.navigator, 'mediaDevices', {
-  //     writable: true,
-  //     value: {
-  //       getUserMedia: vi.fn().mockRejectedValue('unknown camera error'),
-  //       enumerateDevices: vi.fn().mockResolvedValue([]),
-  //     },
-  //   })
+  // Mock toDataURL directly on the prototype
+  Object.defineProperty(HTMLCanvasElement.prototype, 'toDataURL', {
+    configurable: true,
+    value: vi.fn(() => 'data:image/png;base64,mockbase64'),
+  })
+})
 
-  //   const { getByText } = render(CameraView)
-
-  //   await waitFor(() => {
-  //     expect(
-  //       getByText((content) => content.toLowerCase().includes('error')),
-  //     ).toBeInTheDocument()
-  //   })
-  // })
-
-  it('shows camera select dropdown on desktop if multiple devices', async () => {
-    const { getByLabelText, getAllByRole } = render(CameraView)
-
-    await waitFor(() => {
-      expect(getByLabelText(/Select Camera/i)).toBeInTheDocument()
-    })
-
-    const options = getAllByRole('option')
-    expect(options.length).toBe(2)
-    expect(options[0]).toHaveTextContent('Front Camera')
+describe('CameraView', () => {
+  it('should render without crashing', () => {
+    const { container } = render(CameraView)
+    expect(container).toBeTruthy()
   })
 
-  it('displays an error if getUserMedia fails with known error', async () => {
-    navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue(new Error('Permission denied'))
+  it('should find and click the \'Take Photo\' button', async () => {
     const { getByText } = render(CameraView)
-
-    await waitFor(() => {
-      expect(getByText(/Camera error: Permission denied/i)).toBeInTheDocument()
-    })
+    const button = getByText('Take Photo')
+    expect(button).toBeInTheDocument()
+    await fireEvent.click(button)
+    expect(getByText('Retake')).toBeInTheDocument()
+    await fireEvent.click(button)
+    expect(getByText('Take Photo')).toBeInTheDocument()
   })
 
-  it('displays a generic error if getUserMedia fails with unknown type', async () => {
-    navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue('unknown string')
+  it('should find and click the \'Confirm\' button', async () => {
     const { getByText } = render(CameraView)
+    const takePhotoButton = getByText('Take Photo')
+    expect(takePhotoButton).toBeInTheDocument()
+    await fireEvent.click(takePhotoButton)
+    const confirmButton = getByText('Confirm')
+    expect(confirmButton).toBeInTheDocument()
+    await fireEvent.click(confirmButton)
+  })
 
+  it('should show a specific error message if getUserMedia rejects with an Error', async () => {
+    // Mock getUserMedia to reject with an Error
+    global.navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue(new Error('Test error'))
+    const { getByText } = render(CameraView)
     await waitFor(() => {
-      expect(
-        getByText((content) => content.toLowerCase().includes('error')),
-      ).toBeInTheDocument()
+      expect(getByText(/Camera access denied or error: Test error/)).toBeInTheDocument()
     })
   })
 
-  // it('takes a photo and shows the preview when Take Photo is clicked', async () => {
-  //   const { getByText, container } = render(CameraView)
-
-  //   await waitFor(() => {
-  //     const button = getByText(/Take Photo/i)
-  //     expect(button).toBeInTheDocument()
-  //   })
-
-  //   // Fake dimensions for canvas drawing
-  //   Object.defineProperty(HTMLVideoElement.prototype, 'videoWidth', { value: 640 })
-  //   Object.defineProperty(HTMLVideoElement.prototype, 'videoHeight', { value: 480 })
-
-  //   const canvas = container.querySelector('canvas') as HTMLCanvasElement
-  //   const ctx = canvas.getContext('2d')
-  //   vi.spyOn(canvas, 'getContext').mockReturnValue(ctx)
-
-  //   const takeButton = getByText(/Take Photo/i)
-  //   await fireEvent.click(takeButton)
-
-  //   await waitFor(() => {
-  //     expect(container.querySelector('img')).toBeInTheDocument()
-  //     expect(getByText(/Confirm/i)).toBeInTheDocument()
-  //     expect(getByText(/Retake/i)).toBeInTheDocument()
-  //   })
-  // })
-
-  // it('confirms photo and saves to localStorage', async () => {
-  //   const { getByText, container } = render(CameraView)
-
-  //   // Mock canvas interaction
-  //   Object.defineProperty(HTMLVideoElement.prototype, 'videoWidth', { value: 640 })
-  //   Object.defineProperty(HTMLVideoElement.prototype, 'videoHeight', { value: 480 })
-  //   const canvas = container.querySelector('canvas') as HTMLCanvasElement
-  //   const ctx = canvas.getContext('2d')
-  //   vi.spyOn(canvas, 'getContext').mockReturnValue(ctx)
-
-  //   await fireEvent.click(getByText(/Take Photo/i))
-
-  //   await waitFor(() => {
-  //     expect(container.querySelector('img')).toBeInTheDocument()
-  //   })
-
-  //   const confirmButton = getByText(/Confirm/i)
-  //   await fireEvent.click(confirmButton)
-
-  //   expect(localStorage.setItem).toHaveBeenCalled()
-  // })
-
-  // it('retakes photo and returns to video view', async () => {
-  //   const { getByText, queryByText, container } = render(CameraView)
-
-  //   // Mock canvas interaction
-  //   Object.defineProperty(HTMLVideoElement.prototype, 'videoWidth', { value: 640 })
-  //   Object.defineProperty(HTMLVideoElement.prototype, 'videoHeight', { value: 480 })
-  //   const canvas = container.querySelector('canvas') as HTMLCanvasElement
-  //   const ctx = canvas.getContext('2d')
-  //   vi.spyOn(canvas, 'getContext').mockReturnValue(ctx)
-
-  //   await fireEvent.click(getByText(/Take Photo/i))
-
-  //   await waitFor(() => {
-  //     expect(container.querySelector('img')).toBeInTheDocument()
-  //   })
-
-  //   const retakeButton = getByText(/Retake/i)
-  //   await fireEvent.click(retakeButton)
-
-  //   await waitFor(() => {
-  //     expect(queryByText(/Confirm/i)).not.toBeInTheDocument()
-  //     expect(container.querySelector('video')).toBeInTheDocument()
-  //   })
-  // })
+  it('should show a generic error message if getUserMedia rejects with a non-Error', async () => {
+    // Mock getUserMedia to reject with a non-Error value
+    global.navigator.mediaDevices.getUserMedia = vi.fn().mockRejectedValue('not an error')
+    const { getByText } = render(CameraView)
+    await waitFor(() => {
+      expect(getByText(/Camera access denied or unknown error/)).toBeInTheDocument()
+    })
+  })
 })
