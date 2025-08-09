@@ -30,7 +30,7 @@
     <div class="text-lg mb-2">{$imageName}</div>
 
     <!-- Image Preview with Bounding Boxes -->
-    <div class="relative w-3/4 mx-auto">
+    <div class="relative w-full px-2 mx-auto">
       <img
         src={$imageSrc}
         alt="Detected Item"
@@ -61,7 +61,7 @@
     </div>
 
     <!-- Timing data -->
-    <div class="w-3/4 mx-auto mt-4">
+    <div class="w-full px-2 mx-auto mt-4">
       <div class="collapse collapse-arrow bg-base-200 rounded-box">
         <input type="checkbox" class="peer" />
         <div class="collapse-title text-base font-semibold cursor-pointer leading-tight">
