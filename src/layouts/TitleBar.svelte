@@ -8,7 +8,7 @@
   const dispatch = useDispatch()
 
   const title = ''
-  const openGoogle = async () => { await openUrl('https://www.google.com') }
+  const openGithub = async () => { await openUrl('https://github.com/glwagnerii/sweng-894-capstone') }
 
   let popoverMenu: HTMLUListElement | null = null
 
@@ -34,7 +34,7 @@
 
 <div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>
   <div class='flex items-center h-full min-w-min nodrag order-0'>
-    <Button name='classificam' btnClass={btnClass} onClick={() => openGoogle()} labelRight>Classifi-Cam</Button>
+    <Button name='classificam' btnClass={btnClass} onClick={() => openGithub()} labelRight>Classifi-Cam</Button>
   </div>
   <div class='flex items-center justify-center mx-2 h-full max-w-max min-w-0 order-1'>
     <div class='block flex-shrink truncate selected'>{title}</div>

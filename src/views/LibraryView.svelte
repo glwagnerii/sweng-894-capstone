@@ -132,9 +132,9 @@
 
 <div id="view-library" class="p-4">
   <h1 class="text-center text-2xl font-bold mb-2">Photo Library</h1>
-  <ul class="flex flex-wrap gap-4 justify-center px-6 py-4 list-none">
+  <ul class="grid gap-3 justify-center px-2 py-4 list-none grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
     {#each files as file (file.name)}
-      <li class="flex flex-col items-center max-w-[400px]">
+      <li class="flex flex-col items-center w-full max-w-[170px] sm:max-w-[233px]">
         <button
           data-testid={`btn-${file.name}`}
           type="button"
@@ -145,7 +145,7 @@
           <img
             src={`/photos/${file.name}`}
             alt={file.name}
-            class="w-[250px] h-[250px] object-cover rounded shadow"
+            class="w-full aspect-square object-cover rounded shadow"
           />
         </button>
         <div class="mt-2 break-all text-center text-sm">{file.name}</div>

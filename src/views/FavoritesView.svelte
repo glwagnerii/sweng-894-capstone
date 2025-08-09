@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import { SvelteSet } from 'svelte/reactivity'
   import { useSelector, useDispatch } from '../store'
   import { mealsApi, type Meal } from '../store/api'
   import { deleteFavorite } from '../store/appSlice'
@@ -28,7 +29,7 @@
           if (meal.strCategory) categories.add(meal.strCategory)
         }
       }
-      categories = new Set(categories)
+      categories = new SvelteSet(categories)
     }
     catch { error = 'Failed to load meals' }
     finally { loading = false }
@@ -65,19 +66,30 @@
   {:else if !$favoriteIds.length}
     <p class="text-center opacity-60">No Recipes Have Been Added to Your Favorites.</p>
   {:else}
-    <div class="grid justify-between gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+    <div class="grid grid-cols-2 gap-3 sm:grid-cols-2 md:grid-cols-3 px-2">
       {#each $favoriteIds as id (id)}
         {#if meals[id] && (!selectedCategory || meals[id].strCategory === selectedCategory)}
-          <div class="card justify-center bg-base-200 shadow-md hover:shadow-lg transition border border-accent">
-            <button type="button" class="w-full h-40 overflow-hidden" onclick={() => openRecipe(id)}>
-              <img src={meals[id].strMealThumb} alt={meals[id].strMeal} class="w-full h-full object-cover" />
-            </button>
-            <div class="card-body p-4 rounded-b">
-              <h2 class="card-title text-base">{meals[id].strMeal}</h2>
-              <div class="card-actions justify-between mt-2">
-                <button class="btn btn-sm btn-secondary" onclick={() => openRecipe(id)}>View</button>
-                <button class="btn btn-sm btn-error btn-circle" title="Remove" onclick={() => remove(id)}>✕</button>
-              </div>
+          <div class="card bg-base-200 shadow-md hover:shadow-lg transition border border-accent w-full max-w-[233px] aspect-square mx-auto flex flex-col p-0">
+            <div class="relative w-full" style="height:calc(100% - 48px);">
+              <button
+                type="button"
+                class="absolute top-1 right-1 z-10 btn btn-sm btn-error btn-circle"
+                title="Remove"
+                onclick={() => remove(id)}
+                aria-label="Remove from favorites"
+              >✕</button>
+              <button
+                type="button"
+                class="w-full h-full"
+                onclick={() => openRecipe(id)}
+                aria-label={`Open recipe ${meals[id].strMeal}`}
+                style="padding:0; border:none; background:transparent;"
+              >
+                <img src={meals[id].strMealThumb} alt={meals[id].strMeal} class="w-full h-full object-cover" />
+              </button>
+            </div>
+            <div class="card-body p-3 rounded-b h-12 flex items-center justify-center">
+              <h2 class="card-title text-base text-center w-full">{meals[id].strMeal}</h2>
             </div>
           </div>
         {/if}
