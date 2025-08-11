@@ -19,7 +19,7 @@
   let iou  = $derived(selectedModel ? selectedModel.iou  : 0)
   let name = $derived(selectedModel ? selectedModel.name : '')
   let desc = $derived(selectedModel ? selectedModel.desc : '')
-  let recentExpireDaysStr = $derived(String($recentExpireDays))
+  let recentExpireDaysStr = $state(String($recentExpireDays))
 
   const handleSelectModel = () => { if (selectedModelFile !== $selected) { dispatch(selectModel(selectedModelFile)) } }
 
@@ -53,6 +53,18 @@
     catch (e) {
       await message(`Failed to add model. ${String(e)}`)
     }
+  }
+
+  function saveRecentExpireDays() {
+  // recentExpireDaysStr may be a number (from the number input) or a string (initialized)
+    const raw = recentExpireDaysStr as unknown
+    const parsed = typeof raw === 'number' ? raw : Number.parseInt(String(raw), 10)
+
+    const fallback = $recentExpireDays || 7
+    const n = Math.max(1, Math.min(365, Number.isFinite(parsed) ? parsed : fallback))
+
+    recentExpireDaysStr = String(n)
+    dispatch({ type: 'app/setRecentExpireDays', payload: n })
   }
 
 </script>
@@ -103,14 +115,29 @@
       </div>
     {/if}
   </div>
-</div>
+  <!-- Recent Activity Expiration (inline label + boxed, editable value) -->
+  <div class="mt-6">
+    <div class="flex items-center gap-3">
+      <label for="recent-expire-days" class="font-semibold whitespace-nowrap">
+        Expiration Days
+      </label>
 
-<div class="mb-4">
-  <label class="block font-semibold mb-2" for="recent-expire-days">Recent Activity Expiration (Days)</label>
-  <EditableField
-    id="recent-expire-days"
-    label="Expiration Days"
-    bind:value={recentExpireDaysStr}
-    onSave={() => dispatch({ type: 'app/setRecentExpireDays', payload: parseInt(recentExpireDaysStr) })}
-  />
+      <input
+        id="recent-expire-days"
+        class="input input-bordered input-sm w-24 text-center"
+        type="number"
+        min="1"
+        max="365"
+        step="1"
+        bind:value={recentExpireDaysStr}
+        inputmode="numeric"
+        aria-describedby="expire-help"
+      />
+
+      <button class="btn btn-sm btn-primary" onclick={saveRecentExpireDays}>Save</button>
+    </div>
+    <div id="expire-help" class="mt-1 text-xs text-base-content/60">
+      Choose how long to keep Recent Activity (1–365 days).
+    </div>
+  </div>
 </div>

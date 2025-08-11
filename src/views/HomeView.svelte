@@ -77,71 +77,113 @@
   const remove = (id: string) => { dispatch(deleteRecentRecipe(id)).then(() => fetchRecents()) }
 </script>
 
-<div id="view-home" class="flex flex-col items-center justify-start p-4 space-y-6 font-sans">
-  <img src="photos/ClassifiCamLogo.png" alt="ClassifiCam Logo" class="w-64 h-60 object-cover rounded-xl shadow-md" />
+<!-- Outer wrapper centers the content; inner is exactly 75% of viewport width on md+ -->
+<div class="w-full min-h-[100svh] flex justify-center items-start py-6">
+  <div
+    id="view-home"
+    class="w-[92vw] md:w-[75vw] flex flex-col items-center justify-start px-4 md:px-6
+           gap-[clamp(0.75rem,2.2vw,2rem)] font-sans"
+  >
+    <!-- Logo scales more generously so it doesn't look tiny on large windows -->
+    <img
+      src="photos/ClassifiCamLogo.png"
+      alt="ClassifiCam Logo"
+      class="w-[clamp(10rem,30vw,24rem)] h-[clamp(9rem,27vw,22rem)]
+             object-cover rounded-xl shadow-md"
+    />
 
-  <SearchBox
-    id="mealNameSearch"
-    label="Search Recipe by Name"
-    options={mealNameOptions}
-    bind:value={mealName}
-    placeholder="e.g., Arrabiata"
-    onSearch={searchByName}
-  />
-
-  <SearchBox
-    id="ingredientSearch"
-    label="Search Recipes by Ingredient"
-    options={ingredientOptions}
-    bind:value={ingredient}
-    placeholder="e.g., beef"
-    onSearch={searchByIngredient}
-  />
-
-  <!-- Recent Activity Section -->
-  <div class="w-full max-w-xs mt-6">
-    <div class="flex items-center justify-between mb-2">
-      <h2 class="text-md font-semibold">Recent Activity</h2>
-      <button
-        class="text-sm underline transition"
-        onclick={() => dispatch({ type: 'app/viewRecents' })}
-      >
-        See more
-      </button>
+    <!-- Search by Name -->
+    <div class="w-full flex justify-center">
+      <div class="w-full md:w-2/3 max-w-[48rem] mx-auto">
+        <SearchBox
+          id="mealNameSearch"
+          label="Search Recipe by Name"
+          options={mealNameOptions}
+          bind:value={mealName}
+          placeholder="e.g., Arrabiata"
+          onSearch={searchByName}
+        />
+      </div>
     </div>
 
-    {#if loading}
-      <p>Loading recent activity...</p>
-    {:else if error}
-      <p class="text-red-500">{error}</p>
-    {:else if $recentsList.length}
-      <ul class="list bg-base-300 rounded-box shadow-md overflow-y-auto max-h-80">
-        {#each $recentsList.slice(0, 5) as recent (recent.idMeal)}
-          <li class="list-row flex items-center justify-between">
+    <!-- Search by Ingredient -->
+    <div class="w-full flex justify-center">
+      <div class="w-full md:w-2/3 max-w-[48rem] mx-auto">
+        <SearchBox
+          id="ingredientSearch"
+          label="Search Recipes by Ingredient"
+          options={ingredientOptions}
+          bind:value={ingredient}
+          placeholder="e.g., beef"
+          onSearch={searchByIngredient}
+        />
+      </div>
+    </div>
 
-            <button
-              type="button"
-              class="flex items-center space-x-2 cursor-pointer bg-transparent border-0 p-0 focus:outline-none"
-              onclick={() => openRecipe(recent.idMeal)}
-              aria-label={`View details for ${recentMeals[recent.idMeal]?.strMeal ?? 'meal'}`}
-            >
-              <!-- Thumbnail -->
-              <div>
-                <img src={recentMeals[recent.idMeal]?.strMealThumb} alt={recentMeals[recent.idMeal]?.strMeal} class="w-10 h-10 object-cover rounded" />
-              </div>
-              <!-- Meal Name & Date -->
-              <div>
-                <div class="text-sm font-medium">{recentMeals[recent.idMeal]?.strMeal}</div>
-                <div class="text-xs text-base-content/70">Viewed on {formatViewedAt(recent.viewedAt)}</div>
-              </div>
-            </button>
-            <!-- Delete Button -->
-            <button class="btn btn-sm btn-error btn-circle btn-ghost" title="Remove" onclick={() => remove(recent.idMeal)}>✕</button>
-          </li>
-        {/each}
-      </ul>
-    {:else}
-      <p class="text-sm text-gray-500">No recent activity.</p>
-    {/if}
+    <!-- Recent Activity Section -->
+    <div class="w-full md:w-[clamp(24rem,50vw,44rem)] mt-2">
+      <div class="flex items-center justify-between mb-2">
+        <h2 class="font-semibold text-[clamp(1rem,0.8rem+0.6vw,1.25rem)]">Recent Activity</h2>
+        <button
+          class="text-[clamp(0.85rem,0.75rem+0.35vw,1rem)] underline transition"
+          onclick={() => dispatch({ type: 'app/viewRecents' })}
+        >
+          See more
+        </button>
+      </div>
+
+      {#if loading}
+        <p class="text-[clamp(0.9rem,0.8rem+0.3vw,1rem)]">Loading recent activity...</p>
+      {:else if error}
+        <p class="text-red-500 text-[clamp(0.9rem,0.8rem+0.3vw,1rem)]">{error}</p>
+      {:else if $recentsList.length}
+        <ul
+          class="list bg-base-300 rounded-box shadow-md overflow-y-auto
+                 max-h-[clamp(12rem,30vh,24rem)]"
+        >
+          {#each $recentsList.slice(0, 5) as recent (recent.idMeal)}
+            <li class="list-row flex items-center justify-between px-2">
+              <button
+                type="button"
+                class="flex items-center gap-3 cursor-pointer bg-transparent border-0 p-2 focus:outline-none"
+                onclick={() => openRecipe(recent.idMeal)}
+                aria-label={`View details for ${recentMeals[recent.idMeal]?.strMeal ?? 'meal'}`}
+              >
+                <!-- Thumbnail -->
+                <div class="shrink-0">
+                  <img
+                    src={recentMeals[recent.idMeal]?.strMealThumb}
+                    alt={recentMeals[recent.idMeal]?.strMeal}
+                    class="w-[clamp(2.6rem,2.6vw,3.4rem)] h-[clamp(2.6rem,2.6vw,3.4rem)] object-cover rounded"
+                  />
+                </div>
+                <!-- Meal Name & Date -->
+                <div class="text-left">
+                  <div class="font-medium text-[clamp(0.95rem,0.85rem+0.4vw,1.05rem)] leading-tight">
+                    {recentMeals[recent.idMeal]?.strMeal}
+                  </div>
+                  <div class="text-base-content/70 text-[clamp(0.75rem,0.7rem+0.35vw,0.95rem)] leading-tight">
+                    Viewed on {formatViewedAt(recent.viewedAt)}
+                  </div>
+                </div>
+              </button>
+              <!-- Delete Button grows on larger windows -->
+              <button
+                class="btn btn-error btn-circle btn-ghost
+                       h-[clamp(1.9rem,1.2rem+1.7vw,2.4rem)]
+                       w-[clamp(1.9rem,1.2rem+1.7vw,2.4rem)]
+                       text-[clamp(0.9rem,0.8rem+0.35vw,1.1rem)]"
+                title="Remove"
+                onclick={() => remove(recent.idMeal)}
+              >
+                ✕
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="text-[clamp(0.9rem,0.8rem+0.3vw,1rem)] text-base-content/70">No recent activity.</p>
+      {/if}
+    </div>
   </div>
 </div>

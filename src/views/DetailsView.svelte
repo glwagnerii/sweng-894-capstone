@@ -36,13 +36,16 @@
     const instructions = meal.strInstructions?.trim() ?? ''
 
     const text = `
-      ${meal.strMeal}
-      Category: ${meal.strCategory}
-      Area: ${meal.strArea}
-      Ingredients: ${ingredients}
-      Instructions: ${instructions}
-      ${meal.strYoutube ? `Watch on YouTube: ${meal.strYoutube}` : ''}
-      `.trim()
+${meal.strMeal}
+Category: ${meal.strCategory}
+Area: ${meal.strArea}
+Ingredients:
+${ingredients}
+
+Instructions:
+${instructions}
+${meal.strYoutube ? `Watch on YouTube: ${meal.strYoutube}` : ''}`.trim()
+
     try {
       await navigator.clipboard.writeText(text)
       alert('Recipe copied to clipboard!')
@@ -57,105 +60,153 @@
   $: checkedIngredients = $checklist[$recipeId]?.ingredients ?? []
 </script>
 
-<div id="view-details" class="p-4">
-  <h1 class="text-center text-2xl font-bold mb-2">Recipe Details</h1>
-  {#if !$recipeId}
-    <p class="text-center text-base-content/70 italic mt-6">
-      Please select a recipe to view its details.
-    </p>
-  {:else if $recipeQuery?.isLoading}
-    <p>Loading recipe...</p>
-  {:else if $recipeQuery?.error}
-    <p class="text-red-500">Failed to load recipe.</p>
-  {:else if $recipeQuery?.data?.meals}
-    <div class="max-w-xl mx-auto bg-base-100 rounded-xl p-6 space-y-4">
-      <h3 class="text-2xl font-bold text-center mb-2">{$recipeQuery.data.meals[0].strMeal}</h3>
+<!-- 75% lane on desktop, centered; fluid spacing -->
+<div class="w-full min-h-[100svh] flex justify-center items-start py-6">
+  <div
+    id="view-details"
+    class="w-[92vw] md:w-[75vw] flex flex-col items-center
+           gap-[clamp(0.75rem,2vw,1.5rem)] font-sans"
+  >
+    <h1 class="text-center font-bold text-[clamp(1.25rem,1rem+1.2vw,2rem)]">
+      Recipe Details
+    </h1>
 
-      <img
-        src="{$recipeQuery.data.meals[0].strMealThumb}"
-        alt="{$recipeQuery.data.meals[0].strMeal}"
-        class="mx-auto w-80 h-auto rounded-lg shadow border-2 border-base-300"
-      />
+    {#if !$recipeId}
+      <p class="text-center text-base-content/70 italic mt-6 max-w-prose px-4
+                text-[clamp(0.95rem,0.9rem+0.3vw,1.1rem)]">
+        Please select a recipe to view its details.
+      </p>
+    {:else if $recipeQuery?.isLoading}
+      <p class="text-[clamp(0.95rem,0.9rem+0.3vw,1.1rem)]">Loading recipe...</p>
+    {:else if $recipeQuery?.error}
+      <p class="text-error text-[clamp(0.95rem,0.9rem+0.3vw,1.1rem)]">Failed to load recipe.</p>
+    {:else if $recipeQuery?.data?.meals}
+      <div class="w-full md:w-[clamp(28rem,60vw,56rem)] mx-auto bg-base-100 rounded-2xl
+                  p-[clamp(1rem,2.5vw,2rem)] shadow-md space-y-[clamp(0.75rem,2vw,1.25rem)]">
+        <h3 class="text-center font-bold text-[clamp(1.25rem,1rem+1vw,1.8rem)] mb-1">
+          {$recipeQuery.data.meals[0].strMeal}
+        </h3>
 
-      <div class="flex flex-col md:flex-row md:justify-between text-base-content">
-        <p><strong>Category:</strong> {$recipeQuery.data.meals[0].strCategory}</p>
-        <div class="text-center">
-          <button
-            type="button"
-            class="btn btn-sm btn-outline btn-warning"
-            onclick={() => toggleFavorite($recipeQuery.data.meals[0].idMeal)}>
-            {#if isFavorite($recipeQuery.data.meals[0].idMeal)}
-              💔 Remove from Favorites
-            {:else}
-              ❤ Add to Favorites
-            {/if}
-          </button>
-          <button type="button" class="btn btn-sm btn-outline btn-warning" onclick={() => copyToClipboard()}>
-            Copy Recipe
-          </button>
+        <img
+          src="{$recipeQuery.data.meals[0].strMealThumb}"
+          alt="{$recipeQuery.data.meals[0].strMeal}"
+          class="mx-auto w-full max-w-[clamp(14rem,40vw,24rem)] h-auto
+                 rounded-xl shadow border border-base-300 bg-base-200/40"
+          decoding="async"
+        />
+
+        <!-- Meta + actions -->
+        <div class="grid w-full items-center gap-3 md:grid-cols-3">
+          <p class="text-[clamp(0.95rem,0.9rem+0.3vw,1.05rem)] md:justify-self-start">
+            <strong>Category:</strong> {$recipeQuery.data.meals[0].strCategory}
+          </p>
+
+          <div class="flex flex-wrap justify-center gap-2">
+            <button
+              type="button"
+              class="btn btn-outline btn-warning
+                     text-[clamp(0.85rem,0.8rem+0.3vw,1rem)]
+                     h-[clamp(2.1rem,2rem+0.6vw,2.6rem)]"
+              onclick={() => toggleFavorite($recipeQuery.data.meals[0].idMeal)}
+            >
+              {#if isFavorite($recipeQuery.data.meals[0].idMeal)}
+                💔 Remove from Favorites
+              {:else}
+                ❤ Add to Favorites
+              {/if}
+            </button>
+
+            <button
+              type="button"
+              class="btn btn-outline btn-warning
+                     text-[clamp(0.85rem,0.8rem+0.3vw,1rem)]
+                     h-[clamp(2.1rem,2rem+0.6vw,2.6rem)]"
+              onclick={copyToClipboard}
+            >
+              Copy Recipe
+            </button>
+          </div>
+
+          <p class="text-[clamp(0.95rem,0.9rem+0.3vw,1.05rem)] md:justify-self-end">
+            <strong>Area:</strong> {$recipeQuery.data.meals[0].strArea}
+          </p>
         </div>
-        <p><strong>Area:</strong> {$recipeQuery.data.meals[0].strArea}</p>
-      </div>
 
-      <!-- Instructions with Checkboxes -->
-      <div>
-        <h4 class="font-semibold mt-4 mb-2">Instructions:</h4>
-        <ul class="space-y-2 list-none">
-          {#each ($recipeQuery.data.meals[0]?.strInstructions?.split('.').filter((step) => step.trim() !== '') ?? []) as step, i (i)}
-            <li class="flex items-start space-x-2">
-              <input
-                type="checkbox"
-                class="checkbox checkbox-accent"
-                checked={checkedInstructions.includes(i)}
-                onchange={() => toggleInstruction(i)}
-              />
-              <span class:line-through={checkedInstructions.includes(i)}>{step.trim()}.</span>
-            </li>
-          {/each}
-        </ul>
-      </div>
-
-      <!-- Ingredients with Checkboxes -->
-      <div>
-        <h4 class="font-semibold mt-4 mb-2">Ingredients:</h4>
-        <ul class="space-y-1 list-none">
-          {#each Array(20).fill(0).map((_, i) => i + 1) as i (i)}
-            {#if $recipeQuery.data.meals[0]['strIngredient' + i]?.trim()}
-              <li class="flex items-start space-x-2">
+        <!-- Instructions -->
+        <div>
+          <h4 class="font-semibold mt-2 mb-2 text-[clamp(1rem,0.95rem+0.4vw,1.15rem)]">Instructions:</h4>
+          <ul class="space-y-2 list-none">
+            {#each ($recipeQuery.data.meals[0]?.strInstructions?.split('.').filter((step) => step.trim() !== '') ?? []) as step, i (i)}
+              <li class="flex items-start gap-2">
                 <input
                   type="checkbox"
-                  class="checkbox checkbox-success"
-                  checked={checkedIngredients.includes(i)}
-                  onchange={() => toggleIngredient(i)}
+                  class="checkbox checkbox-accent
+                         w-[clamp(1rem,0.9rem+0.4vw,1.25rem)]
+                         h-[clamp(1rem,0.9rem+0.4vw,1.25rem)]"
+                  checked={checkedInstructions.includes(i)}
+                  onchange={() => toggleInstruction(i)}
                 />
-                <span class:line-through={checkedIngredients.includes(i)}>
-                  {$recipeQuery.data.meals[0]['strIngredient' + i]}
-                  {#if $recipeQuery.data.meals[0]['strMeasure' + i]?.trim()}
-                    {`- ${$recipeQuery.data.meals[0]['strMeasure' + i]}`}
-                  {/if}
+                <span
+                  class:line-through={checkedInstructions.includes(i)}
+                  class="text-[clamp(0.95rem,0.9rem+0.3vw,1.05rem)] leading-snug"
+                >
+                  {step.trim()}.
                 </span>
               </li>
-            {/if}
-          {/each}
-        </ul>
-      </div>
-
-      <!-- YouTube Link -->
-      {#if $recipeQuery.data.meals[0].strYoutube}
-        <div class="text-center mt-6">
-          <a
-            href={$recipeQuery.data.meals[0].strYoutube}
-            target="_blank"
-            rel="noopener"
-            class="btn btn-sm btn-primary gap-2">
-            ▶ Watch on YouTube
-          </a>
+            {/each}
+          </ul>
         </div>
-      {/if}
-    </div>
-  {:else}
-    <p class="text-red-500">No recipe found for the selected ID.</p>
-  {/if}
+
+        <!-- Ingredients -->
+        <div>
+          <h4 class="font-semibold mt-2 mb-2 text-[clamp(1rem,0.95rem+0.4vw,1.15rem)]">Ingredients:</h4>
+          <ul class="space-y-1 list-none">
+            {#each Array(20).fill(0).map((_, i) => i + 1) as i (i)}
+              {#if $recipeQuery.data.meals[0]['strIngredient' + i]?.trim()}
+                <li class="flex items-start gap-2">
+                  <input
+                    type="checkbox"
+                    class="checkbox checkbox-success
+                           w-[clamp(1rem,0.9rem+0.4vw,1.25rem)]
+                           h-[clamp(1rem,0.9rem+0.4vw,1.25rem)]"
+                    checked={checkedIngredients.includes(i)}
+                    onchange={() => toggleIngredient(i)}
+                  />
+                  <span
+                    class:line-through={checkedIngredients.includes(i)}
+                    class="text-[clamp(0.95rem,0.9rem+0.3vw,1.05rem)] leading-snug"
+                  >
+                    {$recipeQuery.data.meals[0]['strIngredient' + i]}
+                    {#if $recipeQuery.data.meals[0]['strMeasure' + i]?.trim()}
+                      {` - ${$recipeQuery.data.meals[0]['strMeasure' + i]}`}
+                    {/if}
+                  </span>
+                </li>
+              {/if}
+            {/each}
+          </ul>
+        </div>
+
+        <!-- YouTube Link -->
+        {#if $recipeQuery.data.meals[0].strYoutube}
+          <div class="text-center mt-4">
+            <a
+              href={$recipeQuery.data.meals[0].strYoutube}
+              target="_blank"
+              rel="noopener"
+              class="btn btn-primary normal-case
+                     text-[clamp(0.9rem,0.85rem+0.35vw,1.05rem)]
+                     h-[clamp(2.3rem,2.1rem+0.7vw,2.8rem)]"
+            >
+              ▶ Watch on YouTube
+            </a>
+          </div>
+        {/if}
+      </div>
+    {:else}
+      <p class="text-error text-[clamp(0.95rem,0.9rem+0.3vw,1.1rem)]">No recipe found for the selected ID.</p>
+    {/if}
+  </div>
 </div>
 
 <style>

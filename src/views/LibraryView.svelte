@@ -9,10 +9,7 @@
   const files: File[] = [
     {
       name: 'bailey.jpeg',
-      infer: {
-        timing: defaultTiming,
-        detections: [],
-      },
+      infer: { timing: defaultTiming, detections: [] },
     },
     {
       name: 'ingredients4.jpg',
@@ -125,8 +122,15 @@
       reader.readAsDataURL(blob)
     })
     const base64stipped = base64.replace(/^data:image\/\w+;base64,/, '')
-    const inferResult: InferResult = (file.infer.detections.length > 0) ? file.infer : await invoke('infer', { base64: base64stipped }) as InferResult
-    dispatch({ type: 'app/viewResults', payload: { name: file.name, base64, detections: inferResult.detections, timing:inferResult.timing } })
+    const inferResult: InferResult
+      = (file.infer.detections.length > 0)
+        ? file.infer
+        : await invoke('infer', { base64: base64stipped }) as InferResult
+
+    dispatch({
+      type: 'app/viewResults',
+      payload: { name: file.name, base64, detections: inferResult.detections, timing: inferResult.timing },
+    })
   }
 </script>
 
