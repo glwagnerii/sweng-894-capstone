@@ -24,7 +24,6 @@
     error = null
     recentMeals = {}
     try {
-      console.log('Fetching Recents List:', $recentsList)
       for (const recent of $recentsList) {
         const result = await dispatch(mealsApi.endpoints.getMealById.initiate(recent.idMeal)).unwrap()
         const meal = result.meals?.[0]
@@ -36,11 +35,10 @@
             viewedAt: recent.viewedAt,
           }
         }
-        else {
-          console.warn(`Mismatch or missing meal for ID: ${recent.idMeal}`)
-        }
+        // else {
+        //   console.warn(`Mismatch or missing meal for ID: ${recent.idMeal}`)
+        // }
       }
-      console.log('Recent Meals Loaded:', Object.values(recentMeals))
     }
     catch { error = 'Failed to load recent meals' }
     finally { loading = false }

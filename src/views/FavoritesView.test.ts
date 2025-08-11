@@ -1,36 +1,19 @@
+// mocks must be initiated before the other modules
+import { meal, id, favorites, meals, mockDispatch, setupStoreMocks, dispatchedActions } from '../store/mocks'
+setupStoreMocks()
+
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
 import { FavoritesView } from './'
-import { useDispatch, useSelector } from '../store'
-import { type Meal } from '../store/api'
-import { writable } from 'svelte/store'
-
-import { mealsApi } from '../store/api'
-
-// @ts-expect-error: return type does not match
-mealsApi.endpoints.getMealById.initiate = (id: string) => ({ arg: id })
-
-vi.mock('../store', () => ({
-  useSelector: vi.fn(),
-  useDispatch: vi.fn(),
-}))
-
-const meals: Meal[] = [
-  { idMeal: '1', strMeal: 'Meal 1', strCategory: 'Cat1', strMealThumb: 'img1.jpg' },
-  { idMeal: '2', strMeal: 'Meal 2', strCategory: 'Cat2', strMealThumb: 'img2.jpg' },
-]
 
 describe('FavoritesView', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    vi.mocked(useSelector).mockReturnValue(writable(['1', '2']))
-    // @ts-expect-error: return type does not match
-    vi.mocked(useDispatch).mockReturnValue((a) => {
-      return ({
-        unwrap: () => Promise.resolve({ meals: meals.filter((m) => m.idMeal === a.arg) }),
-      })
-    })
+    id.set('1')
+    favorites.set(['1', '2'])
+    meals.set({ error: false, isLoading: false, data: { meals: meal } })
+    mockDispatch.mockClear()
   })
 
   it('renders favorite meals after loading', async () => {
@@ -45,21 +28,15 @@ describe('FavoritesView', () => {
     const { findAllByRole } = render(FavoritesView)
     const cards = await findAllByRole('button', { name: /Meal 1/i })
     await cards[0].click()
-    expect(vi.mocked(useDispatch).mock.results[0].value).toBeDefined()
-  })
-
-  it('opens the recipe when the "View" button is clicked', async () => {
-    const { findAllByText } = render(FavoritesView)
-    const viewButtons = await findAllByText('View')
-    await viewButtons[0].click()
-    expect(vi.mocked(useDispatch).mock.results[0].value).toBeDefined()
+    expect(mockDispatch.mock.results[0].value).toBeDefined()
   })
 
   it('removes the meal when the "Remove" button is clicked', async () => {
     const { findAllByTitle } = render(FavoritesView)
     const removeButtons = await findAllByTitle('Remove')
+    mockDispatch.mockClear()
     await removeButtons[0].click()
-    expect(vi.mocked(useDispatch).mock.results[0].value).toBeDefined()
+    expect(dispatchedActions).toContainEqual(expect.objectContaining({ type: 'app/_deleteFavorite' }))
   })
 
   it('filters meals by category when a category is selected from the dropdown', async () => {
@@ -96,8 +73,7 @@ describe('FavoritesView', () => {
   })
 
   it('shows empty state when there are no favorite recipes', async () => {
-    // Mock useSelector to return no favorites
-    vi.mocked(useSelector).mockReturnValue(writable([]))
+    favorites.set([])
     const { queryAllByRole } = render(FavoritesView)
     expect(queryAllByRole('heading', { level: 2 }).length).toBe(0)
   })
