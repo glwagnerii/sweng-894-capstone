@@ -134,52 +134,26 @@
   }
 </script>
 
-<!-- 75% lane on desktop, centered; fluid spacing -->
-<div class="w-full min-h-[100svh] flex justify-center items-start py-6">
-  <div
-    id="view-library"
-    class="w-[92vw] md:w-[75vw] flex flex-col items-center
-           gap-[clamp(0.75rem,2vw,1.5rem)]"
-  >
-    <h1 class="text-center font-bold text-[clamp(1.25rem,1rem+1.2vw,2rem)]">
-      Photo Library
-    </h1>
-
-    <!-- Responsive grid; items are centered and scale up on wide windows -->
-    <ul
-      class="w-full grid justify-items-center
-             grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5
-             gap-[clamp(0.75rem,1.8vw,1.5rem)] list-none px-1 md:px-2"
-    >
-      {#each files as file (file.name)}
-        <li class="flex flex-col items-center">
-          <button
-            data-testid={`btn-${file.name}`}
-            type="button"
-            class="group p-0 border-none bg-transparent cursor-pointer focus:outline-none"
-            on:click={() => handleImageClick(file)}
-            aria-label={`Select image ${file.name}`}
-          >
-            <img
-              src={`/photos/${file.name}`}
-              alt={file.name}
-              loading="lazy"
-              class="w-full max-w-[clamp(10rem,18vw,18rem)] aspect-square object-cover
-                     rounded-xl shadow-md transition-shadow group-hover:shadow-lg"
-            />
-          </button>
-          <div
-            class="mt-2 break-all text-center text-[clamp(0.8rem,0.75rem+0.35vw,0.95rem)]
-                   text-base-content/80 px-1"
-          >
-            {file.name}
-          </div>
-        </li>
-      {/each}
-    </ul>
-  </div>
+<div id="view-library" class="p-4">
+  <h1 class="text-center text-2xl font-bold mb-2">Photo Library</h1>
+  <ul class="grid gap-3 justify-center px-2 py-4 list-none grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
+    {#each files as file (file.name)}
+      <li class="flex flex-col items-center w-full max-w-[170px] sm:max-w-[233px]">
+        <button
+          data-testid={`btn-${file.name}`}
+          type="button"
+          class="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
+          on:click={() => handleImageClick(file)}
+          aria-label={`Select image ${file.name}`}
+        >
+          <img
+            src={`/photos/${file.name}`}
+            alt={file.name}
+            class="w-full aspect-square object-cover rounded shadow"
+          />
+        </button>
+        <div class="mt-2 break-all text-center text-sm">{file.name}</div>
+      </li>
+    {/each}
+  </ul>
 </div>
-
-<style lang="postcss">
-  @reference "tailwindcss";
-</style>

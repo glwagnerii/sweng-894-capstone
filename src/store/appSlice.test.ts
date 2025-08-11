@@ -319,3 +319,63 @@ describe('pluginStore', () => {
     expect(store.getState().app.models).toBeDefined()
   })
 })
+
+describe('viewRecents', () => {
+  const dispatch = useDispatch()
+
+  const testRecent = { idMeal: 'test123', strMeal: 'Test Meal', strMealThumb: 'test.jpg', viewedAt: new Date().toISOString() }
+
+  it('_addRecent adds new model', () => {
+    dispatch({ type: 'app/_addRecent', payload: testRecent })
+    expect(store.getState().app.recentsList).toContainEqual(testRecent)
+  })
+
+  it('_addRecent does not add duplicate model', () => {
+    dispatch({ type: 'app/_addRecent', payload: testRecent })
+    dispatch({ type: 'app/_addRecent', payload: testRecent })
+    const recents = store.getState().app.recentsList.filter((r) => r.idMeal === 'test123')
+    expect(recents).toHaveLength(1)
+  })
+
+  it('_deleteRecent removes selected model', () => {
+    dispatch({ type: 'app/_addRecent', payload: testRecent })
+    dispatch({ type: 'app/_deleteRecent', payload: 'test123' })
+    const recents = store.getState().app.recentsList.filter((r) => r.idMeal === 'test123')
+    expect(recents).toHaveLength(0)
+  })
+
+  it('viewRecents sets view.selected to recents', () => {
+    dispatch({ type: 'app/viewRecents' })
+    expect(store.getState().app.view.selected).toBe('recents')
+  })
+})
+
+describe('recentExpireDays reducer', () => {
+  const dispatch = useDispatch()
+
+  it('setRecentExpireDays sets recentExpireDays', () => {
+    dispatch({ type: 'app/setRecentExpireDays', payload: 10 })
+    expect(store.getState().app.recentExpireDays).toBe(10)
+  })
+
+  // it('setRecentExpireDays does not accept negative values', () => {
+  //   dispatch({ type: 'app/setRecentExpireDays', payload: -5 })
+  //   expect(store.getState().app.recentExpireDays).toBe(10)
+  // })
+
+  // it('setRecentExpireDays does not accept non-integer values', () => {
+  //   dispatch({ type: 'app/setRecentExpireDays', payload: 10.5 })
+  //   expect(store.getState().app.recentExpireDays).toBe(10)
+  // })
+
+  // it('setRecentExpireDays accepts stringified integer', () => {
+  //   dispatch({ type: 'app/setRecentExpireDays', payload: '7' })
+  //   expect(store.getState().app.recentExpireDays).toBe(7)
+  // })
+
+  // it('setRecentExpireDays ignores invalid payload', () => {
+  //   const initialRecentExpireDays = store.getState().app.recentExpireDays
+  //   dispatch({ type: 'app/setRecentExpireDays', payload: null })
+  //   expect(store.getState().app.recentExpireDays).toBe(initialRecentExpireDays)
+  // })
+})
