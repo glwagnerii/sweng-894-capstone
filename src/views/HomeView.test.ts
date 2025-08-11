@@ -1,28 +1,20 @@
-/// <reference types="vitest/globals" />
+// mocks must be initiated before the other modules
+import { meal, id, name, favorites, meals, mockDispatch, setupStoreMocks, dispatchedActions } from '../store/mocks'
+setupStoreMocks()
 
-import { describe, it, expect } from 'vitest'
-import { render } from '@testing-library/svelte'
+import { describe, it, expect, vi } from 'vitest'
+import { render, fireEvent } from '@testing-library/svelte'
 import { HomeView } from '../views'
 import '@testing-library/jest-dom/vitest'
-import { writable } from 'svelte/store'
-import { vi } from 'vitest'
-import { useDispatch, useSelector } from '../store'
-
-vi.mock('../store', () => ({
-  useSelector: vi.fn(),
-  useDispatch: vi.fn(),
-}))
 
 describe('HomeView Component', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    // Mock the selectors for name and recipe
-    vi.mocked(useSelector).mockImplementation((selector) => {
-      // Simulate the selectors used in HomeView.svelte
-      if (selector.toString().includes('state.app.ingredient.name')) { return writable('beef') }
-      if (selector.toString().includes('state.app.recipe.id')) { return writable('52772') }
-      return writable(undefined)
-    })
+    id.set('1')
+    favorites.set(['1', '2'])
+    meals.set({ error: false, isLoading: false, data: { meals: meal } })
+    name.set('beef')
+    mockDispatch.mockClear()
   })
 
   it('should render the logo and recent activity section', () => {
@@ -48,23 +40,21 @@ describe('HomeView Component', () => {
   })
 
   it('dispatches correct action when searching by name', async () => {
-    const mockDispatch = vi.fn()
-    vi.mocked(useDispatch).mockReturnValue(mockDispatch)
+    id.set('52768')  // must use a real recipe id
     const { getAllByRole } = render(HomeView)
-    // Find all "Search" buttons (the first is for name)
     const searchButtons = getAllByRole('button', { name: /search/i })
+    mockDispatch.mockClear()
     await searchButtons[0].click()
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'app/viewDetails',
-      payload: { id: '52772' },
+      payload: { id: '52768' },
     })
   })
 
   it('dispatches correct action when searching by ingredient', async () => {
-    const mockDispatch = vi.fn()
-    vi.mocked(useDispatch).mockReturnValue(mockDispatch)
     const { getAllByRole } = render(HomeView)
     const searchButtons = getAllByRole('button', { name: /search/i })
+    mockDispatch.mockClear()
     await searchButtons[1].click()
     expect(mockDispatch).toHaveBeenCalledWith({
       type: 'app/viewMatches',
@@ -72,13 +62,33 @@ describe('HomeView Component', () => {
     })
   })
 
-  // it('calls the handler when "See more" button is clicked', async () => {
-  //   // Spy on console.log
-  //   const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {})
-  //   const { getByText } = render(HomeView)
-  //   const seeMoreButton = getByText('See more')
-  //   await seeMoreButton.click()
-  //   expect(logSpy).toHaveBeenCalledWith('See more clicked')
-  //   logSpy.mockRestore()
-  // })
+  it('dispatches app/viewDetails with correct id when openRecipe is called', async () => {
+    const { findByText, getByText } = render(HomeView)
+    await findByText('Meal 2')
+    const recipe = getByText('Meal 2')
+    await recipe.click()
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'app/viewDetails',
+      payload: { id: '52772' },
+    })
+  })
+
+  it('dispatches deleteRecentRecipe when the delete button is clicked in recents', async () => {
+    const { findByText, findByTitle } = render(HomeView)
+    await findByText('Meal 2')
+    const deleteBtn = await findByTitle('Remove')
+    mockDispatch.mockClear()
+    await fireEvent.click(deleteBtn)
+    expect(dispatchedActions).toContainEqual(expect.objectContaining({ type: 'app/_deleteRecent' }))
+  })
+
+  it('dispatches app/viewRecents when the Recent Activity button is clicked', async () => {
+    const { getByText } = render(HomeView)
+    const seeMoreBtn = getByText('See more')
+    mockDispatch.mockClear()
+    await fireEvent.click(seeMoreBtn)
+    expect(mockDispatch).toHaveBeenCalledWith({
+      type: 'app/viewRecents',
+    })
+  })
 })

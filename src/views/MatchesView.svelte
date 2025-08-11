@@ -11,7 +11,6 @@
   onMount(() => { dispatch(mealsApi.endpoints.getMealsByIngredient.initiate($ingredient)) })
 
   function handleRecipeClick(idMeal: string, name: string, thumbnail: string) {
-    console.log(`Adding to Recents from MatchesView: ${name} (${idMeal})`)
     dispatch(addRecentRecipe({
       idMeal: idMeal,
       strMeal: name,

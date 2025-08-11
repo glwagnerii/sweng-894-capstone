@@ -127,7 +127,7 @@ describe('TitleBar', () => {
     const brandButton = container.querySelector('.btn-classificam')
     await fireEvent.click(brandButton!)
 
-    expect(openUrl).toHaveBeenCalledWith('https://www.google.com')
+    expect(openUrl).toHaveBeenCalledWith('https://github.com/glwagnerii/sweng-894-capstone')
   })
 
   it('shows OS information when OS Values menu item is clicked', async () => {
