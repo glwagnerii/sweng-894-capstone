@@ -28,8 +28,8 @@ describe('ViewContainer', () => {
         .mockReturnValueOnce(writable(true))
 
       const { container } = render(ViewContainer)
-      const divs = container.querySelectorAll('div')
-      expect(divs[1]).toHaveAttribute('id', `view-${view}`)
+      const viewDiv = container.querySelector(`#view-${view}`)
+      expect(viewDiv).toBeInTheDocument()
     })
   })
 })

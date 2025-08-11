@@ -57,15 +57,15 @@
 
   function saveRecentExpireDays() {
   // recentExpireDaysStr may be a number (from the number input) or a string (initialized)
-  const raw = recentExpireDaysStr as unknown
-  const parsed = typeof raw === 'number' ? raw : Number.parseInt(String(raw), 10)
+    const raw = recentExpireDaysStr as unknown
+    const parsed = typeof raw === 'number' ? raw : Number.parseInt(String(raw), 10)
 
-  const fallback = $recentExpireDays || 7
-  const n = Math.max(1, Math.min(365, Number.isFinite(parsed) ? parsed : fallback))
+    const fallback = $recentExpireDays || 7
+    const n = Math.max(1, Math.min(365, Number.isFinite(parsed) ? parsed : fallback))
 
-  recentExpireDaysStr = String(n)
-  dispatch({ type: 'app/setRecentExpireDays', payload: n })
-}
+    recentExpireDaysStr = String(n)
+    dispatch({ type: 'app/setRecentExpireDays', payload: n })
+  }
 
 </script>
 
@@ -141,5 +141,3 @@
     </div>
   </div>
 </div>
-
-

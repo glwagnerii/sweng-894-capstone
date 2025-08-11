@@ -15,12 +15,12 @@
   onMount(async () => {
     try {
       // Prefer higher resolution and rear camera on mobile if available
-      const constraints: MediaStreamConstraints = {
+      const constraints = {
         video: {
           width: { ideal: 1920 },
           height: { ideal: 1080 },
-          facingMode: { ideal: 'environment' }
-        }
+          facingMode: { ideal: 'environment' },
+        },
       }
       stream = await navigator.mediaDevices.getUserMedia(constraints)
       if (videoElement) {
@@ -29,11 +29,13 @@
           // Some browsers require a user gesture; we'll just show the button to start.
         })
       }
-    } catch (error) {
+    }
+    catch (error) {
       console.error('Error accessing webcam:', error)
       if (error instanceof Error) {
         errorMessage = 'Camera access denied or error: ' + error.message
-      } else {
+      }
+      else {
         errorMessage = 'Camera access denied or unknown error'
       }
     }
@@ -90,8 +92,8 @@
         name: filename,
         base64,
         detections: inferResult.detections,
-        timing: inferResult.timing
-      }
+        timing: inferResult.timing,
+      },
     })
   }
 
