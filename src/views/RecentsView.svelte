@@ -51,12 +51,29 @@
       const day = String(date.getDate()).padStart(2, '0')
       const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase()
       const year = String(date.getFullYear()).slice(-2)
-      return `${day}${month}${year}`
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      return `${day}${month}${year} ${hours}:${minutes}`
     }
 
+    async function copyRecentsToClipboard() {
+      // Format recentMeals as a pretty JSON string
+      const formatted = JSON.stringify(Object.values(recentMeals), null, 2)
+      try   { await navigator.clipboard.writeText(formatted) }
+      catch { alert('Failed to copy to clipboard.') }
+    }
 </script>
 
 <div id="view-recents" class="p-4 flex flex-col justify-center max-w-5xl mx-auto space-y-6">
+    <div class="flex justify-end mb-2">
+      <button
+        class="btn btn-primary btn-sm"
+        type="button"
+        onclick={copyRecentsToClipboard}
+      >
+        Copy Recent Meals
+      </button>
+    </div>
     <h1 class="text-2xl font-bold text-center">All Recent Activity</h1>
     {#if loading}
         <p class="text-center">Loading...</p>
