@@ -3,7 +3,7 @@
   import { EditableField, ThresholdSlider } from '../components'
 
   import { useSelector, useDispatch } from '../store'
-  import { addModel, deleteModel, updateModel, selectModel, type Models } from '../store/appSlice'
+  import { addModel, deleteModel, updateModel, selectModel, updateExpire, type Models } from '../store/appSlice'
 
   const dispatch = useDispatch()
 
@@ -64,7 +64,7 @@
     const n = Math.max(1, Math.min(365, Number.isFinite(parsed) ? parsed : fallback))
 
     recentExpireDaysStr = String(n)
-    dispatch({ type: 'app/setRecentExpireDays', payload: n })
+    dispatch(updateExpire(n))
   }
 
 </script>
