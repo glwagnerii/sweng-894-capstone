@@ -27,28 +27,30 @@
     await message(`You selected: ${file}`, { title: 'Classifi-Cam', kind:'info' })
   }
 
-  const viewPath = () => dispatch({ type: 'app/viewPath' })
+  const viewPath    = () => dispatch({ type: 'app/viewPath' })
+  const viewRecents = () => dispatch({ type: 'app/viewRecents' })
 
   const btnClass = 'btn-ghost border-none shadow-none transition-colors py-2 h-full px-1'
 </script>
 
-<div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden drag'>
-  <div class='flex items-center h-full min-w-min nodrag order-0'>
+<div id='titlebar' class='border-b flex items-center h-12 select-none overflow-hidden'>
+  <div class='flex items-center h-full min-w-min'>
     <Button name='classificam' btnClass={btnClass} onClick={() => openGithub()} labelRight>Classifi-Cam</Button>
   </div>
-  <div class='flex items-center justify-center mx-2 h-full max-w-max min-w-0 order-1'>
+  <div class='flex items-center justify-center mx-2 h-full max-w-max min-w-0'>
     <div class='block flex-shrink truncate selected'>{title}</div>
   </div>
-  <div class='flex flex-1 justify-end items-center h-full min-w-min nodrag order-2 space-x-1'>
+  <div class='flex flex-1 justify-end items-center h-full min-w-min space-x-1'>
     <Button name='viewHome'     btnClass={btnClass}/>
     <Button name='themeLight'   btnClass={btnClass}/>
     <Button name='themeDark'    btnClass={btnClass}/>
     <Button name='viewSettings' btnClass={btnClass}/>
-    <Button name='showMenu'     btnClass={btnClass}  popovertarget="popover-menu" onClick={() => null }/>
+    <Button name='showMenu'     btnClass={btnClass}  popovertarget="popover-menu"/>
     <ul class="dropdown menu w-52 rounded-box bg-base-100 shadow-sm" popover id="popover-menu" bind:this={popoverMenu}>
-      <li><Button name='viewPath'   btnClass={btnClass} labelRight onClick={() => handleSelect(viewPath)}>View Paths</Button></li>
-      <li><Button name='getOS'      btnClass={btnClass} labelRight onClick={() => handleSelect(getOS)}>OS Values</Button></li>
-      <li><Button name='openFolder' btnClass={btnClass} labelRight onClick={() => handleSelect(openFolder)}>Open Model</Button></li>
+      <li><Button name='viewPath'    btnClass={btnClass} labelRight onClick={() => handleSelect(viewPath)}>View Paths</Button></li>
+      <li><Button name='getOS'       btnClass={btnClass} labelRight onClick={() => handleSelect(getOS)}>OS Values</Button></li>
+      <li><Button name='openFolder'  btnClass={btnClass} labelRight onClick={() => handleSelect(openFolder)}>Open Model</Button></li>
+      <li><Button name='viewRecents' btnClass={btnClass} labelRight onClick={() => handleSelect(viewRecents)}>View Recents</Button></li>
     </ul>
   </div>
 </div>

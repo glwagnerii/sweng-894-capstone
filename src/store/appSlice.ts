@@ -105,7 +105,7 @@ export const appSlice = createSlice({
     viewPath:      (state) => { state.view.selected = 'path' },
     viewResults:   (state, action) => { if (action.payload) { state.results = action.payload }; state.view.selected = 'results' },
     viewSettings:  (state) => { state.view.selected = 'settings' },
-    viewRecents: (state) => { state.view.selected = 'recents' },
+    viewRecents:   (state) => { state.view.selected = 'recents' },
 
     // search reducers
     searchByName: (state, action) => {

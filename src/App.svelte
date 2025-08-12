@@ -17,15 +17,13 @@
   onMount(() => {
     dispatch(getFavorites())
     dispatch(getRecents())
-    dispatch(getRecents())
     dispatch(getModels())
     dispatch(getModel())
   })
 
 </script>
 
-<svelte:window on:resize={handleResize} onkeydown={handleKeydown}/>
-
+<svelte:window on:resize={handleResize} on:keydown={handleKeydown}/>
 <div id="classicam" class={classes} data-theme={$isDark ? 'dark-cc' : 'light-cc'}>
   <TitleBar />
   <ViewContainer />

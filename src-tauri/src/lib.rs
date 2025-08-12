@@ -61,7 +61,7 @@ async fn infer(handle: tauri::AppHandle, base64: String) -> Result<InferResult, 
     let img = log_result(image::load_from_memory(&img_bytes), "load image from memory")?;
     timing.load = img_load_start.elapsed().as_millis() as u16;
 
-    let model_path = get_resource_path(&handle, "resources/models/yolo11n.onnx")?;
+    let model_path = get_resource_path(&handle, "resources/models/foodseg103n.onnx")?;
 
     let model_init_start = Instant::now();
     let yolo_mutex = get_or_init_yolo(&model_path)?;
