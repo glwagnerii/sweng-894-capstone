@@ -86,7 +86,7 @@ const app: App = {
   checklist: {},
 }
 
-const filterRecents = (state: App, idMeal:string) => {
+const filterRecents = (state: App, idMeal: string) => {
   const now = Date.now()
   const ms = state.recentExpireDays * 24 * 60 * 60 * 1000
   return state.recentsList.filter((r) => (r.idMeal !== idMeal) && (now - new Date(r.viewedAt).getTime() <= ms))
@@ -169,7 +169,7 @@ export const appSlice = createSlice({
     },
 
     // recent history reducers
-    _addRecent:    (state, action) => { state.recentsList = [ action.payload, ...filterRecents(state, action.payload.idMeal)] },
+    _addRecent:    (state, action) => { state.recentsList = [action.payload, ...filterRecents(state, action.payload.idMeal)] },
     _deleteRecent: (state, action) => { state.recentsList = filterRecents(state, action.payload) },
     _updateExpire: (state, action) => { state.recentExpireDays = action.payload },
 

@@ -278,4 +278,20 @@ describe('SettingsView', () => {
     const { getByText } = render(SettingsView)
     expect(getByText('No models available')).toBeInTheDocument()
   })
+
+  it('calls dispatch when Save button for Expiration Days is clicked', async () => {
+    const mockDispatch = vi.fn()
+    vi.mocked(useDispatch).mockReturnValue(mockDispatch)
+
+    const { getByLabelText, getByText } = render(SettingsView)
+    const input = getByLabelText('Expiration Days') as HTMLInputElement
+    input.value = '30'
+    await fireEvent.input(input)
+    const saveButton = getByText('Save')
+    await fireEvent.click(saveButton)
+
+    expect(mockDispatch).toHaveBeenCalled()
+    // Should dispatch updateExpire with 30
+    expect(mockDispatch.mock.calls[0][0]).toEqual(expect.any(Function))
+  })
 })
