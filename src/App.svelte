@@ -6,6 +6,7 @@
 
   import clsx from 'clsx'
 
+  let loading = $state(true)
   const dispatch = useDispatch()
   const isDark = useSelector((state) => state.app.theme.isDark)
 
@@ -14,19 +15,26 @@
   const handleResize = () => { dispatch({ type: 'app/windowResize' }) }
   const handleKeydown = (e: KeyboardEvent) => { console.log(e.key) }
 
-  onMount(() => {
-    dispatch(getFavorites())
-    dispatch(getRecents())
-    dispatch(getModels())
-    dispatch(getModel())
-    dispatch(getExpire())
+  onMount(async () => {
+    await Promise.all([
+      dispatch(getFavorites()),
+      dispatch(getRecents()),
+      dispatch(getModels()),
+      dispatch(getModel()),
+      dispatch(getExpire()),
+    ])
+    loading = false
   })
 
 </script>
 
 <svelte:window on:resize={handleResize} on:keydown={handleKeydown}/>
-<div id="classicam" class={classes} data-theme={$isDark ? 'dark-cc' : 'light-cc'}>
-  <TitleBar />
-  <ViewContainer />
-  <StatusBar />
-</div>
+{#if loading}
+  <div>Loading...</div>
+{:else}
+  <div id="classicam" class={classes} data-theme={$isDark ? 'dark-cc' : 'light-cc'}>
+    <TitleBar />
+    <ViewContainer />
+    <StatusBar />
+  </div>
+{/if}
