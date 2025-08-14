@@ -1,22 +1,27 @@
 <script lang='ts'>
   import { onMount, onDestroy } from 'svelte'
   import { invoke } from '@tauri-apps/api/core'
-  import { useDispatch } from '../store'
+  import { useSelector, useDispatch } from '../store'
+
   import { type InferResult } from '../store/appSlice'
 
   const dispatch = useDispatch()
 
-  let videoElement: HTMLVideoElement | null = null
-  let stream: MediaStream | null = null
-  let errorMessage = ''
-  let isPaused = false
-  let canvasElement: HTMLCanvasElement | null = null
-  let videoDevices: MediaDeviceInfo[] = []
-  let selectedDeviceId: string = ''
+  const models = useSelector((state) => state.app.models)
+  const selected = useSelector((state) => state.app.model.selected)
+  const selectedModel = $derived($models.find((m) => m.file === $selected) || null)
+  const conf = $derived(selectedModel ? selectedModel.conf : 0)
+  const iou  = $derived(selectedModel ? selectedModel.iou  : 0)
 
-  onMount(async () => {
-    await getCameras()
-  })
+  let videoElement = $state<HTMLVideoElement | null>(null)
+  let stream = $state<MediaStream | null>(null)
+  let errorMessage = $state('')
+  let isPaused = $state(false)
+  let canvasElement = $state<HTMLCanvasElement | null>(null)
+  let videoDevices = $state<MediaDeviceInfo[]>([])
+  let selectedDeviceId = $state<string>('')
+
+  onMount(async () => { await getCameras() })
 
   async function getCameras() {
     try {
@@ -39,7 +44,7 @@
       errorMessage = 'Video is not supported.'
     }
   }
-
+// hi
   async function startStream(deviceId: string) {
     try {
       if (stream) stream.getTracks().forEach((track) => track.stop())
@@ -97,7 +102,7 @@
 
     const filename = getDateTimeFilename()
     const base64stipped = base64.replace(/^data:image\/\w+;base64,/, '')
-    const inferResult: InferResult = await invoke('infer', { base64: base64stipped }) as InferResult
+    const inferResult: InferResult = await invoke('infer', { base64: base64stipped, model: $selected, conf:conf, iou:iou }) as InferResult
     dispatch({ type: 'app/viewResults', payload: { name: filename, base64, detections: inferResult.detections, timing: inferResult.timing } })
   }
 
@@ -113,11 +118,11 @@
       Video is not supported.
     </video>
     <div class="flex justify-center gap-4 mt-4">
-      <button class="px-4 py-2 bg-primary text-onPrimary rounded" on:click={togglePausePlay}>
+      <button class="px-4 py-2 bg-primary text-onPrimary rounded" onclick={togglePausePlay}>
         {isPaused ? 'Retake' : 'Take Photo'}
       </button>
       {#if isPaused}
-        <button class="px-4 py-2 bg-secondary text-onSecondary rounded" on:click={confirmPhoto}>
+        <button class="px-4 py-2 bg-secondary text-onSecondary rounded" onclick={confirmPhoto}>
           Confirm
         </button>
       {/if}
@@ -130,7 +135,7 @@
         <select
           id="camera-select"
           bind:value={selectedDeviceId}
-          on:change={handleCameraChange}
+          onchange={handleCameraChange}
           class="select select-bordered w-full max-w-xs"
         >
           {#each videoDevices as device (device.deviceId)}

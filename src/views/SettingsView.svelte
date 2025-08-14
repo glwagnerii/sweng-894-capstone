@@ -1,9 +1,14 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
   import { open, message } from '@tauri-apps/plugin-dialog'
   import { EditableField, ThresholdSlider } from '../components'
+  import { resourceDir } from '@tauri-apps/api/path'
+  import { invoke } from '@tauri-apps/api/core'
 
   import { useSelector, useDispatch } from '../store'
   import { addModel, deleteModel, updateModel, selectModel, updateExpire, type Models } from '../store/appSlice'
+
+  type Info = { input_shape: string, output_shape: string, file_size_mb: string }
 
   const dispatch = useDispatch()
 
@@ -19,13 +24,15 @@
   let iou  = $derived(selectedModel ? selectedModel.iou  : 0)
   let name = $derived(selectedModel ? selectedModel.name : '')
   let desc = $derived(selectedModel ? selectedModel.desc : '')
+
+  let path = ''
   let recentExpireDaysStr = $state(String($recentExpireDays))
 
   const handleSelectModel = () => { if (selectedModelFile !== $selected) { dispatch(selectModel(selectedModelFile)) } }
 
   async function handleAddModel() {
     try {
-      const file = await open({ multiple: false, directory: false })
+      const file = await open({ multiple: false, directory: false, defaultPath: path })
       if (!file) return
       const filePath = file as string
       const fileName = filePath.split(/[\\/]/).pop() || ''
@@ -37,12 +44,22 @@
         await message('A model with this file already exists.',  { title: 'Classifi-Cam', kind:'error' })
         return
       }
+
+      let info: Info
+      // Call tauri info command with the filename and log the result
+      try { info = await invoke('info', { model: fileName }) as Info }
+      catch (err) {
+        await message(String(err),  { title: 'Classifi-Cam', kind:'error' })
+        return
+      }
+
       const model: Models = {
         name: fileName.replace(/\.[^.]+$/, ''),
         file: fileName,
         desc: 'Model Description',
-        shape: 'Unknown',
-        size: 'Unknown',
+        input_shape: info.input_shape,
+        output_shape: info.output_shape,
+        size: info.file_size_mb,
         conf: 70,
         iou: 50,
       }
@@ -67,6 +84,14 @@
     dispatch(updateExpire(n))
   }
 
+  function resetModel() {
+    if (selectedModel) {
+      dispatch(updateModel({ name: selectedModel.file.replace(/\.[^.]+$/, 'Model Name'), desc: 'Model Description', conf: 70, iou: 50 }))
+    }
+  }
+
+  onMount(async () => { path = (await resourceDir()) + '/resources/models' })
+
 </script>
 
 <div id="view-setings" class="w-full max-w-lg mx-auto px-4">
@@ -79,6 +104,7 @@
       <div class="flex gap-2">
         <button class="btn btn-xs btn-primary" onclick={handleAddModel} aria-label="Add model">Add</button>
         <button class="btn btn-xs btn-error"   onclick={() => dispatch(deleteModel())} aria-label="Delete model" disabled={$models.length <= 1}>Delete</button>
+        <button class="btn btn-xs btn-secondary" onclick={resetModel} aria-label="Reset model">Reset</button>
       </div>
     </div>
 
@@ -98,7 +124,8 @@
           <EditableField id="desc" label="Description" bind:value={desc} onSave={() => dispatch(updateModel({ desc:desc }))} />
           <div>
             <div class="text-sm text-base-content/60">{`File:  ${selectedModel.file}`}</div>
-            <div class="text-sm text-base-content/60">{`Shape: ${selectedModel.shape}`}</div>
+            <div class="text-sm text-base-content/60">{`Input: ${selectedModel.input_shape}`}</div>
+            <div class="text-sm text-base-content/60">{`Output: ${selectedModel.output_shape}`}</div>
             <div class="text-sm text-base-content/60">{`Size:  ${selectedModel.size}`}</div>
           </div>
           <ThresholdSlider id="conf" label="Confidence Threshold" bind:value={conf} onchange={() => dispatch(updateModel({ conf:conf }))}/>
@@ -107,7 +134,7 @@
       </div>
     {:else}
       <!-- Test-only elements for coverage -->
-      <div data-testid="defaults">
+      <div data-testid="defaults" style="display:none;">
         <span data-testid="default-name">{name}</span>
         <span data-testid="default-desc">{desc}</span>
         <span data-testid="default-conf">{conf}</span>
@@ -123,15 +150,8 @@
       </label>
 
       <input
-        id="recent-expire-days"
-        class="input input-bordered input-sm w-24 text-center"
-        type="number"
-        min="1"
-        max="365"
-        step="1"
-        bind:value={recentExpireDaysStr}
-        inputmode="numeric"
-        aria-describedby="expire-help"
+        id="recent-expire-days" class="input input-bordered input-sm w-24 text-center" type="number"
+        min="1" max="365" step="1" bind:value={recentExpireDaysStr} inputmode="numeric" aria-describedby="expire-help"
       />
 
       <button class="btn btn-sm btn-primary" onclick={saveRecentExpireDays}>Save</button>

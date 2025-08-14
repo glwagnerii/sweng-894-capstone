@@ -24,7 +24,7 @@ pub struct YoloModelSession {
     session: ort::session::Session,
     labels: Vec<Cow<'static, str>>,
     prob_thresh: f32,
-    iou_thresh: f32
+    iou_thresh: f32,
 }
 
 #[derive(serde::Serialize, Default)]
@@ -77,20 +77,17 @@ impl YoloModelSession {
             session,
             labels,
             prob_thresh: prob_thresh.unwrap_or(0.5),
-            iou_thresh: iou_thresh.unwrap_or(0.7)
+            iou_thresh: iou_thresh.unwrap_or(0.7),
         })
     }
 
-    // /// Getters
-    // pub fn labels(&self) -> &[Cow<'static, str>]    { &self.labels }
-    // pub fn prob_thresh(&self) -> f32                { self.prob_thresh }
-    // pub fn iou_thresh(&self) -> f32                 { self.iou_thresh }
-    // pub fn session(&self) -> &ort::session::Session { &self.session }
+    /// Getters
+    // pub fn prob_thresh(&self) -> f32 { self.prob_thresh }
+    // pub fn iou_thresh(&self)  -> f32 { self.iou_thresh }
 
-    // /// Setters
-    // pub fn set_prob_thresh(&mut self, value: f32)                { self.prob_thresh = value }
-    // pub fn set_iou_thresh(&mut self, value: f32)                 { self.iou_thresh = value }
-    // pub fn set_labels(&mut self, labels: Vec<Cow<'static, str>>) { self.labels = labels }
+    /// Setters
+    pub fn set_prob_thresh(&mut self, value: f32) { self.prob_thresh = value }
+    pub fn set_iou_thresh(&mut self, value: f32)  { self.iou_thresh = value }
 
     /// Preprocess image: resize with aspect ratio, pad, and convert to input tensor
     fn preprocess(&self, image: &image::DynamicImage, timing: &mut YoloTimingStats) -> Result<(ndarray::Array4<f32>, f32, u32, u32), YoloError> {
@@ -279,6 +276,18 @@ impl YoloModelSession {
         }
         timing.nms = nms_start.elapsed().as_millis() as u16;
         result
+    }
+
+    pub fn get_info(&self) -> Result<(String, String), String> {
+        let input_shape = self.session.inputs.get(0)
+            .and_then(|input| input.input_type.tensor_shape().map(|shape| format!("{:?}", shape)))
+            .unwrap_or_else(|| "missing".to_string());
+
+        let output_shape = self.session.outputs.get(0)
+            .and_then(|output| output.output_type.tensor_shape().map(|shape| format!("{:?}", shape)))
+            .unwrap_or_else(|| "missing".to_string());
+
+        Ok((input_shape, output_shape))
     }
 }
 

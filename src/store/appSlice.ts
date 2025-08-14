@@ -39,7 +39,8 @@ export type Models = {
   size: string
   conf: number
   iou: number
-  shape: string
+  input_shape: string
+  output_shape: string
 }
 
 export interface App {
@@ -178,7 +179,11 @@ export const appSlice = createSlice({
       const model = action.payload
       if (!state.models.some((m) => m.file === model.file)) { state.models.push(model) }
     },
-    _deleteModel: (state) => { state.models = state.models.filter((m) => m.file !== state.model.selected) },
+    _deleteModel: (state) => {
+      const deleted = state.model.selected
+      state.models = state.models.filter((m) => m.file !== deleted)
+      state.model.selected = state.models.length > 0 ? state.models[0].file : ''
+    },
     _selectModel: (state, action) => { state.model.selected = action.payload },
     _updateModel: (state, action) => {
       const idx = state.models.findIndex((m) => m.file === state.model.selected)

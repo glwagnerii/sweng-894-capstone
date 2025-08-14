@@ -125,7 +125,7 @@ describe('RecentsView', () => {
   })
 
   it('sorts by date descending when sortAsc is false', async () => {
-    const { findAllByText, getByTitle } = render(RecentsView)
+    const { findAllByText } = render(RecentsView)
     // Default is sortBy 'date', sortAsc false (descending)
     const mealTitles = await findAllByText(/Meal \d/)
     // Meal 1 is newer, so should be first
@@ -145,7 +145,7 @@ describe('RecentsView', () => {
 
   it('warns if a recent meal is missing', async () => {
     // Set a recent with an id not in meals
-    recents.set([ { idMeal: '999', strMeal: 'Missing Meal', strMealThumb: 'missing.jpg', viewedAt: new Date().toISOString() } ])
+    recents.set([{ idMeal: '999', strMeal: 'Missing Meal', strMealThumb: 'missing.jpg', viewedAt: new Date().toISOString() }])
     mockDispatch.mockImplementation((action) => {
       if (action && typeof action === 'object' && 'arg' in action) {
         return { unwrap: () => Promise.resolve({ meals: [] }) }

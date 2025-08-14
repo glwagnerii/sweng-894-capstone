@@ -56,7 +56,7 @@ describe('CameraView', () => {
         { deviceId: 'mock2', kind: 'audioinput', label: 'Mock Mic', groupId: '', toJSON: () => ({}) },
         { deviceId: 'mock3', kind: 'videoinput', label: 'Mock Camera 2', groupId: '', toJSON: () => ({}) },
       ]),
-    }    
+    }
   })
 
   it('should render without crashing', () => {

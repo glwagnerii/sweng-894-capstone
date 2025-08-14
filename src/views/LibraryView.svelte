@@ -1,9 +1,16 @@
 <script lang="ts">
-  import { useDispatch } from '../store'
+  import { useSelector, useDispatch } from '../store'
   import { type InferResult, defaultTiming } from '../store/appSlice'
   import { invoke } from '@tauri-apps/api/core'
 
   const dispatch = useDispatch()
+
+  const models = useSelector((state) => state.app.models)
+  const selected = useSelector((state) => state.app.model.selected)
+  const selectedModel = $derived($models.find((m) => m.file === $selected) || null)
+
+  let conf = $derived(selectedModel ? selectedModel.conf : 0)
+  let iou  = $derived(selectedModel ? selectedModel.iou  : 0)
 
   type File = { name: string, infer: InferResult }
   const files: File[] = [
@@ -125,7 +132,7 @@
     const inferResult: InferResult
       = (file.infer.detections.length > 0)
         ? file.infer
-        : await invoke('infer', { base64: base64stipped }) as InferResult
+        : await invoke('infer', { base64: base64stipped, model: $selected, conf:conf, iou:iou }) as InferResult
 
     dispatch({
       type: 'app/viewResults',
@@ -143,7 +150,7 @@
           data-testid={`btn-${file.name}`}
           type="button"
           class="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
-          on:click={() => handleImageClick(file)}
+          onclick={() => handleImageClick(file)}
           aria-label={`Select image ${file.name}`}
         >
           <div class="relative w-full aspect-square">

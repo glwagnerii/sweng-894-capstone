@@ -14,8 +14,8 @@ vi.mock('@tauri-apps/plugin-dialog', () => ({
 }))
 
 const models = writable([
-  { name: 'TestModel',  file: 'test.onnx',  desc: 'A test model',  shape: '1x3x224x224', size: '10MB', conf: 70, iou: 50 },
-  { name: 'TestModel2', file: 'test.onnx2', desc: 'Another model', shape: '1x3x224x224', size: '20MB', conf: 75, iou: 45 },
+  { name: 'TestModel',  file: 'test.onnx',  desc: 'A test model',  input_shape: '1x3x224x224', output_shape: 'xxx', size: '10MB', conf: 70, iou: 50 },
+  { name: 'TestModel2', file: 'test.onnx2', desc: 'Another model', input_shape: '1x3x224x224', output_shape: 'xxx', size: '20MB', conf: 75, iou: 45 },
 ] as Models[])
 const selected = writable('test.onnx' as string | null)
 
