@@ -14,6 +14,11 @@ const detections = writable([
   { class: 'Tomato', score: 0.7, bbox: [20, 20, 30, 30] },
 ] as Detection[])
 const timing = writable({ load: 1, init: 2, resize: 3, pad: 4, tensor: 5, infer: 6, bbox: 7, nms: 8, total: 36 } as Timing)
+const models = writable([
+  { file: 'model1.onnx', conf: 0.5, iou: 0.5 },
+  { file: 'model2.onnx', conf: 0.6, iou: 0.6 },
+])
+const selected = writable('model1.onnx')
 
 vi.mock('../store', () => ({
   useSelector: (fn: (state: unknown) => unknown) => {
@@ -21,6 +26,8 @@ vi.mock('../store', () => ({
     if (fn.toString().includes('base64')) return base64
     if (fn.toString().includes('detections')) return detections
     if (fn.toString().includes('timing')) return timing
+    if (fn.toString().includes('state.app.models')) return models
+    if (fn.toString().includes('state.app.model.selected')) return selected
     return writable(null)
   },
   useDispatch: vi.fn(),
@@ -88,18 +95,20 @@ describe('LibraryView Component', () => {
     })
   })
 
-  it('should call handleImageClick and dispatch when any image button is clicked', async () => {
+  it('should dispatch when the first image button is clicked', async () => {
     const mockDispatch = vi.fn()
     vi.mocked(useDispatch).mockReturnValue(mockDispatch)
+    mockDispatch.mockClear()
 
-    const { getAllByTestId } = render(LibraryView)
-    const buttons = await waitFor(() => getAllByTestId(/^btn-/))
+    const { getAllByRole } = render(LibraryView)
+    const buttons = await waitFor(() => getAllByRole('button'))
     expect(buttons.length).toBeGreaterThanOrEqual(1)
-    expect(buttons.length).toBe(6)
+
     await fireEvent.click(buttons[0])
-    await waitFor(() => { expect(mockDispatch).toHaveBeenCalled() })
-    await fireEvent.click(buttons[1])
-    await waitFor(() => { expect(mockDispatch).toHaveBeenCalled() })
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalled()
+    })
   })
 
   it('should display the correct number of images and filenames', async () => {

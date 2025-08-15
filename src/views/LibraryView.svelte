@@ -1,9 +1,16 @@
 <script lang="ts">
-  import { useDispatch } from '../store'
+  import { useSelector, useDispatch } from '../store'
   import { type InferResult, defaultTiming } from '../store/appSlice'
   import { invoke } from '@tauri-apps/api/core'
 
   const dispatch = useDispatch()
+
+  const models = useSelector((state) => state.app.models)
+  const selected = useSelector((state) => state.app.model.selected)
+  const selectedModel = $derived($models.find((m) => m.file === $selected) || null)
+
+  let conf = $derived(selectedModel ? selectedModel.conf : 0)
+  let iou  = $derived(selectedModel ? selectedModel.iou  : 0)
 
   type File = { name: string, infer: InferResult }
   const files: File[] = [
@@ -16,15 +23,15 @@
       infer: {
         timing: defaultTiming,
         detections: [
-          { class: 'eggs', score: 0.87, bbox: [1250, 590, 460, 240] },
-          { class: 'ham', score: 0.93, bbox: [380, 50, 500, 500] },
-          { class: 'scallions', score: 0.74, bbox: [200, 610, 350, 350] },
-          { class: 'carrots', score: 0.91, bbox: [670, 990, 326, 326] },
-          { class: 'peas', score: 0.68, bbox: [800, 610, 232, 232] },
-          { class: 'rice', score: 0.95, bbox: [1040, 240, 330, 330] },
-          { class: 'soy sauce', score: 0.77, bbox: [1510, 230, 232, 232] },
-          { class: 'salt', score: 0.65, bbox: [1440, 860, 232, 232] },
-          { class: 'sesame seeds', score: 0.89, bbox: [1190, 1040, 214, 214] },
+          // { class: 'eggs', score: 0.87, bbox: [1250, 590, 460, 240] },
+          // { class: 'ham', score: 0.93, bbox: [380, 50, 500, 500] },
+          // { class: 'scallions', score: 0.74, bbox: [200, 610, 350, 350] },
+          // { class: 'carrots', score: 0.91, bbox: [670, 990, 326, 326] },
+          // { class: 'peas', score: 0.68, bbox: [800, 610, 232, 232] },
+          // { class: 'rice', score: 0.95, bbox: [1040, 240, 330, 330] },
+          // { class: 'soy sauce', score: 0.77, bbox: [1510, 230, 232, 232] },
+          // { class: 'salt', score: 0.65, bbox: [1440, 860, 232, 232] },
+          // { class: 'sesame seeds', score: 0.89, bbox: [1190, 1040, 214, 214] },
         ],
       },
     },
@@ -33,22 +40,22 @@
       infer: {
         timing: defaultTiming,
         detections: [
-          { class: 'onions', score: 0.92, bbox: [450, 40, 120, 140] },
-          { class: 'white beans', score: 0.66, bbox: [226, 70, 190, 170] },
-          { class: 'chicken breast', score: 0.85, bbox: [415, 250, 190, 170] },
-          { class: 'lentils', score: 0.95, bbox: [305, 420, 120, 120] },
-          { class: 'cheese', score: 0.70, bbox: [50, 500, 120, 120] },
-          { class: 'avocado', score: 0.88, bbox: [30, 360, 100, 100] },
-          { class: 'corn', score: 0.81, bbox: [20, 110, 150, 130] },
-          { class: 'jalapenos', score: 0.73, bbox: [269, 273, 104, 96] },
-          { class: 'cilantro', score: 0.69, bbox: [180, 420, 114, 178] },
-          { class: 'flour', score: 0.93, bbox: [580, 185, 84, 88] },
-          { class: 'chicken broth', score: 0.87, bbox: [490, 488, 110, 110] },
-          { class: 'sour cream', score: 0.65, bbox: [390, 562, 70, 80] },
-          { class: 'garlic', score: 0.95, bbox: [0, 250, 70, 80] },
-          { class: 'cumin', score: 0.80, bbox: [100, 290, 50, 50] },
-          { class: 'paprika', score: 0.77, bbox: [190, 319, 50, 50] },
-          { class: 'oregano', score: 0.84, bbox: [170, 230, 50, 50] },
+          // { class: 'onions', score: 0.92, bbox: [450, 40, 120, 140] },
+          // { class: 'white beans', score: 0.66, bbox: [226, 70, 190, 170] },
+          // { class: 'chicken breast', score: 0.85, bbox: [415, 250, 190, 170] },
+          // { class: 'lentils', score: 0.95, bbox: [305, 420, 120, 120] },
+          // { class: 'cheese', score: 0.70, bbox: [50, 500, 120, 120] },
+          // { class: 'avocado', score: 0.88, bbox: [30, 360, 100, 100] },
+          // { class: 'corn', score: 0.81, bbox: [20, 110, 150, 130] },
+          // { class: 'jalapenos', score: 0.73, bbox: [269, 273, 104, 96] },
+          // { class: 'cilantro', score: 0.69, bbox: [180, 420, 114, 178] },
+          // { class: 'flour', score: 0.93, bbox: [580, 185, 84, 88] },
+          // { class: 'chicken broth', score: 0.87, bbox: [490, 488, 110, 110] },
+          // { class: 'sour cream', score: 0.65, bbox: [390, 562, 70, 80] },
+          // { class: 'garlic', score: 0.95, bbox: [0, 250, 70, 80] },
+          // { class: 'cumin', score: 0.80, bbox: [100, 290, 50, 50] },
+          // { class: 'paprika', score: 0.77, bbox: [190, 319, 50, 50] },
+          // { class: 'oregano', score: 0.84, bbox: [170, 230, 50, 50] },
         ],
       },
     },
@@ -57,23 +64,23 @@
       infer: {
         timing: defaultTiming,
         detections: [
-          { class: 'beef', score: 0.95, bbox: [580, 345, 440, 410] },
-          { class: 'onions', score: 0.65, bbox: [260, 10, 350, 280] },
-          { class: 'mushrooms', score: 0.89, bbox: [10, 370, 350, 280] },
-          { class: 'butter', score: 0.70, bbox: [310, 690, 210, 170] },
-          { class: 'garlic', score: 0.84, bbox: [950, 920, 140, 130] },
-          { class: 'carrots', score: 0.93, bbox: [1190, 330, 270, 190] },
-          { class: 'beef broth', score: 0.88, bbox: [980, 0, 340, 240] },
-          { class: 'parsley', score: 0.74, bbox: [1360, 90, 140, 150] },
-          { class: 'soy sauce', score: 0.91, bbox: [1205, 880, 240, 210] },
-          { class: 'salt', score: 0.95, bbox: [220, 910, 120, 130] },
-          { class: 'pepper', score: 0.66, bbox: [720, 940, 120, 130] },
-          { class: 'thyme', score: 0.87, bbox: [1050, 740, 120, 130] },
-          { class: 'sauce', score: 0.81, bbox: [760, 40, 120, 130] },
-          { class: 'olive oil', score: 0.68, bbox: [0, 80, 160, 160] },
-          { class: 'flour', score: 0.73, bbox: [-10, 780, 160, 160] },
-          { class: 'paprika', score: 0.77, bbox: [530, 860, 110, 110] },
-          { class: 'bay leaves', score: 0.90, bbox: [1275, 590, 220, 230] },
+          // { class: 'beef', score: 0.95, bbox: [580, 345, 440, 410] },
+          // { class: 'onions', score: 0.65, bbox: [260, 10, 350, 280] },
+          // { class: 'mushrooms', score: 0.89, bbox: [10, 370, 350, 280] },
+          // { class: 'butter', score: 0.70, bbox: [310, 690, 210, 170] },
+          // { class: 'garlic', score: 0.84, bbox: [950, 920, 140, 130] },
+          // { class: 'carrots', score: 0.93, bbox: [1190, 330, 270, 190] },
+          // { class: 'beef broth', score: 0.88, bbox: [980, 0, 340, 240] },
+          // { class: 'parsley', score: 0.74, bbox: [1360, 90, 140, 150] },
+          // { class: 'soy sauce', score: 0.91, bbox: [1205, 880, 240, 210] },
+          // { class: 'salt', score: 0.95, bbox: [220, 910, 120, 130] },
+          // { class: 'pepper', score: 0.66, bbox: [720, 940, 120, 130] },
+          // { class: 'thyme', score: 0.87, bbox: [1050, 740, 120, 130] },
+          // { class: 'sauce', score: 0.81, bbox: [760, 40, 120, 130] },
+          // { class: 'olive oil', score: 0.68, bbox: [0, 80, 160, 160] },
+          // { class: 'flour', score: 0.73, bbox: [-10, 780, 160, 160] },
+          // { class: 'paprika', score: 0.77, bbox: [530, 860, 110, 110] },
+          // { class: 'bay leaves', score: 0.90, bbox: [1275, 590, 220, 230] },
         ],
       },
     },
@@ -125,7 +132,7 @@
     const inferResult: InferResult
       = (file.infer.detections.length > 0)
         ? file.infer
-        : await invoke('infer', { base64: base64stipped }) as InferResult
+        : await invoke('infer', { base64: base64stipped, model: $selected, conf:conf, iou:iou }) as InferResult
 
     dispatch({
       type: 'app/viewResults',
@@ -143,14 +150,21 @@
           data-testid={`btn-${file.name}`}
           type="button"
           class="p-0 border-none bg-transparent cursor-pointer focus:outline-none"
-          on:click={() => handleImageClick(file)}
+          onclick={() => handleImageClick(file)}
           aria-label={`Select image ${file.name}`}
         >
-          <img
-            src={`/photos/${file.name}`}
-            alt={file.name}
-            class="w-full aspect-square object-cover rounded shadow"
-          />
+          <div class="relative w-full aspect-square">
+            <img
+              src={`/photos/${file.name}`}
+              alt={file.name}
+              class={`w-full h-full object-cover rounded shadow transition-colors border-2 ${
+                file.infer.detections.length > 0 ? 'border-red-500' : 'border-transparent'
+              }`}
+            />
+            {#if file.infer.detections.length > 0}
+              <div class="absolute inset-0 bg-red-500 opacity-20 rounded pointer-events-none"></div>
+            {/if}
+          </div>
         </button>
         <div class="mt-2 break-all text-center text-sm">{file.name}</div>
       </li>

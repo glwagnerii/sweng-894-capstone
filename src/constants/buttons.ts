@@ -22,6 +22,7 @@ export const buttons = tButton({
   viewLibrary:     { title: 'Show photo library', key: '', icon: 'bi-collection',           active: (s) => s.app.view.selected === 'library' },
   viewMatches:     { title: 'Show recipe',        key: '', icon: 'bi-list-columns-reverse', active: (s) => s.app.view.selected === 'matches' },
   viewPath:        { title: 'Show app paths',     key: '', icon: 'bi-terminal',             active: (s) => s.app.view.selected === 'path' },
+  viewRecents:     { title: 'Show recents',       key: '', icon: 'bi-image',                active: (s) => s.app.view.selected === 'recents' },
   viewResults:     { title: 'Show results',       key: '', icon: 'bi-image',                active: (s) => s.app.view.selected === 'results' },
   viewSettings:    { title: 'Edit settings',      key: '', icon: 'bi-gear',                 active: (s) => s.app.view.selected === 'settings' },
 })

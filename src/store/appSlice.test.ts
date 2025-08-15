@@ -1,6 +1,6 @@
 import { describe, it, expect, afterEach, type Mock } from 'vitest'
 import { store, useDispatch } from './'
-import { detectPlatform, saveModel, getModel, addModel, deleteModel } from './appSlice'
+import { detectPlatform, saveModel, getModel, addModel, deleteModel, updateExpire } from './appSlice'
 
 import * as pluginStore from '@tauri-apps/plugin-store'
 
@@ -354,7 +354,7 @@ describe('recentExpireDays reducer', () => {
   const dispatch = useDispatch()
 
   it('setRecentExpireDays sets recentExpireDays', () => {
-    dispatch({ type: 'app/setRecentExpireDays', payload: 10 })
+    dispatch(updateExpire(10))
     expect(store.getState().app.recentExpireDays).toBe(10)
   })
 

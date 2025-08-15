@@ -14,7 +14,8 @@
       "allow": [
         { "url": "https://fakestoreapi.com" }, 
         { "url": "https://www.themealdb.com" },
-        { "url": "https://www.youtube.com" }
+        { "url": "https://www.youtube.com" },
+        { "url": "https://www.github.com" }
       ]
     },
     {

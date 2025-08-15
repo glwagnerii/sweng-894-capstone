@@ -5,7 +5,6 @@
     import { deleteRecentRecipe } from '../store/appSlice'
 
     const dispatch = useDispatch()
-    // const recipe = useSelector((state) => state.app.recipe.id)
     const recentsList = useSelector((state) => state.app.recentsList)
     const openRecipe = (id: string) => { dispatch({ type: 'app/viewDetails', payload: { id } }) }
     const remove = (id: string) => { dispatch(deleteRecentRecipe(id)).then(() => fetchRecents()) }
@@ -13,6 +12,11 @@
     let recentMeals: Record<string, RecentMeal> = $state({})
     let loading = $state(true)
     let error: string | null = $state(null)
+    let filterText = $state('')
+
+    // Sorting state
+    let sortBy  = $state<'name' | 'date'>('date')
+    let sortAsc = $state(false)
 
     async function fetchRecents() {
       loading = true
@@ -41,9 +45,25 @@
 
     onMount(() => { fetchRecents() })
 
-    // Derived value for sorted recents (descending by date)
+    // Derived value for sorted recents (by sortBy and sortAsc)
     const sortedRecents = $derived(
-      $recentsList.slice().sort((a, b) => new Date(b.viewedAt).getTime() - new Date(a.viewedAt).getTime()),
+      $recentsList.slice().sort((a, b) => {
+        if (sortBy === 'name') {
+          const cmp = a.strMeal.localeCompare(b.strMeal)
+          return sortAsc ? cmp : -cmp
+        }
+        else {
+          const cmp = new Date(a.viewedAt).getTime() - new Date(b.viewedAt).getTime()
+          return sortAsc ? cmp : -cmp
+        }
+      }),
+    )
+
+    // Filtered and sorted recents
+    const filteredRecents = $derived(
+      sortedRecents.filter((meal) =>
+        meal.strMeal.toLowerCase().includes(filterText.toLowerCase()),
+      ),
     )
 
     function formatViewedAt(dateStr: string): string {
@@ -51,22 +71,55 @@
       const day = String(date.getDate()).padStart(2, '0')
       const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase()
       const year = String(date.getFullYear()).slice(-2)
-      return `${day}${month}${year}`
+      const hours = String(date.getHours()).padStart(2, '0')
+      const minutes = String(date.getMinutes()).padStart(2, '0')
+      return `${day}${month}${year} ${hours}:${minutes}`
     }
 
+    async function copyRecentsToClipboard() {
+      // Format recentMeals as a pretty JSON string
+      const formatted = JSON.stringify(Object.values(recentMeals), null, 2)
+      try   {
+        await navigator.clipboard.writeText(formatted)
+        alert('Recent meals copied to clipboard!')
+      }
+      catch { alert('Failed to copy to clipboard.') }
+    }
+
+    function toggleSortBy()  { sortBy  = sortBy === 'name' ? 'date' : 'name' }
+    function toggleSortAsc() { sortAsc = !sortAsc }
 </script>
 
 <div id="view-recents" class="p-4 flex flex-col justify-center max-w-5xl mx-auto space-y-6">
+    <div class="flex justify-between mb-2 items-center">
+      <input
+        type="text"
+        class="input input-bordered input-sm w-48"
+        placeholder="Filter meals..."
+        bind:value={filterText}
+      />
+      <div class="flex gap-2">
+        <button class="btn btn-outline btn-sm" type="button" onclick={toggleSortBy} title="Toggle sort by name or date">
+          {sortBy === 'name' ? 'Name' : 'Date'}
+        </button>
+        <button class="btn btn-outline btn-sm" type="button" onclick={toggleSortAsc} title="Toggle ascending/descending">
+          {sortAsc ? '↑' : '↓'}
+        </button>
+        <button class="btn btn-outline btn-sm" type="button" onclick={copyRecentsToClipboard} title="Copy recent history to clipboard">
+          Copy
+        </button>
+      </div>
+    </div>
     <h1 class="text-2xl font-bold text-center">All Recent Activity</h1>
     {#if loading}
         <p class="text-center">Loading...</p>
     {:else if error}
         <p class="text-error text-center">{error}</p>
-    {:else if !sortedRecents.length}
+    {:else if !filteredRecents.length}
         <p class="text-center opacity-60">No Recipes Have Been Viewed Recently.</p>
     {:else}
         <div class="grid justify-between gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-            {#each sortedRecents as meal (meal.idMeal)}
+            {#each filteredRecents as meal (meal.idMeal)}
             <div class="card justify-center bg-base-200 shadow-md hover:shadow-lg transition border border-accent">
                 <button type="button" class="w-full h-40 overflow-hidden" onclick={() => openRecipe(meal.idMeal)}>
                 <img src={meal.strMealThumb} alt={meal.strMeal} class="w-full h-full object-cover" />

@@ -1,4 +1,4 @@
-use once_cell::sync::OnceCell;
+use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use std::time::Instant;
 use tauri::Manager;
@@ -9,7 +9,27 @@ use model::{YoloModelSession, Detection, YoloTimingStats};
 
 use base64::Engine;
 
-static YOLO_SESSION: OnceCell<Mutex<YoloModelSession>> = OnceCell::new();
+static YOLO_SESSION: Lazy<Mutex<Option<YoloModelSession>>> = Lazy::new(|| Mutex::new(None));
+static LAST_MODEL_PATH: Lazy<Mutex<String>> = Lazy::new(|| Mutex::new(String::new()));
+
+fn get_or_init_yolo(model_path: &str) -> Result<std::sync::MutexGuard<'_, Option<YoloModelSession>>, String> {
+    let mut last_path = LAST_MODEL_PATH.lock().map_err(|_| "Failed to lock LAST_MODEL_PATH")?;
+    let mut session = YOLO_SESSION.lock().map_err(|_| "Failed to lock YOLO_SESSION")?;
+
+    if last_path.as_str() != model_path {
+        // Reinitialize session if model_path changed
+        *session = Some(YoloModelSession::new(model_path, Some(0.5), Some(0.5))
+            .map_err(|e| format!("Failed to initialize YOLO model: {e}"))?);
+        *last_path = model_path.to_string();
+    } else if session.is_none() {
+        // Initialize if not already
+        *session = Some(YoloModelSession::new(model_path, Some(0.5), Some(0.5))
+            .map_err(|e| format!("Failed to initialize YOLO model: {e}"))?);
+        *last_path = model_path.to_string();
+    }
+
+    Ok(session)
+}
 
 use serde::Serialize;
 
@@ -18,6 +38,20 @@ pub struct InferResult {
     detections: Vec<Detection>,
     timing: YoloTimingStats,
 }
+
+#[derive(Serialize)]
+pub struct ModelInfo {
+    input_shape: String,
+    output_shape: String,
+    file_size_mb: String,
+}
+
+// #[derive(serde::Serialize)]
+// pub struct Info {
+//     success: bool,
+//     pub score: f32,
+//     pub bbox: [f32; 4], // [x, y, width, height]
+// }
 
 fn log_result<T, E: std::fmt::Debug>(result: Result<T, E>, action: &str) -> Result<T, String> {
     match result {
@@ -43,16 +77,8 @@ fn get_resource_path(handle: &tauri::AppHandle, rel_path: &str) -> Result<String
         .map(|s| s.to_string())
 }
 
-fn get_or_init_yolo(model_path: &str) -> Result<&'static Mutex<YoloModelSession>, String> {
-    YOLO_SESSION.get_or_try_init(|| {
-        YoloModelSession::new(model_path, Some(0.5), Some(0.5))
-            .map(Mutex::new)
-            .map_err(|e| format!("Failed to initialize YOLO model: {e}"))
-    })
-}
-
 #[tauri::command]
-async fn infer(handle: tauri::AppHandle, base64: String) -> Result<InferResult, String> {
+async fn infer(handle: tauri::AppHandle, base64: String, model: String, conf: f32, iou: f32) -> Result<InferResult, String> {
     let total_start = Instant::now();
     let mut timing = YoloTimingStats::default();
 
@@ -61,11 +87,14 @@ async fn infer(handle: tauri::AppHandle, base64: String) -> Result<InferResult, 
     let img = log_result(image::load_from_memory(&img_bytes), "load image from memory")?;
     timing.load = img_load_start.elapsed().as_millis() as u16;
 
-    let model_path = get_resource_path(&handle, "resources/models/yolo11n.onnx")?;
+    // Use the provided model file name
+    let model_path = get_resource_path(&handle, &format!("resources/models/{}", model))?;
 
     let model_init_start = Instant::now();
-    let yolo_mutex = get_or_init_yolo(&model_path)?;
-    let mut yolo = yolo_mutex.lock().map_err(|_| "Failed to lock YOLO session".to_string())?;
+    let mut yolo_guard = get_or_init_yolo(&model_path)?;
+    let yolo = yolo_guard.as_mut().ok_or("YOLO session not initialized".to_string())?;
+    yolo.set_prob_thresh(conf/100.0);
+    yolo.set_iou_thresh(iou/100.0);
     timing.init = model_init_start.elapsed().as_millis() as u16;
 
     let detections = log_result(yolo.infer(&img, &mut timing), "model inference")?;
@@ -84,6 +113,33 @@ async fn infer(handle: tauri::AppHandle, base64: String) -> Result<InferResult, 
     println!("  Total:       {} ms\n", timing.total);
 
     Ok(InferResult { detections, timing })
+}
+
+#[tauri::command]
+async fn info(handle: tauri::AppHandle, model: String) -> Result<ModelInfo, String> {
+    let model_path = get_resource_path(&handle, &format!("resources/models/{}", model))?;
+    let session = YoloModelSession::new(&model_path, Some(0.5), Some(0.5))
+        .map_err(|e| format!("Failed to initialize YOLO model: {e}"))?;
+
+    // Get file size in MB
+    let file_size_mb = match std::fs::metadata(&model_path) {
+        Ok(metadata) => {
+            let file_size_bytes = metadata.len();
+            format!("{:.2} MB", file_size_bytes as f64 / (1024.0 * 1024.0))
+        }
+        Err(e) => format!("Failed to get model file size: {}", e),
+    };
+
+    let (input_shape, output_shape) = match session.get_info() {
+        Ok((input_shape, output_shape)) => (input_shape, output_shape),
+        Err(err_msg) => (err_msg.clone(), err_msg),
+    };
+
+    Ok(ModelInfo {
+        input_shape,
+        output_shape,
+        file_size_mb,
+    })
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -106,7 +162,7 @@ pub fn run() {
     }
 
     builder
-        .invoke_handler(tauri::generate_handler![infer])
+        .invoke_handler(tauri::generate_handler![infer, info])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

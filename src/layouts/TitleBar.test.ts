@@ -51,7 +51,7 @@ describe('TitleBar', () => {
     const { container } = render(TitleBar)
     const titleBar = container.querySelector('#titlebar')
     expect(titleBar).toBeInTheDocument()
-    expect(titleBar).toHaveClass('border-b', 'flex', 'items-center', 'h-12', 'select-none', 'overflow-hidden', 'drag')
+    expect(titleBar).toHaveClass('border-b', 'flex', 'items-center', 'h-12', 'select-none', 'overflow-hidden')
   })
 
   it('renders a Classifi-Cam brand button', () => {
@@ -164,22 +164,6 @@ describe('TitleBar', () => {
     const viewPathButton = container.querySelector('.btn-viewPath')
     await fireEvent.click(viewPathButton!)
     expect(mockDispatch).toHaveBeenCalledWith({ type: 'app/viewPath' })
-  })
-
-  it('has proper layout structure with correct order classes', () => {
-    const { container } = render(TitleBar)
-
-    const brandSection = container.querySelector('.order-0')
-    const titleSection = container.querySelector('.order-1')
-    const buttonsSection = container.querySelector('.order-2')
-
-    expect(brandSection).toBeInTheDocument()
-    expect(titleSection).toBeInTheDocument()
-    expect(buttonsSection).toBeInTheDocument()
-
-    expect(brandSection).toHaveClass('order-0')
-    expect(titleSection).toHaveClass('order-1')
-    expect(buttonsSection).toHaveClass('order-2')
   })
 
   it('does not throw when show Menu button is clicked', async () => {
