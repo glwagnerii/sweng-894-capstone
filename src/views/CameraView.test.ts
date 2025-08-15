@@ -1,11 +1,23 @@
 import { describe, it, vi, expect } from 'vitest'
 import { render, fireEvent, waitFor } from '@testing-library/svelte'
 import '@testing-library/jest-dom/vitest'
+import { writable } from 'svelte/store'
 import { CameraView } from './'
+
+const models = writable([
+  { file: 'model1.onnx', conf: 0.5, iou: 0.5 },
+  { file: 'model2.onnx', conf: 0.6, iou: 0.6 },
+])
+const selected = writable('model1.onnx')
 
 const mockDispatch = vi.fn()
 vi.mock('../store', () => ({
   useDispatch: () => mockDispatch,
+  useSelector: (fn: (state: unknown) => unknown) => {
+    if (fn.toString().includes('state.app.models')) return models
+    if (fn.toString().includes('state.app.model.selected')) return selected
+    return writable(null)
+  },
 }))
 
 vi.mock('@tauri-apps/api/core', () => ({

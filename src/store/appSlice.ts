@@ -80,7 +80,7 @@ const app: App = {
   ingredient: { name:'' },
   recipe:     { id: '' },
   favorites:  [],
-  model:      { selected:'' },
+  model:      { selected:'yolo11n.onnx' },
   models:     [],
   recentsList: [],
   recentExpireDays: 7,
@@ -265,11 +265,44 @@ function createGetThunk<T>(key: string, defaultValue: T) {
 export const saveFavorites = createSaveThunk(FAV_KEY, (app) => app.favorites)
 export const getFavorites = createGetThunk<string[]>(FAV_KEY, [])
 
+const defaultModels: Models[] = [
+  {
+    conf: 70,
+    desc: 'Model Description',
+    file: 'ingredients.onnx',
+    input_shape: '[1, 3, 640, 640]',
+    iou: 50,
+    name: 'ingredients',
+    output_shape: '[1, 58, 8400]',
+    size: '10.13 MB',
+  },
+  {
+    conf: 70,
+    desc: 'Model Description',
+    file: 'yolo11n.onnx',
+    input_shape: '[1, 3, 640, 640]',
+    iou: 50,
+    name: 'yolo11n',
+    output_shape: '[1, 84, 8400]',
+    size: '10.22 MB',
+  },
+  {
+    conf: 70,
+    desc: 'Model Description',
+    file: 'foodseg103n.onnx',
+    input_shape: '[1, 3, 640, 640]',
+    iou: 50,
+    name: 'foodseg103n',
+    output_shape: '[1, 107, 8400]',
+    size: '10.35 MB',
+  },
+]
+
 // ai model thunks
 export const saveModels = createSaveThunk(MODELS_KEY, (app) => app.models)
-export const getModels = createGetThunk<Models[]>(MODELS_KEY, [])
+export const getModels = createGetThunk<Models[]>(MODELS_KEY, defaultModels)
 export const saveModel = createSaveThunk(MODEL_KEY, (app) => app.model)
-export const getModel = createGetThunk<Model>(MODEL_KEY, { selected: '' })
+export const getModel = createGetThunk<Model>(MODEL_KEY, { selected: 'yolo11n.onnx' })
 
 // checkboxes
 export const saveChecklist = createSaveThunk(CHECKLIST_KEY, (app) => app.checklist)
